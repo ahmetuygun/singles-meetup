@@ -12,11 +12,12 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IEvent } from '../event.model';
 import { EntityArrayResponseType, EventService } from '../service/event.service';
 import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
+import HasAnyAuthorityDirective from "../../../shared/auth/has-any-authority.directive";
 
 @Component({
   selector: 'jhi-event',
   templateUrl: './event.component.html',
-  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe],
+  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe, HasAnyAuthorityDirective],
 })
 export class EventComponent implements OnInit {
   subscription: Subscription | null = null;
