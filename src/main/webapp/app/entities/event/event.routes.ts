@@ -19,7 +19,6 @@ const eventRoute: Routes = [
     resolve: {
       event: EventResolve,
     },
-    canActivate: [UserRouteAccessService],
   },
   {
     path: 'new',
