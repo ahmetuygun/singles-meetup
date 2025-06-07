@@ -59,7 +59,9 @@ public class EventAsserts {
             )
             .satisfies(a -> assertThat(a.getMaxParticipants()).as("check maxParticipants").isEqualTo(expected.getMaxParticipants()))
             .satisfies(a -> assertThat(a.getStatus()).as("check status").isEqualTo(expected.getStatus()))
-            .satisfies(a -> assertThat(a.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(expected.getPrice()));
+            .satisfies(a -> assertThat(a.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(expected.getPrice()))
+            .satisfies(a -> assertThat(a.getImage()).as("check image").isEqualTo(expected.getImage()))
+            .satisfies(a -> assertThat(a.getImageContentType()).as("check image contenty type").isEqualTo(expected.getImageContentType()));
     }
 
     /**

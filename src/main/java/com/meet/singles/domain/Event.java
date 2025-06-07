@@ -49,6 +49,13 @@ public class Event implements Serializable {
     @Column(name = "price", precision = 21, scale = 2, nullable = false)
     private BigDecimal price;
 
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    @Column(name = "image_content_type")
+    private String imageContentType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Venue venue;
 
@@ -150,6 +157,32 @@ public class Event implements Serializable {
         this.price = price;
     }
 
+    public byte[] getImage() {
+        return this.image;
+    }
+
+    public Event image(byte[] image) {
+        this.setImage(image);
+        return this;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageContentType() {
+        return this.imageContentType;
+    }
+
+    public Event imageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+        return this;
+    }
+
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+    }
+
     public Venue getVenue() {
         return this.venue;
     }
@@ -224,6 +257,8 @@ public class Event implements Serializable {
             ", maxParticipants=" + getMaxParticipants() +
             ", status='" + getStatus() + "'" +
             ", price=" + getPrice() +
+            ", image='" + getImage() + "'" +
+            ", imageContentType='" + getImageContentType() + "'" +
             "}";
     }
 }

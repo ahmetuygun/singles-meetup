@@ -37,6 +37,8 @@ type EventFormGroupContent = {
   maxParticipants: FormControl<EventFormRawValue['maxParticipants']>;
   status: FormControl<EventFormRawValue['status']>;
   price: FormControl<EventFormRawValue['price']>;
+  image: FormControl<EventFormRawValue['image']>;
+  imageContentType: FormControl<EventFormRawValue['imageContentType']>;
   venue: FormControl<EventFormRawValue['venue']>;
   participants: FormControl<EventFormRawValue['participants']>;
 };
@@ -70,6 +72,8 @@ export class EventFormService {
       price: new FormControl(eventRawValue.price, {
         validators: [Validators.required],
       }),
+      image: new FormControl(eventRawValue.image),
+      imageContentType: new FormControl(eventRawValue.imageContentType),
       venue: new FormControl(eventRawValue.venue),
       participants: new FormControl(eventRawValue.participants ?? []),
     });

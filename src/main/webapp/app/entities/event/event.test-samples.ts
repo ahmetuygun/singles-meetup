@@ -10,11 +10,11 @@ export const sampleWithRequiredData: IEvent = {
 };
 
 export const sampleWithPartialData: IEvent = {
-  id: 32196,
-  name: 'meh underpants and',
-  eventDate: dayjs('2025-06-07T00:31'),
-  maxParticipants: 17150,
-  price: 1321.67,
+  id: 23203,
+  name: 'ugh',
+  eventDate: dayjs('2025-06-06T12:44'),
+  maxParticipants: 19381,
+  price: 1192.88,
 };
 
 export const sampleWithFullData: IEvent = {
@@ -25,6 +25,8 @@ export const sampleWithFullData: IEvent = {
   maxParticipants: 31380,
   status: 'psst',
   price: 4253.03,
+  image: '../fake-data/blob/hipster.png',
+  imageContentType: 'unknown',
 };
 
 export const sampleWithNewData: NewEvent = {

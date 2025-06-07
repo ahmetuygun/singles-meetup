@@ -139,6 +139,12 @@ public class EventResource {
                 if (event.getPrice() != null) {
                     existingEvent.setPrice(event.getPrice());
                 }
+                if (event.getImage() != null) {
+                    existingEvent.setImage(event.getImage());
+                }
+                if (event.getImageContentType() != null) {
+                    existingEvent.setImageContentType(event.getImageContentType());
+                }
 
                 return existingEvent;
             })

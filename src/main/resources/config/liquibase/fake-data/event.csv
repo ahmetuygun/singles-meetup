@@ -1,11 +1,11 @@
-id;name;description;event_date;max_participants;status;price
-1;pantyhose devise crossly;queasily innocently;2025-06-06T18:22:33;30633;off;18019.81
-2;event;phooey cultivated;2025-06-06T23:47:08;2689;nudge;6473.51
-3;from animated;like rusty;2025-06-07T00:31:23;27811;pish interestingly regular;954.94
-4;broadly ha;beside;2025-06-07T02:17:09;16271;boohoo miserably judgementally;11049.45
-5;intent violent judicious;unearth the;2025-06-06T16:02:45;12333;quaff;26201.8
-6;that jacket duh;mmm enlist;2025-06-06T14:26:59;22849;deafening collaboration clean;30847.86
-7;aw aircraft;sesame tough aw;2025-06-07T05:49:10;28422;fair ouch;9887.46
-8;but;decent wound;2025-06-07T07:52:39;15742;husky blah;20289.65
-9;lined coarse;hmph pupil;2025-06-06T16:45:30;27729;whoever;29678.99
-10;consequently;sans questioningly;2025-06-07T09:52:32;22523;loudly;21339.92
+id;name;description;event_date;max_participants;status;price;image;image_content_type
+1;pantyhose devise crossly;queasily innocently;2025-06-06T18:22:33;30633;off;18019.81;../fake-data/blob/hipster.png;image/png
+2;event;phooey cultivated;2025-06-06T23:47:08;2689;nudge;6473.51;../fake-data/blob/hipster.png;image/png
+3;from animated;like rusty;2025-06-07T00:31:23;27811;pish interestingly regular;954.94;../fake-data/blob/hipster.png;image/png
+4;broadly ha;beside;2025-06-07T02:17:09;16271;boohoo miserably judgementally;11049.45;../fake-data/blob/hipster.png;image/png
+5;intent violent judicious;unearth the;2025-06-06T16:02:45;12333;quaff;26201.8;../fake-data/blob/hipster.png;image/png
+6;that jacket duh;mmm enlist;2025-06-06T14:26:59;22849;deafening collaboration clean;30847.86;../fake-data/blob/hipster.png;image/png
+7;aw aircraft;sesame tough aw;2025-06-07T05:49:10;28422;fair ouch;9887.46;../fake-data/blob/hipster.png;image/png
+8;but;decent wound;2025-06-07T07:52:39;15742;husky blah;20289.65;../fake-data/blob/hipster.png;image/png
+9;lined coarse;hmph pupil;2025-06-06T16:45:30;27729;whoever;29678.99;../fake-data/blob/hipster.png;image/png
+10;consequently;sans questioningly;2025-06-07T09:52:32;22523;loudly;21339.92;../fake-data/blob/hipster.png;image/png

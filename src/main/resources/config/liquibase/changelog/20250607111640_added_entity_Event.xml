@@ -32,6 +32,12 @@
             <column name="price" type="decimal(21,2)">
                 <constraints nullable="false" />
             </column>
+            <column name="image" type="${blobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="image_content_type" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="venue_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -63,6 +69,8 @@
             <column name="max_participants" type="numeric"/>
             <column name="status" type="string"/>
             <column name="price" type="numeric"/>
+            <column name="image" type="blob"/>
+            <column name="image_content_type" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

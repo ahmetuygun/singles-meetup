@@ -24,6 +24,7 @@
       "maxParticipants": "Max Participants",
       "status": "Status",
       "price": "Price",
+      "image": "Image",
       "venue": "Venue",
       "participants": "Participants"
     }

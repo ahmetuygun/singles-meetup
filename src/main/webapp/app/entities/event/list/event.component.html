@@ -82,6 +82,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="image">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.event.image">Image</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col" jhiSortBy="venue.id">
               <div class="d-flex">
                 <span jhiTranslate="singlesMeetup2App.event.venue">Venue</span>
@@ -109,6 +116,14 @@
               <td>{{ event.maxParticipants }}</td>
               <td>{{ event.status }}</td>
               <td>{{ event.price }}</td>
+              <td>
+                @if (event.image) {
+                  <a (click)="openFile(event.image, event.imageContentType)">
+                    <img [src]="'data:' + event.imageContentType + ';base64,' + event.image" style="max-height: 30px" alt="event" />
+                  </a>
+                  <span>{{ event.imageContentType }}, {{ byteSize(event.image) }}</span>
+                }
+              </td>
               <td>
                 @if (event.venue) {
                   <div>

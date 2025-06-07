@@ -10,6 +10,8 @@ export interface IEvent {
   maxParticipants?: number | null;
   status?: string | null;
   price?: number | null;
+  image?: string | null;
+  imageContentType?: string | null;
   venue?: IVenue | null;
   participants?: IPersonProfile[] | null;
 }

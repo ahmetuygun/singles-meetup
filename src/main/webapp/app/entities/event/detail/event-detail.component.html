@@ -39,6 +39,17 @@
           <dd>
             <span>{{ eventRef.price }}</span>
           </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.image">Image</span></dt>
+          <dd>
+            @if (eventRef.image) {
+              <div>
+                <a (click)="openFile(eventRef.image ?? '', eventRef.imageContentType)">
+                  <img [src]="'data:' + eventRef.imageContentType + ';base64,' + eventRef.image" style="max-width: 100%" alt="event" />
+                </a>
+                {{ eventRef.imageContentType }}, {{ byteSize(eventRef.image ?? '') }}
+              </div>
+            }
+          </dd>
           <dt><span jhiTranslate="singlesMeetup2App.event.venue">Venue</span></dt>
           <dd>
             @if (event()!.venue) {

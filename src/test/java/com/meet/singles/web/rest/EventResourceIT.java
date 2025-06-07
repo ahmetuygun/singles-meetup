@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
@@ -58,6 +59,11 @@ class EventResourceIT {
     private static final BigDecimal DEFAULT_PRICE = new BigDecimal(1);
     private static final BigDecimal UPDATED_PRICE = new BigDecimal(2);
 
+    private static final byte[] DEFAULT_IMAGE = TestUtil.createByteArray(1, "0");
+    private static final byte[] UPDATED_IMAGE = TestUtil.createByteArray(1, "1");
+    private static final String DEFAULT_IMAGE_CONTENT_TYPE = "image/jpg";
+    private static final String UPDATED_IMAGE_CONTENT_TYPE = "image/png";
+
     private static final String ENTITY_API_URL = "/api/events";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -93,7 +99,9 @@ class EventResourceIT {
             .eventDate(DEFAULT_EVENT_DATE)
             .maxParticipants(DEFAULT_MAX_PARTICIPANTS)
             .status(DEFAULT_STATUS)
-            .price(DEFAULT_PRICE);
+            .price(DEFAULT_PRICE)
+            .image(DEFAULT_IMAGE)
+            .imageContentType(DEFAULT_IMAGE_CONTENT_TYPE);
     }
 
     /**
@@ -109,7 +117,9 @@ class EventResourceIT {
             .eventDate(UPDATED_EVENT_DATE)
             .maxParticipants(UPDATED_MAX_PARTICIPANTS)
             .status(UPDATED_STATUS)
-            .price(UPDATED_PRICE);
+            .price(UPDATED_PRICE)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
     }
 
     @BeforeEach
@@ -229,7 +239,9 @@ class EventResourceIT {
             .andExpect(jsonPath("$.[*].eventDate").value(hasItem(sameInstant(DEFAULT_EVENT_DATE))))
             .andExpect(jsonPath("$.[*].maxParticipants").value(hasItem(DEFAULT_MAX_PARTICIPANTS)))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
-            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))));
+            .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
+            .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64.getEncoder().encodeToString(DEFAULT_IMAGE))));
     }
 
     @Test
@@ -249,7 +261,9 @@ class EventResourceIT {
             .andExpect(jsonPath("$.eventDate").value(sameInstant(DEFAULT_EVENT_DATE)))
             .andExpect(jsonPath("$.maxParticipants").value(DEFAULT_MAX_PARTICIPANTS))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS))
-            .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)));
+            .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
+            .andExpect(jsonPath("$.imageContentType").value(DEFAULT_IMAGE_CONTENT_TYPE))
+            .andExpect(jsonPath("$.image").value(Base64.getEncoder().encodeToString(DEFAULT_IMAGE)));
     }
 
     @Test
@@ -277,7 +291,9 @@ class EventResourceIT {
             .eventDate(UPDATED_EVENT_DATE)
             .maxParticipants(UPDATED_MAX_PARTICIPANTS)
             .status(UPDATED_STATUS)
-            .price(UPDATED_PRICE);
+            .price(UPDATED_PRICE)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
         restEventMockMvc
             .perform(
@@ -360,7 +376,11 @@ class EventResourceIT {
         Event partialUpdatedEvent = new Event();
         partialUpdatedEvent.setId(event.getId());
 
-        partialUpdatedEvent.description(UPDATED_DESCRIPTION).status(UPDATED_STATUS);
+        partialUpdatedEvent
+            .description(UPDATED_DESCRIPTION)
+            .status(UPDATED_STATUS)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
         restEventMockMvc
             .perform(
@@ -395,7 +415,9 @@ class EventResourceIT {
             .eventDate(UPDATED_EVENT_DATE)
             .maxParticipants(UPDATED_MAX_PARTICIPANTS)
             .status(UPDATED_STATUS)
-            .price(UPDATED_PRICE);
+            .price(UPDATED_PRICE)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
 
         restEventMockMvc
             .perform(
