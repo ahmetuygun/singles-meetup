@@ -19,6 +19,8 @@ logging:
     tech.jhipster: DEBUG
     org.hibernate.SQL: DEBUG
     com.meet.singles: DEBUG
+    jdk.internal.httpclient: WARN
+    org.apache.http: WARN
 
 spring:
   devtools:
