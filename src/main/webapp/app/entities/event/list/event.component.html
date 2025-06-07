@@ -2,12 +2,11 @@
   <div class="row">
     <div class="col-md-12">
       <h2 id="page-heading" data-cy="EventHeading">
- 
+
 
         <div class="d-flex justify-content-end">
           <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading" *jhiHasAnyAuthority="'ROLE_ADMIN'">
             <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-            <span jhiTranslate="singlesMeetup2App.event.home.refreshListLabel">Refresh List</span>
           </button>
 
           <button
@@ -18,7 +17,6 @@
             *jhiHasAnyAuthority="'ROLE_ADMIN'"
           >
             <fa-icon icon="plus"></fa-icon>
-            <span jhiTranslate="singlesMeetup2App.event.home.createLabel">Create new Event</span>
           </button>
         </div>
       </h2>
@@ -66,9 +64,10 @@
                   <span>{{ event.venue?.name || 'TBD' }}</span>
                 </div>
               </div>
-              <button class="book-button" (click)="navigateToEvent(event.id); $event.stopPropagation()">
-                Book Your Spot
-              </button>
+
+                <button type="button" (click)="navigateToEvent(event.id); $event.stopPropagation()" class="btn btn-warning mt-3">
+                    Book Your Spot
+                </button>
             </div>
           </div>
         }
