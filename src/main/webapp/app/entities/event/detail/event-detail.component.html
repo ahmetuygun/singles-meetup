@@ -1,0 +1,71 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (event(); as eventRef) {
+      <div>
+        <h2 data-cy="eventDetailsHeading"><span jhiTranslate="singlesMeetup2App.event.detail.title">Event</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ eventRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.name">Name</span></dt>
+          <dd>
+            <span>{{ eventRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.description">Description</span></dt>
+          <dd>
+            <span>{{ eventRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.eventDate">Event Date</span></dt>
+          <dd>
+            <span>{{ eventRef.eventDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.maxParticipants">Max Participants</span></dt>
+          <dd>
+            <span>{{ eventRef.maxParticipants }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.status">Status</span></dt>
+          <dd>
+            <span>{{ eventRef.status }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.price">Price</span></dt>
+          <dd>
+            <span>{{ eventRef.price }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.venue">Venue</span></dt>
+          <dd>
+            @if (event()!.venue) {
+              <div>
+                <a [routerLink]="['/venue', event()!.venue?.id, 'view']">{{ eventRef.venue?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.event.participants">Participants</span></dt>
+          <dd>
+            @for (participants of eventRef.participants; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/person-profile', participants.id, 'view']">{{ participants?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/event', eventRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

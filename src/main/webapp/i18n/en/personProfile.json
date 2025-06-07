@@ -1,0 +1,33 @@
+{
+  "singlesMeetup2App": {
+    "personProfile": {
+      "home": {
+        "title": "Person Profiles",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Person Profile",
+        "createOrEditLabel": "Create or edit a Person Profile",
+        "notFound": "No Person Profiles found"
+      },
+      "created": "A new Person Profile is created with identifier {{ param }}",
+      "updated": "A Person Profile is updated with identifier {{ param }}",
+      "deleted": "A Person Profile is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Person Profile {{ id }}?"
+      },
+      "detail": {
+        "title": "Person Profile"
+      },
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Dob",
+      "gender": "Gender",
+      "bio": "Bio",
+      "interests": "Interests",
+      "location": "Location",
+      "internalUser": "Internal User",
+      "answers": "Answers",
+      "events": "Events"
+    }
+  }
+}

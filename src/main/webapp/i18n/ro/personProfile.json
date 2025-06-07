@@ -1,0 +1,33 @@
+{
+  "singlesMeetup2App": {
+    "personProfile": {
+      "home": {
+        "title": "Person Profiles",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Person Profile",
+        "createOrEditLabel": "Creeare sau editare Person Profile",
+        "notFound": "No Person Profiles found"
+      },
+      "created": "A fost creată o nouă entitate Person Profile cu identificatorul {{ param }}",
+      "updated": "Person Profile cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Person Profile cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Person Profile {{ id }}?"
+      },
+      "detail": {
+        "title": "Person Profile"
+      },
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Dob",
+      "gender": "Gender",
+      "bio": "Bio",
+      "interests": "Interests",
+      "location": "Location",
+      "internalUser": "Internal User",
+      "answers": "Answers",
+      "events": "Events"
+    }
+  }
+}

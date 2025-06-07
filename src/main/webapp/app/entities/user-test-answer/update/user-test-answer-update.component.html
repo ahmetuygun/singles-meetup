@@ -1,0 +1,134 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-user-test-answer-heading"
+        data-cy="UserTestAnswerCreateUpdateHeading"
+        jhiTranslate="singlesMeetup2App.userTestAnswer.home.createOrEditLabel"
+      >
+        Create or edit a User Test Answer
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="singlesMeetup2App.userTestAnswer.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let answerValueRef = editForm.get('answerValue')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_answerValue" jhiTranslate="singlesMeetup2App.userTestAnswer.answerValue">Answer Value</label>
+          <input
+            type="number"
+            class="form-control"
+            name="answerValue"
+            id="field_answerValue"
+            data-cy="answerValue"
+            formControlName="answerValue"
+          />
+          @if (answerValueRef.invalid && (answerValueRef.dirty || answerValueRef.touched)) {
+            <div>
+              @if (editForm.get('answerValue')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('answerValue')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_timestamp" jhiTranslate="singlesMeetup2App.userTestAnswer.timestamp">Timestamp</label>
+          <div class="d-flex">
+            <input
+              id="field_timestamp"
+              data-cy="timestamp"
+              type="datetime-local"
+              class="form-control"
+              name="timestamp"
+              formControlName="timestamp"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_question" jhiTranslate="singlesMeetup2App.userTestAnswer.question">Question</label>
+          <select
+            class="form-control"
+            id="field_question"
+            data-cy="question"
+            name="question"
+            formControlName="question"
+            [compareWith]="compareTestQuestion"
+          >
+            <option [ngValue]="null"></option>
+            @for (testQuestionOption of testQuestionsSharedCollection; track $index) {
+              <option [ngValue]="testQuestionOption">{{ testQuestionOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_personProfile" jhiTranslate="singlesMeetup2App.userTestAnswer.personProfile"
+            >Person Profile</label
+          >
+          <select
+            class="form-control"
+            id="field_personProfile"
+            data-cy="personProfile"
+            name="personProfile"
+            formControlName="personProfile"
+            [compareWith]="comparePersonProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (personProfileOption of personProfilesSharedCollection; track $index) {
+              <option [ngValue]="personProfileOption">{{ personProfileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_answer" jhiTranslate="singlesMeetup2App.userTestAnswer.answer">Answer</label>
+          <select
+            class="form-control"
+            id="field_answer"
+            data-cy="answer"
+            name="answer"
+            formControlName="answer"
+            [compareWith]="compareTestAnswerOption"
+          >
+            <option [ngValue]="null"></option>
+            @for (testAnswerOptionOption of testAnswerOptionsSharedCollection; track $index) {
+              <option [ngValue]="testAnswerOptionOption">{{ testAnswerOptionOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

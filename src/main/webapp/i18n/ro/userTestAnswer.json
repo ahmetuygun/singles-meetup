@@ -1,0 +1,28 @@
+{
+  "singlesMeetup2App": {
+    "userTestAnswer": {
+      "home": {
+        "title": "User Test Answers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate User Test Answer",
+        "createOrEditLabel": "Creeare sau editare User Test Answer",
+        "notFound": "No User Test Answers found"
+      },
+      "created": "A fost creată o nouă entitate User Test Answer cu identificatorul {{ param }}",
+      "updated": "User Test Answer cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "User Test Answer cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți User Test Answer {{ id }}?"
+      },
+      "detail": {
+        "title": "User Test Answer"
+      },
+      "id": "ID",
+      "answerValue": "Answer Value",
+      "timestamp": "Timestamp",
+      "question": "Question",
+      "personProfile": "Person Profile",
+      "answer": "Answer"
+    }
+  }
+}

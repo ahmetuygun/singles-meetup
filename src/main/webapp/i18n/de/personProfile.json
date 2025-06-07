@@ -1,0 +1,33 @@
+{
+  "singlesMeetup2App": {
+    "personProfile": {
+      "home": {
+        "title": "Person Profiles",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Person Profile erstellen",
+        "createOrEditLabel": "Person Profile erstellen oder bearbeiten",
+        "notFound": "Keine Person Profiles gefunden"
+      },
+      "created": "Person Profile erstellt mit ID {{ param }}",
+      "updated": "Person Profile aktualisiert mit ID {{ param }}",
+      "deleted": "Person Profile gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Person Profile {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Person Profile"
+      },
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Dob",
+      "gender": "Gender",
+      "bio": "Bio",
+      "interests": "Interests",
+      "location": "Location",
+      "internalUser": "Internal User",
+      "answers": "Answers",
+      "events": "Events"
+    }
+  }
+}

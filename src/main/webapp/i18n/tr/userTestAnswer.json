@@ -1,0 +1,28 @@
+{
+  "singlesMeetup2App": {
+    "userTestAnswer": {
+      "home": {
+        "title": "User Test Answers",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni User Test Answer ekle",
+        "createOrEditLabel": "Yeni User Test Answer ekle veya guncelle",
+        "notFound": "User Test Answers kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir User Test Answer eklendi",
+      "updated": "{{ param }} nolu User Test Answer guncellendi",
+      "deleted": "{{ param }} nolu User Test Answer silindi",
+      "delete": {
+        "question": "{{ id }} nolu User Test Answer silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "User Test Answer"
+      },
+      "id": "ID",
+      "answerValue": "Answer Value",
+      "timestamp": "Timestamp",
+      "question": "Question",
+      "personProfile": "Person Profile",
+      "answer": "Answer"
+    }
+  }
+}

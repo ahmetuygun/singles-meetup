@@ -1,0 +1,27 @@
+{
+  "singlesMeetup2App": {
+    "testAnswerOption": {
+      "home": {
+        "title": "Test Answer Options",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Test Answer Option",
+        "createOrEditLabel": "Create or edit a Test Answer Option",
+        "notFound": "No Test Answer Options found"
+      },
+      "created": "A new Test Answer Option is created with identifier {{ param }}",
+      "updated": "A Test Answer Option is updated with identifier {{ param }}",
+      "deleted": "A Test Answer Option is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Test Answer Option {{ id }}?"
+      },
+      "detail": {
+        "title": "Test Answer Option"
+      },
+      "id": "ID",
+      "optionText": "Option Text",
+      "value": "Value",
+      "selectedAnswers": "Selected Answers",
+      "question": "Question"
+    }
+  }
+}

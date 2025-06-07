@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (testAnswerOption(); as testAnswerOptionRef) {
+      <div>
+        <h2 data-cy="testAnswerOptionDetailsHeading">
+          <span jhiTranslate="singlesMeetup2App.testAnswerOption.detail.title">Test Answer Option</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ testAnswerOptionRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testAnswerOption.optionText">Option Text</span></dt>
+          <dd>
+            <span>{{ testAnswerOptionRef.optionText }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testAnswerOption.value">Value</span></dt>
+          <dd>
+            <span>{{ testAnswerOptionRef.value }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testAnswerOption.question">Question</span></dt>
+          <dd>
+            @if (testAnswerOption()!.question) {
+              <div>
+                <a [routerLink]="['/test-question', testAnswerOption()!.question?.id, 'view']">{{ testAnswerOptionRef.question?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/test-answer-option', testAnswerOptionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

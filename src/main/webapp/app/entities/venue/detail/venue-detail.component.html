@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (venue(); as venueRef) {
+      <div>
+        <h2 data-cy="venueDetailsHeading"><span jhiTranslate="singlesMeetup2App.venue.detail.title">Venue</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ venueRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.name">Name</span></dt>
+          <dd>
+            <span>{{ venueRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.address">Address</span></dt>
+          <dd>
+            <span>{{ venueRef.address }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.city">City</span></dt>
+          <dd>
+            <span>{{ venueRef.city }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.capacity">Capacity</span></dt>
+          <dd>
+            <span>{{ venueRef.capacity }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.contactInfo">Contact Info</span></dt>
+          <dd>
+            <span>{{ venueRef.contactInfo }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.venue.photoUrl">Photo Url</span></dt>
+          <dd>
+            <span>{{ venueRef.photoUrl }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/venue', venueRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

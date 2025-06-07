@@ -1,0 +1,136 @@
+<div>
+  <h2 id="page-heading" data-cy="TestQuestionHeading">
+    <span jhiTranslate="singlesMeetup2App.testQuestion.home.title">Test Questions</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="singlesMeetup2App.testQuestion.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-test-question"
+        [routerLink]="['/test-question/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="singlesMeetup2App.testQuestion.home.createLabel">Create a new Test Question</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (testQuestions().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="singlesMeetup2App.testQuestion.home.notFound">No Test Questions found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="questionText">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.questionText">Question Text</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="questionType">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.questionType">Question Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="stepNumber">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.stepNumber">Step Number</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="isRequired">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.isRequired">Is Required</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="category">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.category">Category</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="language">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.testQuestion.language">Language</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (testQuestion of testQuestions(); track trackId(testQuestion)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/test-question', testQuestion.id, 'view']">{{ testQuestion.id }}</a>
+              </td>
+              <td>{{ testQuestion.questionText }}</td>
+              <td [jhiTranslate]="'singlesMeetup2App.QuestionType.' + (testQuestion.questionType ?? 'null')">
+                {{
+                  {
+                    null: '',
+                    SINGLE_CHOICE: 'SINGLE_CHOICE',
+                    MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+                    TEXT_INPUT: 'TEXT_INPUT',
+                    NUMBER_INPUT: 'NUMBER_INPUT',
+                    DATE_INPUT: 'DATE_INPUT',
+                    AUTOCOMPLETE_INPUT: 'AUTOCOMPLETE_INPUT',
+                  }[testQuestion.questionType ?? 'null']
+                }}
+              </td>
+              <td>{{ testQuestion.stepNumber }}</td>
+              <td>{{ testQuestion.isRequired }}</td>
+              <td>{{ testQuestion.category }}</td>
+              <td>{{ testQuestion.language }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/test-question', testQuestion.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/test-question', testQuestion.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(testQuestion)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

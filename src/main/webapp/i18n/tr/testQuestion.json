@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "testQuestion": {
+      "home": {
+        "title": "Test Questions",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Test Question ekle",
+        "createOrEditLabel": "Yeni Test Question ekle veya guncelle",
+        "notFound": "Test Questions kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Test Question eklendi",
+      "updated": "{{ param }} nolu Test Question guncellendi",
+      "deleted": "{{ param }} nolu Test Question silindi",
+      "delete": {
+        "question": "{{ id }} nolu Test Question silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Test Question"
+      },
+      "id": "ID",
+      "questionText": "Question Text",
+      "questionType": "Question Type",
+      "stepNumber": "Step Number",
+      "isRequired": "Is Required",
+      "category": "Category",
+      "language": "Language",
+      "options": "Options",
+      "answers": "Answers"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "singlesMeetup2App": {
+    "userEvent": {
+      "home": {
+        "title": "User Events",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni User Event ekle",
+        "createOrEditLabel": "Yeni User Event ekle veya guncelle",
+        "notFound": "User Events kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir User Event eklendi",
+      "updated": "{{ param }} nolu User Event guncellendi",
+      "deleted": "{{ param }} nolu User Event silindi",
+      "delete": {
+        "question": "{{ id }} nolu User Event silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "User Event"
+      },
+      "id": "ID",
+      "status": "Status",
+      "checkedIn": "Checked In",
+      "matchCompleted": "Match Completed",
+      "paymentStatus": "Payment Status",
+      "personProfile": "Person Profile",
+      "event": "Event"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20250607111641"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "status",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "checkedIn",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "matchCompleted",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "paymentStatus",
+      "fieldType": "PaymentStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "PAID,UNPAID,PENDING"
+    }
+  ],
+  "name": "UserEvent",
+  "relationships": [
+    {
+      "otherEntityName": "personProfile",
+      "relationshipName": "personProfile",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "event",
+      "relationshipName": "event",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

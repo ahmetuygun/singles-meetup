@@ -1,0 +1,29 @@
+{
+  "singlesMeetup2App": {
+    "venue": {
+      "home": {
+        "title": "Venues",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Venue",
+        "createOrEditLabel": "Créer ou éditer un Venue",
+        "notFound": "Aucun Venue trouvé"
+      },
+      "created": "Un nouveau Venue a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Venue avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Venue avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Venue {{ id }} ?"
+      },
+      "detail": {
+        "title": "Venue"
+      },
+      "id": "ID",
+      "name": "Name",
+      "address": "Address",
+      "city": "City",
+      "capacity": "Capacity",
+      "contactInfo": "Contact Info",
+      "photoUrl": "Photo Url"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "singlesMeetup2App": {
+    "venue": {
+      "home": {
+        "title": "Venues",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Venue ekle",
+        "createOrEditLabel": "Yeni Venue ekle veya guncelle",
+        "notFound": "Venues kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Venue eklendi",
+      "updated": "{{ param }} nolu Venue guncellendi",
+      "deleted": "{{ param }} nolu Venue silindi",
+      "delete": {
+        "question": "{{ id }} nolu Venue silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Venue"
+      },
+      "id": "ID",
+      "name": "Name",
+      "address": "Address",
+      "city": "City",
+      "capacity": "Capacity",
+      "contactInfo": "Contact Info",
+      "photoUrl": "Photo Url"
+    }
+  }
+}

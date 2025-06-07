@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (testQuestion(); as testQuestionRef) {
+      <div>
+        <h2 data-cy="testQuestionDetailsHeading"><span jhiTranslate="singlesMeetup2App.testQuestion.detail.title">Test Question</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.questionText">Question Text</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.questionText }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.questionType">Question Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'singlesMeetup2App.QuestionType.' + (testQuestionRef.questionType ?? 'null')">{{
+              {
+                null: '',
+                SINGLE_CHOICE: 'SINGLE_CHOICE',
+                MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+                TEXT_INPUT: 'TEXT_INPUT',
+                NUMBER_INPUT: 'NUMBER_INPUT',
+                DATE_INPUT: 'DATE_INPUT',
+                AUTOCOMPLETE_INPUT: 'AUTOCOMPLETE_INPUT',
+              }[testQuestionRef.questionType ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.stepNumber">Step Number</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.stepNumber }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.isRequired">Is Required</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.isRequired }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.category">Category</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.category }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.testQuestion.language">Language</span></dt>
+          <dd>
+            <span>{{ testQuestionRef.language }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/test-question', testQuestionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

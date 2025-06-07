@@ -1,0 +1,35 @@
+{
+  "annotations": {
+    "changelogDate": "20250607111638"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "optionText",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "value",
+      "fieldType": "Integer"
+    }
+  ],
+  "name": "TestAnswerOption",
+  "relationships": [
+    {
+      "otherEntityName": "userTestAnswer",
+      "otherEntityRelationshipName": "answer",
+      "relationshipName": "selectedAnswers",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "testQuestion",
+      "otherEntityRelationshipName": "options",
+      "relationshipName": "question",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

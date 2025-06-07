@@ -1,0 +1,73 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (personProfile(); as personProfileRef) {
+      <div>
+        <h2 data-cy="personProfileDetailsHeading">
+          <span jhiTranslate="singlesMeetup2App.personProfile.detail.title">Person Profile</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ personProfileRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.firstName">First Name</span></dt>
+          <dd>
+            <span>{{ personProfileRef.firstName }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.lastName">Last Name</span></dt>
+          <dd>
+            <span>{{ personProfileRef.lastName }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.dob">Dob</span></dt>
+          <dd>
+            <span>{{ personProfileRef.dob | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.gender">Gender</span></dt>
+          <dd>
+            <span>{{ personProfileRef.gender }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.bio">Bio</span></dt>
+          <dd>
+            <span>{{ personProfileRef.bio }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.interests">Interests</span></dt>
+          <dd>
+            <span>{{ personProfileRef.interests }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.location">Location</span></dt>
+          <dd>
+            <span>{{ personProfileRef.location }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.internalUser">Internal User</span></dt>
+          <dd>
+            <span>{{ personProfileRef.internalUser?.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.personProfile.events">Events</span></dt>
+          <dd>
+            @for (events of personProfileRef.events; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/event', events.id, 'view']">{{ events?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/person-profile', personProfileRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

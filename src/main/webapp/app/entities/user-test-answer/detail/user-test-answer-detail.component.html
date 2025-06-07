@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (userTestAnswer(); as userTestAnswerRef) {
+      <div>
+        <h2 data-cy="userTestAnswerDetailsHeading">
+          <span jhiTranslate="singlesMeetup2App.userTestAnswer.detail.title">User Test Answer</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ userTestAnswerRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userTestAnswer.answerValue">Answer Value</span></dt>
+          <dd>
+            <span>{{ userTestAnswerRef.answerValue }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userTestAnswer.timestamp">Timestamp</span></dt>
+          <dd>
+            <span>{{ userTestAnswerRef.timestamp | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userTestAnswer.question">Question</span></dt>
+          <dd>
+            @if (userTestAnswer()!.question) {
+              <div>
+                <a [routerLink]="['/test-question', userTestAnswer()!.question?.id, 'view']">{{ userTestAnswerRef.question?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userTestAnswer.personProfile">Person Profile</span></dt>
+          <dd>
+            @if (userTestAnswer()!.personProfile) {
+              <div>
+                <a [routerLink]="['/person-profile', userTestAnswer()!.personProfile?.id, 'view']">{{
+                  userTestAnswerRef.personProfile?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userTestAnswer.answer">Answer</span></dt>
+          <dd>
+            @if (userTestAnswer()!.answer) {
+              <div>
+                <a [routerLink]="['/test-answer-option', userTestAnswer()!.answer?.id, 'view']">{{ userTestAnswerRef.answer?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/user-test-answer', userTestAnswerRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

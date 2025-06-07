@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "testQuestion": {
+      "home": {
+        "title": "Test Questions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Test Question",
+        "createOrEditLabel": "Creeare sau editare Test Question",
+        "notFound": "No Test Questions found"
+      },
+      "created": "A fost creată o nouă entitate Test Question cu identificatorul {{ param }}",
+      "updated": "Test Question cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Test Question cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Test Question {{ id }}?"
+      },
+      "detail": {
+        "title": "Test Question"
+      },
+      "id": "ID",
+      "questionText": "Question Text",
+      "questionType": "Question Type",
+      "stepNumber": "Step Number",
+      "isRequired": "Is Required",
+      "category": "Category",
+      "language": "Language",
+      "options": "Options",
+      "answers": "Answers"
+    }
+  }
+}

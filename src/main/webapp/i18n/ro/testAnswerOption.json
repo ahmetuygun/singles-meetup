@@ -1,0 +1,27 @@
+{
+  "singlesMeetup2App": {
+    "testAnswerOption": {
+      "home": {
+        "title": "Test Answer Options",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Test Answer Option",
+        "createOrEditLabel": "Creeare sau editare Test Answer Option",
+        "notFound": "No Test Answer Options found"
+      },
+      "created": "A fost creată o nouă entitate Test Answer Option cu identificatorul {{ param }}",
+      "updated": "Test Answer Option cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Test Answer Option cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Test Answer Option {{ id }}?"
+      },
+      "detail": {
+        "title": "Test Answer Option"
+      },
+      "id": "ID",
+      "optionText": "Option Text",
+      "value": "Value",
+      "selectedAnswers": "Selected Answers",
+      "question": "Question"
+    }
+  }
+}

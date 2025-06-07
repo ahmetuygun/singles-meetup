@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "event": {
+      "home": {
+        "title": "Events",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Event ekle",
+        "createOrEditLabel": "Yeni Event ekle veya guncelle",
+        "notFound": "Events kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Event eklendi",
+      "updated": "{{ param }} nolu Event guncellendi",
+      "deleted": "{{ param }} nolu Event silindi",
+      "delete": {
+        "question": "{{ id }} nolu Event silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Event"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "eventDate": "Event Date",
+      "maxParticipants": "Max Participants",
+      "status": "Status",
+      "price": "Price",
+      "venue": "Venue",
+      "participants": "Participants"
+    }
+  }
+}

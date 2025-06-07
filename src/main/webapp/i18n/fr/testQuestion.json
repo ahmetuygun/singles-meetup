@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "testQuestion": {
+      "home": {
+        "title": "TestQuestions",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Test Question",
+        "createOrEditLabel": "Créer ou éditer un Test Question",
+        "notFound": "Aucun Test Question trouvé"
+      },
+      "created": "Un nouveau Test Question a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Test Question avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Test Question avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Test Question {{ id }} ?"
+      },
+      "detail": {
+        "title": "Test Question"
+      },
+      "id": "ID",
+      "questionText": "Question Text",
+      "questionType": "Question Type",
+      "stepNumber": "Step Number",
+      "isRequired": "Is Required",
+      "category": "Category",
+      "language": "Language",
+      "options": "Options",
+      "answers": "Answers"
+    }
+  }
+}

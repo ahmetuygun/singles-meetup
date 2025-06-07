@@ -1,0 +1,27 @@
+{
+  "singlesMeetup2App": {
+    "testAnswerOption": {
+      "home": {
+        "title": "Test Answer Options",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Test Answer Option ekle",
+        "createOrEditLabel": "Yeni Test Answer Option ekle veya guncelle",
+        "notFound": "Test Answer Options kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Test Answer Option eklendi",
+      "updated": "{{ param }} nolu Test Answer Option guncellendi",
+      "deleted": "{{ param }} nolu Test Answer Option silindi",
+      "delete": {
+        "question": "{{ id }} nolu Test Answer Option silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Test Answer Option"
+      },
+      "id": "ID",
+      "optionText": "Option Text",
+      "value": "Value",
+      "selectedAnswers": "Selected Answers",
+      "question": "Question"
+    }
+  }
+}

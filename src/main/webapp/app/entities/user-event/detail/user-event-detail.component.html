@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (userEvent(); as userEventRef) {
+      <div>
+        <h2 data-cy="userEventDetailsHeading"><span jhiTranslate="singlesMeetup2App.userEvent.detail.title">User Event</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ userEventRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.status">Status</span></dt>
+          <dd>
+            <span>{{ userEventRef.status }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.checkedIn">Checked In</span></dt>
+          <dd>
+            <span>{{ userEventRef.checkedIn }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.matchCompleted">Match Completed</span></dt>
+          <dd>
+            <span>{{ userEventRef.matchCompleted }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.paymentStatus">Payment Status</span></dt>
+          <dd>
+            <span [jhiTranslate]="'singlesMeetup2App.PaymentStatus.' + (userEventRef.paymentStatus ?? 'null')">{{
+              { null: '', PAID: 'PAID', UNPAID: 'UNPAID', PENDING: 'PENDING' }[userEventRef.paymentStatus ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.personProfile">Person Profile</span></dt>
+          <dd>
+            @if (userEvent()!.personProfile) {
+              <div>
+                <a [routerLink]="['/person-profile', userEvent()!.personProfile?.id, 'view']">{{ userEventRef.personProfile?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="singlesMeetup2App.userEvent.event">Event</span></dt>
+          <dd>
+            @if (userEvent()!.event) {
+              <div>
+                <a [routerLink]="['/event', userEvent()!.event?.id, 'view']">{{ userEventRef.event?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/user-event', userEventRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

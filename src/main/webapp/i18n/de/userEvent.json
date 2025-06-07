@@ -1,0 +1,29 @@
+{
+  "singlesMeetup2App": {
+    "userEvent": {
+      "home": {
+        "title": "User Events",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "User Event erstellen",
+        "createOrEditLabel": "User Event erstellen oder bearbeiten",
+        "notFound": "Keine User Events gefunden"
+      },
+      "created": "User Event erstellt mit ID {{ param }}",
+      "updated": "User Event aktualisiert mit ID {{ param }}",
+      "deleted": "User Event gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll User Event {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "User Event"
+      },
+      "id": "ID",
+      "status": "Status",
+      "checkedIn": "Checked In",
+      "matchCompleted": "Match Completed",
+      "paymentStatus": "Payment Status",
+      "personProfile": "Person Profile",
+      "event": "Event"
+    }
+  }
+}

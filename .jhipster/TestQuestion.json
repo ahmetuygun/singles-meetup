@@ -1,0 +1,55 @@
+{
+  "annotations": {
+    "changelogDate": "20250607111637"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "questionText",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "questionType",
+      "fieldType": "QuestionType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SINGLE_CHOICE,MULTIPLE_CHOICE,TEXT_INPUT,NUMBER_INPUT,DATE_INPUT,AUTOCOMPLETE_INPUT"
+    },
+    {
+      "fieldName": "stepNumber",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "isRequired",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "category",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "language",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "TestQuestion",
+  "relationships": [
+    {
+      "otherEntityName": "testAnswerOption",
+      "otherEntityRelationshipName": "question",
+      "relationshipName": "options",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "userTestAnswer",
+      "otherEntityRelationshipName": "question",
+      "relationshipName": "answers",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

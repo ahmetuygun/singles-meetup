@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "event": {
+      "home": {
+        "title": "Events",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Event",
+        "createOrEditLabel": "Criar ou editar Event",
+        "notFound": "Nenhum Event encontrado"
+      },
+      "created": "Um novo Event foi criado com o identificador {{ param }}",
+      "updated": "Um Event foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Event foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Event {{ id }}?"
+      },
+      "detail": {
+        "title": "Event"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "eventDate": "Event Date",
+      "maxParticipants": "Max Participants",
+      "status": "Status",
+      "price": "Price",
+      "venue": "Venue",
+      "participants": "Participants"
+    }
+  }
+}

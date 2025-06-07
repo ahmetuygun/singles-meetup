@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20250607111639"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "answerValue",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "UserTestAnswer",
+  "relationships": [
+    {
+      "otherEntityName": "testQuestion",
+      "otherEntityRelationshipName": "answers",
+      "relationshipName": "question",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "options": {
+        "builtInEntity": true
+      },
+      "otherEntityName": "personProfile",
+      "otherEntityRelationshipName": "answers",
+      "relationshipName": "personProfile",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "testAnswerOption",
+      "otherEntityRelationshipName": "selectedAnswers",
+      "relationshipName": "answer",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

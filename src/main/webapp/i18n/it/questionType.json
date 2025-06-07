@@ -1,0 +1,13 @@
+{
+  "singlesMeetup2App": {
+    "QuestionType": {
+      "null": "",
+      "SINGLE_CHOICE": "SINGLE_CHOICE",
+      "MULTIPLE_CHOICE": "MULTIPLE_CHOICE",
+      "TEXT_INPUT": "TEXT_INPUT",
+      "NUMBER_INPUT": "NUMBER_INPUT",
+      "DATE_INPUT": "DATE_INPUT",
+      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT"
+    }
+  }
+}

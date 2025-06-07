@@ -1,0 +1,28 @@
+{
+  "singlesMeetup2App": {
+    "userTestAnswer": {
+      "home": {
+        "title": "User Test Answer",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Dodaj User Test Answer",
+        "createOrEditLabel": "Dodaj lub edytuj: User Test Answer",
+        "notFound": "No User Test Answers found"
+      },
+      "created": "Utworzono nowy obiekt typu User Test Answer z identyfikatorem {{ param }}",
+      "updated": "Uaktualniono obiekt typu User Test Answer z identyfikatorem {{ param }}",
+      "deleted": "Usunięto obiekt typu User Test Answer z identyfikatorem {{ param }}",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć User Test Answer {{ id }}?"
+      },
+      "detail": {
+        "title": "User Test Answer"
+      },
+      "id": "ID",
+      "answerValue": "Answer Value",
+      "timestamp": "Timestamp",
+      "question": "Question",
+      "personProfile": "Person Profile",
+      "answer": "Answer"
+    }
+  }
+}

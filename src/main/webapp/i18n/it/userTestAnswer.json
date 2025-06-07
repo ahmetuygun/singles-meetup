@@ -1,0 +1,28 @@
+{
+  "singlesMeetup2App": {
+    "userTestAnswer": {
+      "home": {
+        "title": "UserTestAnswers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Genera un nuovo User Test Answer",
+        "createOrEditLabel": "Genera o modifica un User Test Answer",
+        "notFound": "No User Test Answers found"
+      },
+      "created": "&Egrave; stato generato un nuovo User Test Answer con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato User Test Answer identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato User Test Answer con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare User Test Answer {{ id }}?"
+      },
+      "detail": {
+        "title": "User Test Answer"
+      },
+      "id": "ID",
+      "answerValue": "Answer Value",
+      "timestamp": "Timestamp",
+      "question": "Question",
+      "personProfile": "Person Profile",
+      "answer": "Answer"
+    }
+  }
+}

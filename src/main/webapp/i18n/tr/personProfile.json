@@ -1,0 +1,33 @@
+{
+  "singlesMeetup2App": {
+    "personProfile": {
+      "home": {
+        "title": "Person Profiles",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Person Profile ekle",
+        "createOrEditLabel": "Yeni Person Profile ekle veya guncelle",
+        "notFound": "Person Profiles kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Person Profile eklendi",
+      "updated": "{{ param }} nolu Person Profile guncellendi",
+      "deleted": "{{ param }} nolu Person Profile silindi",
+      "delete": {
+        "question": "{{ id }} nolu Person Profile silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Person Profile"
+      },
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Dob",
+      "gender": "Gender",
+      "bio": "Bio",
+      "interests": "Interests",
+      "location": "Location",
+      "internalUser": "Internal User",
+      "answers": "Answers",
+      "events": "Events"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "singlesMeetup2App": {
+    "testQuestion": {
+      "home": {
+        "title": "Test Question",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Dodaj Test Question",
+        "createOrEditLabel": "Dodaj lub edytuj: Test Question",
+        "notFound": "No Test Questions found"
+      },
+      "created": "Utworzono nowy obiekt typu Test Question z identyfikatorem {{ param }}",
+      "updated": "Uaktualniono obiekt typu Test Question z identyfikatorem {{ param }}",
+      "deleted": "Usunięto obiekt typu Test Question z identyfikatorem {{ param }}",
+      "delete": {
+        "question": "Czy na pewno chcesz usunąć Test Question {{ id }}?"
+      },
+      "detail": {
+        "title": "Test Question"
+      },
+      "id": "ID",
+      "questionText": "Question Text",
+      "questionType": "Question Type",
+      "stepNumber": "Step Number",
+      "isRequired": "Is Required",
+      "category": "Category",
+      "language": "Language",
+      "options": "Options",
+      "answers": "Answers"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+
+enum QuestionType {
+  SINGLE_CHOICE,
+  MULTIPLE_CHOICE,
+  TEXT_INPUT,
+  NUMBER_INPUT,
+  DATE_INPUT,
+  AUTOCOMPLETE_INPUT
+}
+
+enum PaymentStatus {
+  PAID,
+  UNPAID,
+  PENDING
+}
+
+entity PersonProfile {
+  firstName String required,
+  lastName String required,
+  dob LocalDate required,
+  gender String required,
+  bio String,
+  interests String,
+  location String
+}
+
+entity TestQuestion {
+  questionText String required,
+  questionType QuestionType required,
+  stepNumber Integer,
+  isRequired Boolean required,
+  category String,
+  language String required
+}
+
+entity TestAnswerOption {
+  optionText String required,
+  value Integer
+}
+
+entity UserTestAnswer {
+  answerValue Integer required,
+  timestamp Instant
+}
+
+entity Event {
+  name String required,
+  description String,
+  eventDate ZonedDateTime required,
+  maxParticipants Integer,
+  status String,
+  price BigDecimal required
+}
+
+entity UserEvent {
+  status String,
+  checkedIn Boolean,
+  matchCompleted Boolean,
+  paymentStatus PaymentStatus required
+}
+
+entity Venue {
+  name String required,
+  address String required,
+  city String,
+  capacity Integer,
+  contactInfo String,
+  photoUrl String
+}
+
+relationship OneToOne {
+  PersonProfile{internalUser} to User with builtInEntity
+}
+
+relationship OneToMany {
+  TestQuestion{options} to TestAnswerOption{question}
+  TestQuestion{answers} to UserTestAnswer{question}
+  PersonProfile{answers} to UserTestAnswer{personProfile} with builtInEntity
+  TestAnswerOption{selectedAnswers} to UserTestAnswer{answer}
+}
+
+relationship ManyToMany {
+  PersonProfile{events} to Event{participants}
+}
+
+relationship ManyToOne {
+  Event{venue} to Venue
+  UserEvent{personProfile} to PersonProfile
+  UserEvent{event} to Event
+}
+
+

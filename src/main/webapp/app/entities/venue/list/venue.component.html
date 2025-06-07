@@ -1,0 +1,124 @@
+<div>
+  <h2 id="page-heading" data-cy="VenueHeading">
+    <span jhiTranslate="singlesMeetup2App.venue.home.title">Venues</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="singlesMeetup2App.venue.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-venue"
+        [routerLink]="['/venue/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="singlesMeetup2App.venue.home.createLabel">Create a new Venue</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (venues().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="singlesMeetup2App.venue.home.notFound">No Venues found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.name">Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="address">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.address">Address</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="city">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.city">City</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="capacity">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.capacity">Capacity</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="contactInfo">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.contactInfo">Contact Info</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="photoUrl">
+              <div class="d-flex">
+                <span jhiTranslate="singlesMeetup2App.venue.photoUrl">Photo Url</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (venue of venues(); track trackId(venue)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/venue', venue.id, 'view']">{{ venue.id }}</a>
+              </td>
+              <td>{{ venue.name }}</td>
+              <td>{{ venue.address }}</td>
+              <td>{{ venue.city }}</td>
+              <td>{{ venue.capacity }}</td>
+              <td>{{ venue.contactInfo }}</td>
+              <td>{{ venue.photoUrl }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/venue', venue.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/venue', venue.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(venue)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

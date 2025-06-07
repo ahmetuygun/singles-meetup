@@ -1,0 +1,10 @@
+{
+  "singlesMeetup2App": {
+    "PaymentStatus": {
+      "null": "",
+      "PAID": "PAID",
+      "UNPAID": "UNPAID",
+      "PENDING": "PENDING"
+    }
+  }
+}

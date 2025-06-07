@@ -1,0 +1,132 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-test-question-heading"
+        data-cy="TestQuestionCreateUpdateHeading"
+        jhiTranslate="singlesMeetup2App.testQuestion.home.createOrEditLabel"
+      >
+        Create or edit a Test Question
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="singlesMeetup2App.testQuestion.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let questionTextRef = editForm.get('questionText')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_questionText" jhiTranslate="singlesMeetup2App.testQuestion.questionText"
+            >Question Text</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="questionText"
+            id="field_questionText"
+            data-cy="questionText"
+            formControlName="questionText"
+          />
+          @if (questionTextRef.invalid && (questionTextRef.dirty || questionTextRef.touched)) {
+            <div>
+              @if (editForm.get('questionText')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let questionTypeRef = editForm.get('questionType')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_questionType" jhiTranslate="singlesMeetup2App.testQuestion.questionType"
+            >Question Type</label
+          >
+          <select class="form-control" name="questionType" formControlName="questionType" id="field_questionType" data-cy="questionType">
+            <option [ngValue]="null">{{ 'singlesMeetup2App.QuestionType.null' | translate }}</option>
+            @for (questionType of questionTypeValues; track $index) {
+              <option [value]="questionType">{{ 'singlesMeetup2App.QuestionType.' + questionType | translate }}</option>
+            }
+          </select>
+          @if (questionTypeRef.invalid && (questionTypeRef.dirty || questionTypeRef.touched)) {
+            <div>
+              @if (editForm.get('questionType')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_stepNumber" jhiTranslate="singlesMeetup2App.testQuestion.stepNumber">Step Number</label>
+          <input
+            type="number"
+            class="form-control"
+            name="stepNumber"
+            id="field_stepNumber"
+            data-cy="stepNumber"
+            formControlName="stepNumber"
+          />
+        </div>
+
+        @let isRequiredRef = editForm.get('isRequired')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_isRequired" jhiTranslate="singlesMeetup2App.testQuestion.isRequired">Is Required</label>
+          <input
+            type="checkbox"
+            class="form-check"
+            name="isRequired"
+            id="field_isRequired"
+            data-cy="isRequired"
+            formControlName="isRequired"
+          />
+          @if (isRequiredRef.invalid && (isRequiredRef.dirty || isRequiredRef.touched)) {
+            <div>
+              @if (editForm.get('isRequired')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_category" jhiTranslate="singlesMeetup2App.testQuestion.category">Category</label>
+          <input type="text" class="form-control" name="category" id="field_category" data-cy="category" formControlName="category" />
+        </div>
+
+        @let languageRef = editForm.get('language')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_language" jhiTranslate="singlesMeetup2App.testQuestion.language">Language</label>
+          <input type="text" class="form-control" name="language" id="field_language" data-cy="language" formControlName="language" />
+          @if (languageRef.invalid && (languageRef.dirty || languageRef.touched)) {
+            <div>
+              @if (editForm.get('language')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

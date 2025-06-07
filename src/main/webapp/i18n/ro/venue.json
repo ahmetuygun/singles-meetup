@@ -1,0 +1,29 @@
+{
+  "singlesMeetup2App": {
+    "venue": {
+      "home": {
+        "title": "Venues",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Venue",
+        "createOrEditLabel": "Creeare sau editare Venue",
+        "notFound": "No Venues found"
+      },
+      "created": "A fost creată o nouă entitate Venue cu identificatorul {{ param }}",
+      "updated": "Venue cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Venue cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Venue {{ id }}?"
+      },
+      "detail": {
+        "title": "Venue"
+      },
+      "id": "ID",
+      "name": "Name",
+      "address": "Address",
+      "city": "City",
+      "capacity": "Capacity",
+      "contactInfo": "Contact Info",
+      "photoUrl": "Photo Url"
+    }
+  }
+}
