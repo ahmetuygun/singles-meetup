@@ -1,0 +1,35 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10">
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item" *ngFor="let faq of faqs; let i = index">
+          <h2 class="accordion-header" [id]="'heading' + i">
+            <button 
+              class="accordion-button" 
+              [class.bg-warning]="isOpen[i]"
+              [class.text-dark]="isOpen[i]"
+              [class.collapsed]="!isOpen[i]"
+              type="button" 
+              (click)="toggleAccordion(i)"
+              [attr.aria-expanded]="isOpen[i]"
+              [attr.aria-controls]="'collapse' + i"
+            >
+              {{ faq.question }}
+            </button>
+          </h2>
+          <div 
+            [id]="'collapse' + i" 
+            class="accordion-collapse collapse" 
+            [class.show]="isOpen[i]"
+            [attr.aria-labelledby]="'heading' + i" 
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
