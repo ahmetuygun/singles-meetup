@@ -209,8 +209,10 @@
                     [jhiActiveMenu]="language"
                     href="javascript:void(0);"
                     (click)="changeLanguage(language); collapseNavbar()"
-                    >{{ language | findLanguageFromKey }}</a
                   >
+                    <span class="fi fi-{{ languageFlags[language] }} me-2"></span>
+                    {{ language | findLanguageFromKey }}
+                  </a>
                 </li>
               }
             </ul>

@@ -29,6 +29,20 @@ export default class NavbarComponent implements OnInit {
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
 
+  // Language flag mapping using country codes
+  languageFlags: { [key: string]: string } = {
+    en: 'gb',
+    ca: 'es',
+    fr: 'fr',
+    de: 'de',
+    it: 'it',
+    pl: 'pl',
+    'pt-br': 'br',
+    ro: 'ro',
+    es: 'es',
+    tr: 'tr',
+  };
+
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
   private readonly stateStorageService = inject(StateStorageService);
