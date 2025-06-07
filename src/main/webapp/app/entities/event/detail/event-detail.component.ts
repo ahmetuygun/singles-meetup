@@ -1,20 +1,27 @@
 import { Component, inject, input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { filter } from 'rxjs/operators';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { IEvent } from '../event.model';
+import HasAnyAuthorityDirective from "../../../shared/auth/has-any-authority.directive";
+import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   selector: 'jhi-event-detail',
   templateUrl: './event-detail.component.html',
-  imports: [SharedModule, RouterModule, FormatMediumDatetimePipe],
+  imports: [SharedModule, RouterModule, FormatMediumDatetimePipe, HasAnyAuthorityDirective],
 })
 export class EventDetailComponent {
   event = input<IEvent | null>(null);
 
   protected dataUtils = inject(DataUtils);
+  protected modalService = inject(NgbModal);
+  protected router = inject(Router);
 
   byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);
@@ -26,5 +33,15 @@ export class EventDetailComponent {
 
   previousState(): void {
     window.history.back();
+  }
+
+  delete(event: IEvent): void {
+    const modalRef = this.modalService.open(EventDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.event = event;
+    modalRef.closed
+      .pipe(filter(reason => reason === ITEM_DELETED_EVENT))
+      .subscribe(() => {
+        this.router.navigate(['/']);
+      });
   }
 }

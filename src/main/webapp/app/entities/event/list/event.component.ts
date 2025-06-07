@@ -1,124 +1,70 @@
-import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Component, OnInit, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { Dayjs } from 'dayjs';
 
 import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { FormatMediumDatetimePipe } from 'app/shared/date';
-import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { DataUtils } from 'app/core/util/data-util.service';
+import { SortDirective, SortByDirective } from 'app/shared/sort';
+import { FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
+import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 import { IEvent } from '../event.model';
-import { EntityArrayResponseType, EventService } from '../service/event.service';
-import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
-import HasAnyAuthorityDirective from "../../../shared/auth/has-any-authority.directive";
+import { EventService } from '../service/event.service';
 
 @Component({
   selector: 'jhi-event',
   templateUrl: './event.component.html',
-  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe, HasAnyAuthorityDirective],
+  standalone: true,
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    FormatMediumDatetimePipe,
+    HasAnyAuthorityDirective,
+    FormatMediumDatePipe
+  ],
 })
 export class EventComponent implements OnInit {
-  subscription: Subscription | null = null;
   events = signal<IEvent[]>([]);
   isLoading = false;
+  currentSearch = '';
 
-  sortState = sortStateSignal({});
-
-  public readonly router = inject(Router);
-  protected readonly eventService = inject(EventService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected dataUtils = inject(DataUtils);
-  protected modalService = inject(NgbModal);
-  protected ngZone = inject(NgZone);
-
-  trackId = (item: IEvent): number => this.eventService.getEventIdentifier(item);
+  constructor(
+    protected eventService: EventService,
+    protected eventModalService: NgbModal,
+    protected router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (this.events().length === 0) {
-            this.load();
-          } else {
-            this.events.set(this.refineData(this.events()));
-          }
-        }),
-      )
-      .subscribe();
-  }
-
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
-  }
-
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    return this.dataUtils.openFile(base64String, contentType);
-  }
-
-  delete(event: IEvent): void {
-    const modalRef = this.modalService.open(EventDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.event = event;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
+    this.load();
   }
 
   load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
+    this.isLoading = true;
+    this.eventService.query().subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.events.set(res.body ?? []);
+      },
+      error: () => {
+        this.isLoading = false;
       },
     });
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
+  trackId(index: number, item: IEvent): number {
+    return item.id!;
   }
 
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+  getEventHour(eventDate: Dayjs | null | undefined): string {
+    if (!eventDate) return '';
+    return eventDate.format('HH:mm');
   }
 
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.events.set(this.refineData(dataFromBody));
-  }
-
-  protected refineData(data: IEvent[]): IEvent[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: IEvent[] | null): IEvent[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.eventService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
-    });
+  navigateToEvent(id: number): void {
+    this.router.navigate(['/event', id, 'view']);
   }
 }

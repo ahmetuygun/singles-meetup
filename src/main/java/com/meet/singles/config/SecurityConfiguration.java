@@ -42,6 +42,7 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import tech.jhipster.config.JHipsterProperties;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -88,8 +89,11 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/authenticate")).permitAll()
                     .requestMatchers(mvc.pattern("/api/auth-info")).permitAll()
-                    .requestMatchers(mvc.pattern("/api/events")).permitAll()
-                    .requestMatchers(mvc.pattern("/api/events/*")).permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/events/*").permitAll()
+                    .requestMatchers(mvc.pattern("/api/events/*/edit")).authenticated()
+                    .requestMatchers(mvc.pattern("/api/events/new")).authenticated()
+                    .requestMatchers(mvc.pattern("/api/events/*/delete")).authenticated()
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/api/**")).authenticated()
                     .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
