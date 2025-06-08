@@ -49,4 +49,11 @@ export class EventDetailComponent {
     if (!eventDate) return '';
     return eventDate.format('dddd, MMMM D, YYYY [at] HH:mm');
   }
+
+  openTicketPurchase(): void {
+    const eventId = this.event()?.id;
+    if (eventId) {
+      this.router.navigate(['/event', eventId, 'tickets']);
+    }
+  }
 }

@@ -40,6 +40,16 @@ const routes: Routes = [
     path: 'questionnaire-success',
     loadComponent: () => import('./questionnaire-success/questionnaire-success.component').then(m => m.QuestionnaireSuccessComponent)
   },
+  {
+    path: 'event/:eventId/tickets',
+    loadComponent: () => import('./ticket-purchase/ticket-purchase.component').then(m => m.TicketPurchaseComponent),
+    title: 'Purchase Tickets'
+  },
+  {
+    path: 'event/:eventId/payment',
+    loadComponent: () => import('./payment/payment.component').then(m => m.PaymentComponent),
+    title: 'Payment'
+  },
   ...errorRoute,
 ];
 

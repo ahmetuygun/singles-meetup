@@ -39,7 +39,7 @@ export class EventComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.load();
+            this.load();
   }
 
   load(): void {

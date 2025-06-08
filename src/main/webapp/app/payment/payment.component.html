@@ -1,0 +1,220 @@
+<div class="bg-white text-dark min-vh-100">
+  <!-- Header with Close Button -->
+  <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+    <h2 class="fw-bold mb-0 text-uppercase text-dark fs-4">PAYMENT</h2>
+    <button type="button" class="btn btn-outline-secondary rounded-circle p-2 border-2" (click)="goBack()" style="width: 45px; height: 45px;">
+      <fa-icon icon="times" class="text-dark"></fa-icon>
+    </button>
+  </div>
+
+  <div class="container-fluid px-4 py-4">
+    <!-- Order Summary -->
+    @if (selectedTickets().length > 0) {
+      <div class="mb-5">
+        <h5 class="text-dark mb-4 fw-semibold">Order Summary</h5>
+
+        @for (ticket of selectedTickets(); track ticket.ticketType.id) {
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <span class="text-dark">{{ ticket.ticketType.name }}</span>
+              <small class="text-muted d-block">Qty: {{ ticket.quantity }}</small>
+            </div>
+            <span class="text-dark fw-medium">€{{ (ticket.ticketType.price * ticket.quantity).toFixed(2) }}</span>
+          </div>
+        }
+
+        <!-- Booking Fees -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-muted">Booking fees</span>
+          <span class="text-muted">€{{ getBookingFees().toFixed(2) }}</span>
+        </div>
+
+        <hr class="my-3">
+
+        <!-- Total -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-dark fw-bold fs-5">Total</span>
+          <span class="text-dark fw-bold fs-5">€{{ getTotalWithFees().toFixed(2) }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Select Payment Type -->
+    <div class="mb-5">
+      <h5 class="text-dark mb-4 fw-semibold">Select Payment Type</h5>
+
+      <!-- Apple Pay Option -->
+      <div class="border-bottom py-4">
+        <div class="d-flex align-items-center">
+          <div class="form-check me-4">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="paymentMethod"
+              id="applePay"
+              value="apple"
+              [checked]="selectedPaymentMethod() === 'apple'"
+              (change)="selectPaymentMethod('apple')"
+              style="transform: scale(1.2);"
+            >
+          </div>
+          <div class="d-flex align-items-center">
+            <img src="content/images/apple-pay.png" alt="Apple Pay" style="height: 45px; width: auto;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Payment Option -->
+      <div class="py-4">
+        <div class="d-flex align-items-center">
+          <div class="form-check me-4">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="paymentMethod"
+              id="cardPay"
+              value="card"
+              [checked]="selectedPaymentMethod() === 'card'"
+              (change)="selectPaymentMethod('card')"
+              style="transform: scale(1.2);"
+            >
+          </div>
+          <span class="text-dark fw-medium fs-5">Pay with a new card</span>
+        </div>
+            </div>
+    </div>
+
+    <!-- Card Form (shown when card payment is selected) -->
+    @if (selectedPaymentMethod() === 'card') {
+      <div class="mb-5">
+        <!-- Card Number -->
+        <div class="mb-5">
+          <label class="form-label text-dark fw-medium mb-3">
+            Card Number <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
+            placeholder="1234 1234 1234 1234"
+            [value]="cardNumber()"
+            (input)="formatCardNumber($event)"
+            maxlength="19"
+            style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
+          >
+        </div>
+
+        <!-- Name on Card -->
+        <div class="mb-5">
+          <label class="form-label text-dark fw-medium mb-3">
+            Name On Card <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
+            placeholder="John Smith"
+            [value]="cardName()"
+            (input)="onCardNameChange($event)"
+            style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
+          >
+        </div>
+
+        <!-- Expiry Date and Security Code Row -->
+        <div class="row gx-4">
+          <div class="col-6">
+            <div class="mb-5">
+              <label class="form-label text-dark fw-medium mb-3">
+                Expires End <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
+                placeholder="MM / YY"
+                [value]="expiryDate()"
+                (input)="formatExpiryDate($event)"
+                maxlength="5"
+                style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
+              >
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-5">
+              <label class="form-label text-dark fw-medium mb-3">
+                Security Code <span class="text-danger">*</span>
+              </label>
+              <div class="position-relative">
+                <input
+                  type="text"
+                  class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2 pe-5"
+                  placeholder="CVC"
+                  [value]="securityCode()"
+                  (input)="onSecurityCodeChange($event)"
+                  maxlength="4"
+                  style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
+                >
+                <fa-icon icon="lock" class="position-absolute text-dark" style="right: 0; bottom: 8px; font-size: 18px;"></fa-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Card Checkbox -->
+        <div class="mb-5">
+          <div class="form-check d-flex align-items-center">
+            <input
+              class="form-check-input me-3"
+              type="checkbox"
+              id="saveCard"
+              [checked]="saveCard()"
+              (change)="onSaveCardChange($event)"
+              style="transform: scale(1.3); accent-color: #28a745;"
+            >
+            <label class="form-check-label text-dark fs-6" for="saveCard">
+              Save Card For Next Time?
+            </label>
+          </div>
+        </div>
+      </div>
+          }
+
+    <!-- Event Details -->
+    @if (event()) {
+      <div class="border-top pt-4 mb-5">
+        <p class="text-muted small lh-base">
+          You're purchasing for <strong>{{ event()?.name }}</strong> by Thursday Dublin.
+          By purchasing you accept the
+          <a href="#" class="text-decoration-underline text-muted">terms of service</a>
+          and have read the
+          <a href="#" class="text-decoration-underline text-muted">privacy policy</a>.
+        </p>
+      </div>
+    }
+
+    <!-- Bottom Section -->
+    <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top shadow-lg p-4">
+      <!-- Purchase Button -->
+      <div class="d-grid">
+                <button
+          type="button"
+          class="btn btn-warning btn-lg rounded-pill fw-bold text-white fs-5 d-flex align-items-center justify-content-center"
+          [disabled]="getButtonDisabled()"
+          (click)="processPurchase()"
+          style="box-shadow: 0 4px 12px rgba(0,0,0,0.15); height: 70px; min-height: 70px;"
+        >
+          @if (isProcessing()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Processing...
+          } @else if (selectedPaymentMethod() === 'apple') {
+            <img src="content/images/apple-pay.png" alt="Apple Pay" class="me-2" style="height: 45px; width: auto;">
+            €{{ getTotalWithFees().toFixed(2) }}
+          } @else {
+            <fa-icon icon="lock" class="me-2 text-white"></fa-icon>
+            <span class="text-white">PURCHASE - €{{ getTotalWithFees().toFixed(2) }}</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Add bottom padding to prevent content from being hidden behind fixed button -->
+    <div style="height: 120px;"></div>
+  </div>
+</div>
