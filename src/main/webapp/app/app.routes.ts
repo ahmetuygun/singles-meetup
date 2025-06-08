@@ -36,6 +36,10 @@ const routes: Routes = [
     path: 'questionnaire',
     loadComponent: () => import('./test-questionnaire/test-questionnaire.component').then(m => m.TestQuestionnaireComponent)
   },
+  {
+    path: 'questionnaire-success',
+    loadComponent: () => import('./questionnaire-success/questionnaire-success.component').then(m => m.QuestionnaireSuccessComponent)
+  },
   ...errorRoute,
 ];
 

@@ -27,4 +27,6 @@ public interface PersonProfileRepository extends PersonProfileRepositoryWithBagR
     default Page<PersonProfile> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+    Optional<PersonProfile> findByInternalUserLogin(String login);
 }

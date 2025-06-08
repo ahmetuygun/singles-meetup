@@ -91,7 +91,7 @@ export class TestQuestionnaireComponent implements OnInit {
   selectSingleChoice(questionId: number, value: number): void {
     this.answers[questionId] = value;
     if (!this.isLastStep()) {
-     // setTimeout(() => this.next(), 500);
+      setTimeout(() => this.next(), 300);
     }
   }
 

@@ -78,6 +78,14 @@ export class AccountService {
   }
 
   private navigateToStoredUrl(): void {
+    // Check if there are saved questionnaire answers to process
+    const savedAnswers = localStorage.getItem('questionnaireAnswers');
+    if (savedAnswers) {
+      // Redirect to questionnaire success page to process answers
+      this.router.navigate(['/questionnaire-success']);
+      return;
+    }
+
     // previousState can be set in the authExpiredInterceptor and in the userRouteAccessService
     // if login is successful, go to stored previousState and clear previousState
     const previousUrl = this.stateStorageService.getUrl();

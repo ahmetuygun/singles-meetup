@@ -1,0 +1,82 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      
+      <!-- Processing State -->
+      <div *ngIf="isProcessing" class="mb-4">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h3 class="mb-3">Processing Your Information</h3>
+        <p class="text-muted">We're saving your questionnaire responses. This will only take a moment...</p>
+      </div>
+
+      <!-- Success State -->
+      <div *ngIf="!isProcessing && isSuccess" class="mb-4">
+        <div class="text-success mb-3">
+          <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+        </div>
+        <h3 class="mb-3 text-success">Welcome! Your Information Has Been Saved</h3>
+        <div class="alert alert-success" role="alert">
+          <h5 class="alert-heading">Great news!</h5>
+          <p class="mb-2">✅ Your questionnaire responses have been successfully saved</p>
+          <p class="mb-2">✅ Your profile is now complete</p>
+          <p class="mb-0">✅ You can now browse and book events</p>
+        </div>
+        
+        <div class="mt-4">
+          <h5>What's Next?</h5>
+          <p class="text-muted mb-4">
+            You can now explore upcoming events and book your spot at meetups that interest you. 
+            Our matching system will help connect you with like-minded people based on your responses.
+          </p>
+          
+          <button class="btn btn-primary btn-lg px-4" (click)="viewEvents()">
+            <i class="bi bi-calendar-event me-2"></i>
+            View Events
+          </button>
+        </div>
+      </div>
+
+      <!-- No Answers State -->
+      <div *ngIf="!isProcessing && !hasAnswers && !errorMessage" class="mb-4">
+        <div class="text-info mb-3">
+          <i class="bi bi-info-circle-fill" style="font-size: 3rem;"></i>
+        </div>
+        <h3 class="mb-3">Welcome Back!</h3>
+        <p class="text-muted mb-4">
+          You don't have any pending questionnaire responses to process. 
+          You can start exploring events right away.
+        </p>
+        
+        <button class="btn btn-primary btn-lg px-4" (click)="viewEvents()">
+          <i class="bi bi-calendar-event me-2"></i>
+          View Events
+        </button>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="!isProcessing && errorMessage" class="mb-4">
+        <div class="text-danger mb-3">
+          <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+        </div>
+        <h3 class="mb-3 text-danger">Oops! Something Went Wrong</h3>
+        <div class="alert alert-danger" role="alert">
+          {{ errorMessage }}
+        </div>
+        
+        <div class="d-flex gap-3 justify-content-center mt-4">
+          <button class="btn btn-outline-danger" (click)="retryProcessing()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Try Again
+          </button>
+          <button class="btn btn-primary" (click)="viewEvents()">
+            <i class="bi bi-calendar-event me-2"></i>
+            Continue to Events
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div> 
