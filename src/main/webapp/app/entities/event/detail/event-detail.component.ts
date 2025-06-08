@@ -44,4 +44,9 @@ export class EventDetailComponent {
         this.router.navigate(['/']);
       });
   }
+
+  formatEventDate(eventDate: any): string {
+    if (!eventDate) return '';
+    return eventDate.format('dddd, MMMM D, YYYY [at] HH:mm');
+  }
 }

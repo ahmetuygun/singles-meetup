@@ -1,86 +1,93 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (event(); as eventRef) {
-      <div>
-        <h2 data-cy="eventDetailsHeading"><span jhiTranslate="singlesMeetup2App.event.detail.title">Event</span></h2>
+@if (event(); as eventRef) {
+  <div class="container py-4">
+    <!-- Back Button -->
+    <div class="mb-4">
+      <button type="button" (click)="previousState()" class="btn btn-outline-secondary">
+        <fa-icon icon="arrow-left" class="me-2"></fa-icon>
+        Back to Events
+      </button>
+    </div>
 
-        <hr />
+    <!-- Event Image -->
+    <div class="mb-4">
+      @if (eventRef.image) {
+        <img 
+          [src]="'data:' + eventRef.imageContentType + ';base64,' + eventRef.image" 
+          [alt]="eventRef.name"
+          class="img-fluid rounded-3 w-100"
+          style="max-height: 400px; object-fit: cover; cursor: pointer;"
+          (click)="openFile(eventRef.image ?? '', eventRef.imageContentType)"
+        />
+      } @else {
+        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 300px;">
+          <fa-icon icon="calendar-alt" class="text-muted" style="font-size: 4rem;"></fa-icon>
+        </div>
+      }
+    </div>
 
-        <jhi-alert-error />
+    <!-- Location and Date Info Boxes -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 d-flex">
+        <div class="alert alert-success d-flex align-items-center fs-6 py-2 w-100">
+          <fa-icon icon="map-marker-alt" class="me-3" style="font-size: 1.5rem;"></fa-icon>
+          <span class="fw-medium">{{ eventRef.venue?.name || 'TBD' }}</span>
+        </div>
+      </div>
+      <div class="col-6 d-flex">
+        <div class="alert alert-info d-flex align-items-center fs-6 py-2 w-100">
+          <fa-icon icon="calendar-alt" class="me-3" style="font-size: 1.5rem;"></fa-icon>
+          <span class="fw-medium">{{ formatEventDate(eventRef.eventDate) }}</span>
+        </div>
+      </div>
+    </div>
 
-        <jhi-alert />
+    <!-- Event Title -->
+    <div class="mb-4">
+      <h1 class="display-5 fw-bold">{{ eventRef.name }}</h1>
+    </div>
 
-        <dl class="row-md jh-entity-details">
-          <dt><span jhiTranslate="global.field.id">ID</span></dt>
-          <dd>
-            <span>{{ eventRef.id }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.name">Name</span></dt>
-          <dd>
-            <span>{{ eventRef.name }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.description">Description</span></dt>
-          <dd>
-            <span>{{ eventRef.description }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.eventDate">Event Date</span></dt>
-          <dd>
-            <span>{{ eventRef.eventDate | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.maxParticipants">Max Participants</span></dt>
-          <dd>
-            <span>{{ eventRef.maxParticipants }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.status">Status</span></dt>
-          <dd>
-            <span>{{ eventRef.status }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.price">Price</span></dt>
-          <dd>
-            <span>{{ eventRef.price }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.image">Image</span></dt>
-          <dd>
-            @if (eventRef.image) {
-              <div>
-                <a (click)="openFile(eventRef.image ?? '', eventRef.imageContentType)">
-                  <img [src]="'data:' + eventRef.imageContentType + ';base64,' + eventRef.image" style="max-width: 100%" alt="event" />
-                </a>
-                {{ eventRef.imageContentType }}, {{ byteSize(eventRef.image ?? '') }}
-              </div>
-            }
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.venue">Venue</span></dt>
-          <dd>
-            @if (event()!.venue) {
-              <div>
-                <a [routerLink]="['/venue', event()!.venue?.id, 'view']">{{ eventRef.venue?.id }}</a>
-              </div>
-            }
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.event.participants">Participants</span></dt>
-          <dd>
-            @for (participants of eventRef.participants; track $index; let last = $last) {
-              <span>
-                <a [routerLink]="['/person-profile', participants.id, 'view']">{{ participants?.id }}</a
-                >{{ last ? '' : ', ' }}
-              </span>
-            }
-          </dd>
-        </dl>
+    <!-- Event Description -->
+    <div class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <p class="fs-5 text-muted lh-lg mb-0">{{ eventRef.description }}</p>
+        </div>
+      </div>
+    </div>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;
+    <!-- Ticket Button -->
+    <div class="mb-5 text-center">
+      <button class="btn btn-warning btn-lg px-5 py-3">
+        <fa-icon icon="ticket-alt" class="me-2"></fa-icon>
+        Get Ticket
+      </button>
+    </div>
+
+    <!-- Admin Actions (if admin) -->
+    <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="border-top pt-4">
+      <h6 class="text-muted mb-3">Admin Actions</h6>
+      <div class="d-flex gap-2">
+        <button 
+          type="button" 
+          [routerLink]="['/event', eventRef.id, 'edit']" 
+          class="btn btn-outline-primary"
+        >
+          <fa-icon icon="pencil-alt" class="me-2"></fa-icon>
+          Edit Event
         </button>
-
-        <button type="button" [routerLink]="['/event', eventRef.id, 'edit']" class="btn btn-primary" *jhiHasAnyAuthority="'ROLE_ADMIN'">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;
-        </button>
-
-        <button type="button" (click)="delete(eventRef)" class="btn btn-danger" *jhiHasAnyAuthority="'ROLE_ADMIN'">
-          <fa-icon icon="trash"></fa-icon>
+        
+        <button 
+          type="button" 
+          (click)="delete(eventRef)" 
+          class="btn btn-outline-danger"
+        >
+          <fa-icon icon="times" class="me-2"></fa-icon>
+          Delete Event
         </button>
       </div>
-    }
+    </div>
+
+    <jhi-alert-error />
+    <jhi-alert />
   </div>
-</div>
+}
