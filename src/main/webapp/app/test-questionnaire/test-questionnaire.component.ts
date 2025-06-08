@@ -56,7 +56,9 @@ export class TestQuestionnaireComponent implements OnInit {
   }
 
   submit() {
-    // Submit logic here
+    // Save answers to localStorage
+    localStorage.setItem('questionnaireAnswers', JSON.stringify(this.answers));
+    console.info('Questionnaire answers saved:', this.answers);
     alert('Submitted! ' + JSON.stringify(this.answers));
   }
 
@@ -93,8 +95,5 @@ export class TestQuestionnaireComponent implements OnInit {
 
   selectMultiChoice(questionId: number, value: number): void {
     this.toggleMultiChoice(questionId, value);
-    if (!this.isLastStep()) {
-      setTimeout(() => this.next(), 500);
-    }
   }
 } 
