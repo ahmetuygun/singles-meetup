@@ -33,12 +33,12 @@ public class TestAnswerOption implements Serializable {
     @Column(name = "value")
     private Integer value;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "answer")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "answer")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "question", "personProfile", "answer" }, allowSetters = true)
     private Set<UserTestAnswer> selectedAnswers = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "options", "answers" }, allowSetters = true)
     private TestQuestion question;
 

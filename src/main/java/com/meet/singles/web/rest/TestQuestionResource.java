@@ -164,6 +164,17 @@ public class TestQuestionResource {
     }
 
     /**
+     * {@code GET  /test-questions/with-options} : get all the testQuestions with their answer options.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of testQuestions with their options in body.
+     */
+    @GetMapping("/with-options")
+    public List<TestQuestion> getAllTestQuestionsWithOptions() {
+        LOG.debug("REST request to get all TestQuestions with their options");
+        return testQuestionRepository.findAllWithOptions();
+    }
+
+    /**
      * {@code GET  /test-questions/:id} : get the "id" testQuestion.
      *
      * @param id the id of the testQuestion to retrieve.

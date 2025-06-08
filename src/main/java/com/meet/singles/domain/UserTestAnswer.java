@@ -32,15 +32,15 @@ public class UserTestAnswer implements Serializable {
     @Column(name = "timestamp")
     private Instant timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "options", "answers" }, allowSetters = true)
     private TestQuestion question;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "internalUser", "answers", "events" }, allowSetters = true)
     private PersonProfile personProfile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "selectedAnswers", "question" }, allowSetters = true)
     private TestAnswerOption answer;
 

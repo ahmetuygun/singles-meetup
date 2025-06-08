@@ -50,12 +50,12 @@ public class TestQuestion implements Serializable {
     @Column(name = "language", nullable = false)
     private String language;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "question")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "selectedAnswers", "question" }, allowSetters = true)
     private Set<TestAnswerOption> options = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "question")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "question", "personProfile", "answer" }, allowSetters = true)
     private Set<UserTestAnswer> answers = new HashSet<>();

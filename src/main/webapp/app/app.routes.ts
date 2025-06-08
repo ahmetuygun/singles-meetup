@@ -28,6 +28,10 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },
+  {
+    path: 'landing',
+    loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent)
+  },
   ...errorRoute,
 ];
 
