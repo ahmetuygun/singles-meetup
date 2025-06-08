@@ -5,17 +5,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { EventService } from '../entities/event/service/event.service';
 import { IEvent } from '../entities/event/event.model';
-
-export interface TicketType {
-  id: string;
-  name: string;
-  price: number;
-  icon: string;
-  color: string;
-}
+import { TicketService } from '../entities/ticket/service/ticket.service';
+import { ITicket } from '../entities/ticket/ticket.model';
 
 export interface TicketSelection {
-  ticketType: TicketType;
+  ticket: ITicket;
   quantity: number;
 }
 
@@ -27,41 +21,12 @@ export interface TicketSelection {
 })
 export class TicketPurchaseComponent implements OnInit {
   event = signal<IEvent | null>(null);
+  tickets = signal<ITicket[]>([]);
   
   protected route = inject(ActivatedRoute);
   protected router = inject(Router);
   protected eventService = inject(EventService);
-  
-  ticketTypes: TicketType[] = [
-    {
-      id: 'male-early',
-      name: 'Male Early Bird Ticket',
-      price: 12.00,
-      icon: 'user',
-      color: 'primary'
-    },
-    {
-      id: 'female-early',
-      name: 'Female Early Bird Ticket', 
-      price: 12.00,
-      icon: 'user',
-      color: 'danger'
-    },
-    {
-      id: 'male-general',
-      name: 'Male General Admission Ticket',
-      price: 15.00,
-      icon: 'user',
-      color: 'primary'
-    },
-    {
-      id: 'female-general',
-      name: 'Female General Admission Ticket', 
-      price: 15.00,
-      icon: 'user',
-      color: 'danger'
-    }
-  ];
+  protected ticketService = inject(TicketService);
 
   selectedTickets = signal<TicketSelection[]>([]);
   isProcessing = signal<boolean>(false);
@@ -77,6 +42,7 @@ export class TicketPurchaseComponent implements OnInit {
     this.eventService.find(eventId).subscribe({
       next: (response) => {
         this.event.set(response.body);
+        this.loadTickets(eventId);
       },
       error: () => {
         this.router.navigate(['/']);
@@ -84,39 +50,50 @@ export class TicketPurchaseComponent implements OnInit {
     });
   }
 
-  selectTicket(ticketType: TicketType): void {
+  loadTickets(eventId: number): void {
+    this.ticketService.getTicketsByEvent(eventId).subscribe({
+      next: (response) => {
+        this.tickets.set(response.body || []);
+      },
+      error: (error) => {
+        console.error('Error loading tickets:', error);
+      }
+    });
+  }
+
+  selectTicket(ticket: ITicket): void {
     const current = this.selectedTickets();
-    const existing = current.find(t => t.ticketType.id === ticketType.id);
+    const existing = current.find(t => t.ticket.id === ticket.id);
     
     if (existing) {
       // Remove if already selected
-      this.selectedTickets.set(current.filter(t => t.ticketType.id !== ticketType.id));
+      this.selectedTickets.set(current.filter(t => t.ticket.id !== ticket.id));
     } else {
       // Add new selection
-      this.selectedTickets.set([...current, { ticketType, quantity: 1 }]);
+      this.selectedTickets.set([...current, { ticket, quantity: 1 }]);
     }
   }
 
-  updateQuantity(ticketTypeId: string, quantity: number): void {
+  updateQuantity(ticketId: number, quantity: number): void {
     if (quantity < 1) return;
     
     const current = this.selectedTickets();
     const updated = current.map(selection => 
-      selection.ticketType.id === ticketTypeId 
+      selection.ticket.id === ticketId 
         ? { ...selection, quantity }
         : selection
     );
     this.selectedTickets.set(updated);
   }
 
-  removeTicket(ticketTypeId: string): void {
+  removeTicket(ticketId: number): void {
     const current = this.selectedTickets();
-    this.selectedTickets.set(current.filter(t => t.ticketType.id !== ticketTypeId));
+    this.selectedTickets.set(current.filter(t => t.ticket.id !== ticketId));
   }
 
   getTotalPrice(): number {
     return this.selectedTickets().reduce((total, selection) => 
-      total + (selection.ticketType.price * selection.quantity), 0
+      total + ((selection.ticket.price || 0) * selection.quantity), 0
     );
   }
 
@@ -126,29 +103,29 @@ export class TicketPurchaseComponent implements OnInit {
     );
   }
 
-  onQuantityChange(ticketType: TicketType, event: any): void {
+  onQuantityChange(ticket: ITicket, event: any): void {
     const quantity = parseInt(event.target.value, 10);
     
     if (quantity === 0) {
       // Remove ticket if quantity is 0
       this.selectedTickets.update(tickets => 
-        tickets.filter(t => t.ticketType.id !== ticketType.id)
+        tickets.filter(t => t.ticket.id !== ticket.id)
       );
     } else {
-      const existingIndex = this.selectedTickets().findIndex(t => t.ticketType.id === ticketType.id);
+      const existingIndex = this.selectedTickets().findIndex(t => t.ticket.id === ticket.id);
       
       if (existingIndex >= 0) {
         // Update existing ticket quantity
         this.selectedTickets.update(tickets => 
           tickets.map(t => 
-            t.ticketType.id === ticketType.id 
+            t.ticket.id === ticket.id 
               ? { ...t, quantity }
               : t
           )
         );
       } else {
         // Add new ticket with quantity
-        this.selectedTickets.update(tickets => [...tickets, { ticketType, quantity }]);
+        this.selectedTickets.update(tickets => [...tickets, { ticket, quantity }]);
       }
     }
   }
@@ -168,12 +145,21 @@ export class TicketPurchaseComponent implements OnInit {
     }
   }
 
-  isTicketSelected(ticketTypeId: string): boolean {
-    return this.selectedTickets().some(t => t.ticketType.id === ticketTypeId);
+  isTicketSelected(ticketId: number): boolean {
+    return this.selectedTickets().some(t => t.ticket.id === ticketId);
   }
 
-  getSelectedTicket(ticketTypeId: string): TicketSelection | undefined {
-    return this.selectedTickets().find(t => t.ticketType.id === ticketTypeId);
+  getSelectedTicket(ticketId: number): TicketSelection | undefined {
+    return this.selectedTickets().find(t => t.ticket.id === ticketId);
+  }
+
+  getTicketColor(ticket: ITicket): string {
+    if (ticket.genderRestriction === 'MALE') {
+      return 'primary';
+    } else if (ticket.genderRestriction === 'FEMALE') {
+      return 'danger';
+    }
+    return 'secondary';
   }
 
   goBack(): void {

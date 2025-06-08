@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { DataUtils } from 'app/core/util/data-util.service';
+import { AccountService } from 'app/core/auth/account.service';
 import { IEvent } from '../event.model';
 import HasAnyAuthorityDirective from "../../../shared/auth/has-any-authority.directive";
 import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
@@ -22,6 +23,7 @@ export class EventDetailComponent {
   protected dataUtils = inject(DataUtils);
   protected modalService = inject(NgbModal);
   protected router = inject(Router);
+  protected accountService = inject(AccountService);
 
   byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);

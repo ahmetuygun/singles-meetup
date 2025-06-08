@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { IEvent } from '../entities/event/event.model';
 import { TicketSelection } from '../ticket-purchase/ticket-purchase.component';
+import { UserTicketService, PurchaseRequest } from '../entities/user-ticket/service/user-ticket.service';
 
 @Component({
   selector: 'jhi-payment',
@@ -14,6 +15,7 @@ import { TicketSelection } from '../ticket-purchase/ticket-purchase.component';
 })
 export class PaymentComponent implements OnInit {
   protected router = inject(Router);
+  protected userTicketService = inject(UserTicketService);
   
   event = signal<IEvent | null>(null);
   selectedTickets = signal<TicketSelection[]>([]);
@@ -47,7 +49,7 @@ export class PaymentComponent implements OnInit {
 
   getTotalPrice(): number {
     return this.selectedTickets().reduce((total, selection) => 
-      total + (selection.ticketType.price * selection.quantity), 0
+      total + ((selection.ticket.price || 0) * selection.quantity), 0
     );
   }
 
@@ -132,15 +134,27 @@ export class PaymentComponent implements OnInit {
   }
 
   completePurchase(): void {
-    console.log('Purchase completed:', {
-      tickets: this.selectedTickets(),
-      paymentMethod: this.selectedPaymentMethod(),
-      total: this.getTotalPrice()
+    const purchaseRequest: PurchaseRequest = {
+      ticketSelections: this.selectedTickets().map(selection => ({
+        ticketId: selection.ticket.id,
+        quantity: selection.quantity
+      })),
+      paymentMethod: this.selectedPaymentMethod()
+    };
+
+    this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
+      next: (response) => {
+        console.log('Purchase completed:', response.body);
+        this.isProcessing.set(false);
+        alert('Payment processed successfully!');
+        this.router.navigate(['/my-tickets']);
+      },
+      error: (error) => {
+        console.error('Purchase failed:', error);
+        this.isProcessing.set(false);
+        alert('Payment failed. Please try again.');
+      }
     });
-    
-    this.isProcessing.set(false);
-    alert('Payment processed successfully!');
-    this.router.navigate(['/']);
   }
 
   goBack(): void {

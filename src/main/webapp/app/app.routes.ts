@@ -43,12 +43,20 @@ const routes: Routes = [
   {
     path: 'event/:eventId/tickets',
     loadComponent: () => import('./ticket-purchase/ticket-purchase.component').then(m => m.TicketPurchaseComponent),
-    title: 'Purchase Tickets'
+    title: 'Purchase Tickets',
+    canActivate: [UserRouteAccessService]
   },
   {
     path: 'event/:eventId/payment',
     loadComponent: () => import('./payment/payment.component').then(m => m.PaymentComponent),
-    title: 'Payment'
+    title: 'Payment',
+    canActivate: [UserRouteAccessService]
+  },
+  {
+    path: 'my-tickets',
+    loadComponent: () => import('./my-tickets/my-tickets.component').then(m => m.MyTicketsComponent),
+    title: 'My Tickets',
+    canActivate: [UserRouteAccessService]
   },
   ...errorRoute,
 ];

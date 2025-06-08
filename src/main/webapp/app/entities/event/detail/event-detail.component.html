@@ -2,9 +2,8 @@
   <div class="container py-4">
     <!-- Back Button -->
     <div class="mb-4">
-      <button type="button" (click)="previousState()" class="btn btn-outline-secondary">
-        <fa-icon icon="arrow-left" class="me-2"></fa-icon>
-        Back to Events
+      <button type="button" class="btn btn-light rounded-circle p-2" (click)="previousState()" style="width: 40px; height: 40px;">
+        <fa-icon icon="times" class="text-dark"></fa-icon>
       </button>
     </div>
 
@@ -59,7 +58,11 @@
     <div class="mb-5 text-center">
       <button class="btn btn-warning btn-lg px-5 py-3" (click)="openTicketPurchase()">
         <fa-icon icon="ticket-alt" class="me-2"></fa-icon>
-        Get Ticket
+        @if (accountService.trackCurrentAccount()(); as account) {
+          Get Ticket
+        } @else {
+          Login to Get Ticket
+        }
       </button>
     </div>
 
