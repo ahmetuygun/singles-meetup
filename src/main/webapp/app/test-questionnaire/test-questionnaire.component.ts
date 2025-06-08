@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { LoginService } from 'app/login/login.service';
 
 interface TestAnswerOption {
   id: number;
@@ -31,7 +33,7 @@ export class TestQuestionnaireComponent implements OnInit {
   currentStep = 0;
   answers: any = {};
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router, private loginService: LoginService) {}
 
   ngOnInit(): void {
     this.http.get<TestQuestion[]>('/api/test-questions/with-options').subscribe(data => {
@@ -59,7 +61,7 @@ export class TestQuestionnaireComponent implements OnInit {
     // Save answers to localStorage
     localStorage.setItem('questionnaireAnswers', JSON.stringify(this.answers));
     console.info('Questionnaire answers saved:', this.answers);
-    alert('Submitted! ' + JSON.stringify(this.answers));
+    this.loginService.login();
   }
 
   toggleMultiChoice(questionId: number, value: number): void {
@@ -89,7 +91,7 @@ export class TestQuestionnaireComponent implements OnInit {
   selectSingleChoice(questionId: number, value: number): void {
     this.answers[questionId] = value;
     if (!this.isLastStep()) {
-      setTimeout(() => this.next(), 500);
+     // setTimeout(() => this.next(), 500);
     }
   }
 
