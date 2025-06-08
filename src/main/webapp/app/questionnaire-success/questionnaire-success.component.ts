@@ -40,6 +40,8 @@ export class QuestionnaireSuccessComponent implements OnInit {
     if (!savedAnswers) {
       this.hasAnswers = false;
       this.isProcessing = false;
+      // Redirect to homepage if no questionnaire answers found
+      this.router.navigate(['/']);
       return;
     }
 
