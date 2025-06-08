@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, ReplaySubject, of } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { catchError, shareReplay, tap, switchMap } from 'rxjs/operators';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Account } from 'app/core/auth/account.model';
 import { ApplicationConfigService } from '../config/application-config.service';
+import { PersonProfileService } from 'app/entities/person-profile/service/person-profile.service';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -20,6 +21,7 @@ export class AccountService {
   private readonly stateStorageService = inject(StateStorageService);
   private readonly router = inject(Router);
   private readonly applicationConfigService = inject(ApplicationConfigService);
+  private readonly personProfileService = inject(PersonProfileService);
 
   authenticate(identity: Account | null): void {
     this.userIdentity.set(identity);
@@ -47,7 +49,7 @@ export class AccountService {
   identity(force?: boolean): Observable<Account | null> {
     if (!this.accountCache$ || force) {
       this.accountCache$ = this.fetch().pipe(
-        tap((account: Account) => {
+        switchMap((account: Account) => {
           this.authenticate(account);
 
           // After retrieve the account info, the language will be changed to
@@ -57,7 +59,20 @@ export class AccountService {
             this.translateService.use(account.langKey);
           }
 
-          this.navigateToStoredUrl();
+          // Ensure PersonProfile exists for the authenticated user
+          return this.personProfileService.getCurrentUserProfile().pipe(
+            tap((profileResponse) => {
+              console.log('PersonProfile ensured for user:', account.login);
+            }),
+            catchError((error) => {
+              console.error('Error ensuring PersonProfile:', error);
+              return of(null); // Continue even if profile creation fails
+            }),
+            switchMap(() => {
+              this.navigateToStoredUrl();
+              return of(account);
+            })
+          );
         }),
         shareReplay(),
       );

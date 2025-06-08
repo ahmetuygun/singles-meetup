@@ -1,7 +1,10 @@
 package com.meet.singles.web.rest;
 
 import com.meet.singles.domain.PersonProfile;
+import com.meet.singles.domain.User;
 import com.meet.singles.repository.PersonProfileRepository;
+import com.meet.singles.repository.UserRepository;
+import com.meet.singles.security.SecurityUtils;
 import com.meet.singles.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +38,11 @@ public class PersonProfileResource {
     private String applicationName;
 
     private final PersonProfileRepository personProfileRepository;
+    private final UserRepository userRepository;
 
-    public PersonProfileResource(PersonProfileRepository personProfileRepository) {
+    public PersonProfileResource(PersonProfileRepository personProfileRepository, UserRepository userRepository) {
         this.personProfileRepository = personProfileRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -184,6 +189,48 @@ public class PersonProfileResource {
         LOG.debug("REST request to get PersonProfile : {}", id);
         Optional<PersonProfile> personProfile = personProfileRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(personProfile);
+    }
+
+    /**
+     * {@code GET  /person-profiles/current} : get or create the current user's profile.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the personProfile.
+     */
+    @GetMapping("/current")
+    public ResponseEntity<PersonProfile> getCurrentUserProfile() {
+        LOG.debug("REST request to get or create current user's PersonProfile");
+        
+        String userLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new RuntimeException("Current user login not found"));
+        
+        // Try to find existing profile
+        Optional<PersonProfile> existingProfile = personProfileRepository.findByInternalUserLogin(userLogin);
+        
+        if (existingProfile.isPresent()) {
+            return ResponseEntity.ok(existingProfile.get());
+        }
+        
+        // Create new profile if it doesn't exist
+        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found: " + userLogin);
+        }
+        
+        PersonProfile newProfile = new PersonProfile();
+        newProfile.setInternalUser(user.get());
+        // Set basic info from user account if available, with defaults for required fields
+        newProfile.setFirstName(user.get().getFirstName() != null && !user.get().getFirstName().isEmpty() 
+            ? user.get().getFirstName() : "User");
+        newProfile.setLastName(user.get().getLastName() != null && !user.get().getLastName().isEmpty() 
+            ? user.get().getLastName() : "User");
+        // Set default values for required fields
+        newProfile.setDob(java.time.LocalDate.of(1990, 1, 1)); // Default DOB
+        newProfile.setGender("Not specified"); // Default gender
+        
+        PersonProfile savedProfile = personProfileRepository.save(newProfile);
+        LOG.debug("Created new PersonProfile for user: {}", userLogin);
+        
+        return ResponseEntity.ok(savedProfile);
     }
 
     /**

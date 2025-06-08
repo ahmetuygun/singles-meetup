@@ -70,6 +70,12 @@ export class PersonProfileService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  getCurrentUserProfile(): Observable<EntityResponseType> {
+    return this.http
+      .get<RestPersonProfile>(`${this.resourceUrl}/current`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
   getPersonProfileIdentifier(personProfile: Pick<IPersonProfile, 'id'>): number {
     return personProfile.id;
   }
