@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { UserTicketService } from '../entities/user-ticket/service/user-ticket.service';
 import { IUserTicket } from '../entities/user-ticket/user-ticket.model';
@@ -14,6 +14,7 @@ import dayjs from 'dayjs/esm';
 })
 export class MyTicketsComponent implements OnInit {
   protected userTicketService = inject(UserTicketService);
+  protected router = inject(Router);
   
   userTickets = signal<IUserTicket[]>([]);
   isLoading = signal<boolean>(true);
@@ -77,6 +78,13 @@ export class MyTicketsComponent implements OnInit {
         return 'badge bg-danger';
       default:
         return 'badge bg-secondary';
+    }
+  }
+
+  navigateToEvent(userTicket: IUserTicket): void {
+    const eventId = userTicket.ticket?.event?.id;
+    if (eventId) {
+      this.router.navigate(['/event', eventId, 'view']);
     }
   }
 } 
