@@ -32,6 +32,10 @@ const routes: Routes = [
     path: 'landing',
     loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent)
   },
+  {
+    path: 'questionnaire',
+    loadComponent: () => import('./test-questionnaire/test-questionnaire.component').then(m => m.TestQuestionnaireComponent)
+  },
   ...errorRoute,
 ];
 
