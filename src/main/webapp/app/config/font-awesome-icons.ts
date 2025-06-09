@@ -41,6 +41,11 @@ import {
   faUsers,
   faUsersCog,
   faWrench,
+  faQrcode,
+  faExclamationTriangle,
+  faKeyboard,
+  faInfoCircle,
+  faLightbulb,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -87,6 +92,11 @@ export const fontAwesomeIcons = [
   faUsers,
   faUsersCog,
   faWrench,
-  faTrash
+  faTrash,
+  faQrcode,
+  faExclamationTriangle,
+  faKeyboard,
+  faInfoCircle,
+  faLightbulb
   // jhipster-needle-add-icon-import
 ];

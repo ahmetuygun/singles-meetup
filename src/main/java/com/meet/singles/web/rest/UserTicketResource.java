@@ -11,6 +11,7 @@ import com.meet.singles.repository.UserEventRepository;
 import com.meet.singles.repository.PersonProfileRepository;
 import com.meet.singles.repository.TicketRepository;
 import com.meet.singles.security.SecurityUtils;
+import com.meet.singles.service.QrCodeService;
 import com.meet.singles.web.rest.errors.BadRequestAlertException;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -50,17 +51,20 @@ public class UserTicketResource {
     private final UserEventRepository userEventRepository;
     private final PersonProfileRepository personProfileRepository;
     private final TicketRepository ticketRepository;
+    private final QrCodeService qrCodeService;
 
     public UserTicketResource(
         UserTicketRepository userTicketRepository,
         UserEventRepository userEventRepository,
         PersonProfileRepository personProfileRepository,
-        TicketRepository ticketRepository
+        TicketRepository ticketRepository,
+        QrCodeService qrCodeService
     ) {
         this.userTicketRepository = userTicketRepository;
         this.userEventRepository = userEventRepository;
         this.personProfileRepository = personProfileRepository;
         this.ticketRepository = ticketRepository;
+        this.qrCodeService = qrCodeService;
     }
 
     /**
@@ -116,6 +120,16 @@ public class UserTicketResource {
         for (Event event : uniqueEvents) {
             Optional<UserEvent> existingUserEvent = userEventRepository.findByPersonProfileAndEvent(personProfile, event);
             if (existingUserEvent.isEmpty()) {
+                // Find the ticket code for this event from the purchased tickets
+                String ticketCode = userTickets.stream()
+                    .filter(ut -> ut.getTicket().getEvent().getId().equals(event.getId()))
+                    .findFirst()
+                    .map(UserTicket::getTicketCode)
+                    .orElse(UUID.randomUUID().toString());
+                
+                // Generate QR code for the ticket
+                String qrCode = qrCodeService.generateTicketQrCode(ticketCode, event.getId(), personProfile.getId());
+                
                 UserEvent userEvent = new UserEvent();
                 userEvent.setPersonProfile(personProfile);
                 userEvent.setEvent(event);
@@ -123,10 +137,28 @@ public class UserTicketResource {
                 userEvent.setCheckedIn(false);
                 userEvent.setMatchCompleted(false);
                 userEvent.setPaymentStatus(PaymentStatus.PAID);
+                userEvent.setQrCode(qrCode);
                 userEventRepository.save(userEvent);
-                log.debug("Created UserEvent for person {} and event {}", personProfile.getId(), event.getId());
+                log.debug("Created UserEvent with QR code for person {} and event {}", personProfile.getId(), event.getId());
             } else {
                 log.debug("UserEvent already exists for person {} and event {}", personProfile.getId(), event.getId());
+                
+                // Update existing UserEvent with QR code if it doesn't have one
+                UserEvent userEvent = existingUserEvent.get();
+                if (userEvent.getQrCode() == null) {
+                    // Find the ticket code for this event from the purchased tickets
+                    String ticketCode = userTickets.stream()
+                        .filter(ut -> ut.getTicket().getEvent().getId().equals(event.getId()))
+                        .findFirst()
+                        .map(UserTicket::getTicketCode)
+                        .orElse(UUID.randomUUID().toString());
+                    
+                    // Generate QR code for the ticket
+                    String qrCode = qrCodeService.generateTicketQrCode(ticketCode, event.getId(), personProfile.getId());
+                    userEvent.setQrCode(qrCode);
+                    userEventRepository.save(userEvent);
+                    log.debug("Updated existing UserEvent with QR code for person {} and event {}", personProfile.getId(), event.getId());
+                }
             }
         }
 

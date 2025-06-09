@@ -8,6 +8,7 @@ export interface IUserEvent {
   checkedIn?: boolean | null;
   matchCompleted?: boolean | null;
   paymentStatus?: keyof typeof PaymentStatus | null;
+  qrCode?: string | null;
   personProfile?: IPersonProfile | null;
   event?: IEvent | null;
 }

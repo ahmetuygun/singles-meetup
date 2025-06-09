@@ -2,6 +2,8 @@ package com.meet.singles.web.rest;
 
 import com.meet.singles.domain.UserEvent;
 import com.meet.singles.repository.UserEventRepository;
+import com.meet.singles.security.SecurityUtils;
+import com.meet.singles.service.QrCodeService;
 import com.meet.singles.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +37,11 @@ public class UserEventResource {
     private String applicationName;
 
     private final UserEventRepository userEventRepository;
+    private final QrCodeService qrCodeService;
 
-    public UserEventResource(UserEventRepository userEventRepository) {
+    public UserEventResource(UserEventRepository userEventRepository, QrCodeService qrCodeService) {
         this.userEventRepository = userEventRepository;
+        this.qrCodeService = qrCodeService;
     }
 
     /**
@@ -159,7 +163,7 @@ public class UserEventResource {
             LOG.debug("Filtering UserEvents by event ID: {}", eventId);
             return userEventRepository.findByEventIdWithPersonProfile(eventId);
         }
-        return userEventRepository.findAll();
+        return userEventRepository.findAllWithEvent();
     }
 
     /**
@@ -188,5 +192,140 @@ public class UserEventResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code POST  /user-events/generate-missing-qr} : Generate QR codes for UserEvents that don't have them.
+     *
+     * @return the {@link ResponseEntity} with the count of updated UserEvents.
+     */
+    @PostMapping("/generate-missing-qr")
+    public ResponseEntity<String> generateMissingQrCodes() {
+        LOG.debug("REST request to generate missing QR codes");
+        
+        List<UserEvent> userEventsWithoutQr = userEventRepository.findAllWithEvent().stream()
+            .filter(ue -> ue.getQrCode() == null && ue.getEvent() != null && ue.getPersonProfile() != null)
+            .toList();
+        
+        int updatedCount = 0;
+        for (UserEvent userEvent : userEventsWithoutQr) {
+            try {
+                // Generate a unique ticket code for this UserEvent
+                String ticketCode = java.util.UUID.randomUUID().toString();
+                String qrCode = qrCodeService.generateTicketQrCode(
+                    ticketCode, 
+                    userEvent.getEvent().getId(), 
+                    userEvent.getPersonProfile().getId()
+                );
+                userEvent.setQrCode(qrCode);
+                userEventRepository.save(userEvent);
+                updatedCount++;
+                LOG.debug("Generated QR code for UserEvent {}", userEvent.getId());
+            } catch (Exception e) {
+                LOG.error("Failed to generate QR code for UserEvent {}: {}", userEvent.getId(), e.getMessage());
+            }
+        }
+        
+        return ResponseEntity.ok(String.format("Generated QR codes for %d UserEvents", updatedCount));
+    }
+
+    /**
+     * {@code POST  /user-events/validate-qr} : Validate QR code and check in user.
+     *
+     * @param request the QR code validation request.
+     * @return the {@link ResponseEntity} with validation result.
+     */
+    @PostMapping("/validate-qr")
+    public ResponseEntity<QrValidationResponse> validateQrCode(@RequestBody QrValidationRequest request) {
+        LOG.debug("REST request to validate QR code: {}", request.getQrData());
+        
+        try {
+            // Parse QR code data: TICKET:ticketCode:EVENT:eventId:USER:userId
+            String[] parts = request.getQrData().split(":");
+            if (parts.length != 6 || !parts[0].equals("TICKET") || !parts[2].equals("EVENT") || !parts[4].equals("USER")) {
+                return ResponseEntity.ok(new QrValidationResponse(false, "Invalid QR code format", null));
+            }
+            
+            String ticketCode = parts[1];
+            Long eventId = Long.parseLong(parts[3]);
+            Long userId = Long.parseLong(parts[5]);
+            
+            // Find the UserEvent
+            List<UserEvent> userEvents = userEventRepository.findByEventIdWithPersonProfile(eventId);
+            Optional<UserEvent> userEventOpt = userEvents.stream()
+                .filter(ue -> ue.getPersonProfile().getId().equals(userId))
+                .findFirst();
+            
+            if (userEventOpt.isEmpty()) {
+                return ResponseEntity.ok(new QrValidationResponse(false, "User not registered for this event", null));
+            }
+            
+            UserEvent userEvent = userEventOpt.get();
+            
+            // Check if already checked in
+            if (Boolean.TRUE.equals(userEvent.getCheckedIn())) {
+                return ResponseEntity.ok(new QrValidationResponse(false, "User already checked in", userEvent));
+            }
+            
+            // Check in the user
+            userEvent.setCheckedIn(true);
+            userEventRepository.save(userEvent);
+            
+            LOG.debug("Successfully checked in user {} for event {}", userId, eventId);
+            return ResponseEntity.ok(new QrValidationResponse(true, "Check-in successful", userEvent));
+            
+        } catch (Exception e) {
+            LOG.error("Error validating QR code", e);
+            return ResponseEntity.ok(new QrValidationResponse(false, "Error validating QR code: " + e.getMessage(), null));
+        }
+    }
+
+    // DTOs for QR validation
+    public static class QrValidationRequest {
+        private String qrData;
+
+        public String getQrData() {
+            return qrData;
+        }
+
+        public void setQrData(String qrData) {
+            this.qrData = qrData;
+        }
+    }
+
+    public static class QrValidationResponse {
+        private boolean valid;
+        private String message;
+        private UserEvent userEvent;
+
+        public QrValidationResponse(boolean valid, String message, UserEvent userEvent) {
+            this.valid = valid;
+            this.message = message;
+            this.userEvent = userEvent;
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public void setValid(boolean valid) {
+            this.valid = valid;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public UserEvent getUserEvent() {
+            return userEvent;
+        }
+
+        public void setUserEvent(UserEvent userEvent) {
+            this.userEvent = userEvent;
+        }
     }
 }

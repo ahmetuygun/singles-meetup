@@ -111,9 +111,9 @@
                         </div>
                       </div>
 
-                      <!-- Price Info -->
+                      <!-- Price Info and QR Code -->
                       <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <div class="bg-light rounded-3 p-3">
+                        <div class="bg-light rounded-3 p-3 mb-3">
                           <div class="fw-bold text-dark fs-4 mb-1">
                             €{{ getTotalWithFees(userTicket).toFixed(2) }}
                           </div>
@@ -121,6 +121,15 @@
                             €{{ (userTicket.totalPrice || 0).toFixed(2) }} + €{{ (userTicket.bookingFee || 0).toFixed(2) }} fee
                           </small>
                         </div>
+                        @if (getQrCodeForTicket(userTicket)) {
+                          <button 
+                            class="btn btn-warning btn-sm w-100" 
+                            (click)="showQrCode(userTicket)"
+                          >
+                            <fa-icon icon="qrcode" class="me-2"></fa-icon>
+                            Show QR Code
+                          </button>
+                        }
                       </div>
                     </div>
                   </div>

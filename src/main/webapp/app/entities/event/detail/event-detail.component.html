@@ -79,6 +79,25 @@
           View Participants
         </button>
         
+                <button 
+          type="button" 
+          (click)="validateQrCode()" 
+          class="btn btn-outline-warning me-2"
+        >
+          <fa-icon icon="qrcode" class="me-2"></fa-icon>
+          Scan QR Code
+        </button>
+        
+        <button 
+          type="button" 
+          (click)="manualQrEntry()" 
+          class="btn btn-outline-secondary btn-sm"
+          title="Manual QR Code Entry"
+        >
+          <fa-icon icon="keyboard" class="me-1"></fa-icon>
+          Manual
+        </button>
+        
         <button 
           type="button" 
           [routerLink]="['/event', eventRef.id, 'edit']" 
@@ -102,4 +121,22 @@
     <jhi-alert-error />
     <jhi-alert />
   </div>
+
+  <!-- QR Scanner Modal -->
+  @if (showQrScanner) {
+    <jhi-qr-scanner 
+      [isOpen]="showQrScanner"
+      (onScan)="onQrCodeScanned($event)"
+      (onClose)="onScannerClosed()">
+    </jhi-qr-scanner>
+  }
+
+  <!-- Manual QR Entry Modal -->
+  @if (showManualEntry) {
+    <jhi-qr-manual-entry 
+      [isOpen]="showManualEntry"
+      (onValidate)="onManualValidate($event)"
+      (onClose)="onManualEntryClosed()">
+    </jhi-qr-manual-entry>
+  }
 }

@@ -39,6 +39,9 @@ public class UserEvent implements Serializable {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "qr_code", columnDefinition = "TEXT")
+    private String qrCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "internalUser", "answers", "events" }, allowSetters = true)
     private PersonProfile personProfile;
@@ -112,6 +115,19 @@ public class UserEvent implements Serializable {
 
     public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public String getQrCode() {
+        return this.qrCode;
+    }
+
+    public UserEvent qrCode(String qrCode) {
+        this.setQrCode(qrCode);
+        return this;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
     public PersonProfile getPersonProfile() {

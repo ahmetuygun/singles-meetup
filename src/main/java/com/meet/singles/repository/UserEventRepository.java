@@ -31,4 +31,10 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
      * Find UserEvent by PersonProfile and Event
      */
     Optional<UserEvent> findByPersonProfileAndEvent(PersonProfile personProfile, Event event);
+    
+    /**
+     * Find all UserEvents with Event data eagerly loaded
+     */
+    @Query("SELECT ue FROM UserEvent ue LEFT JOIN FETCH ue.event")
+    List<UserEvent> findAllWithEvent();
 }
