@@ -1,0 +1,274 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Question Manager</h2>
+        <button 
+          class="btn btn-primary" 
+          (click)="startEdit()"
+          [disabled]="showEditForm">
+          <fa-icon icon="plus" class="me-2"></fa-icon>
+          Add New Question
+        </button>
+      </div>
+
+      <!-- Edit Form -->
+      @if (showEditForm) {
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              {{ editingQuestion ? 'Edit Question' : 'Create New Question' }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="editForm" (ngSubmit)="save()">
+              <div class="row">
+                <!-- Question Text -->
+                <div class="col-md-8 mb-3">
+                  <label class="form-label fw-semibold">Question Text *</label>
+                  <textarea 
+                    class="form-control" 
+                    formControlName="questionText"
+                    rows="3"
+                    placeholder="Enter your question text..."></textarea>
+                  @if (editForm.get('questionText')?.invalid && editForm.get('questionText')?.touched) {
+                    <div class="text-danger small mt-1">Question text is required</div>
+                  }
+                </div>
+
+                <!-- Question Type -->
+                <div class="col-md-4 mb-3">
+                  <label class="form-label fw-semibold">Question Type *</label>
+                  <select 
+                    class="form-select" 
+                    formControlName="questionType"
+                    (change)="onQuestionTypeChange()">
+                    <option value="">Select type...</option>
+                    @for (type of questionTypeValues; track type) {
+                      <option [value]="type">{{ getQuestionTypeLabel(type) }}</option>
+                    }
+                  </select>
+                  @if (editForm.get('questionType')?.invalid && editForm.get('questionType')?.touched) {
+                    <div class="text-danger small mt-1">Question type is required</div>
+                  }
+                </div>
+
+                <!-- Step Number -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label fw-semibold">Step Number</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    formControlName="stepNumber"
+                    placeholder="1">
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label fw-semibold">Category</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    formControlName="category"
+                    placeholder="e.g., Personal, Preferences">
+                </div>
+
+                <!-- Language -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label fw-semibold">Language *</label>
+                  <select class="form-select" formControlName="language">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                  </select>
+                </div>
+
+                <!-- Is Required -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label fw-semibold">Settings</label>
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      formControlName="isRequired" 
+                      id="isRequired">
+                    <label class="form-check-label" for="isRequired">
+                      Required Question
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Answer Options (for choice questions) -->
+              @if (needsOptions(editForm.get('questionType')?.value)) {
+                <div class="border-top pt-4 mt-3">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-semibold mb-0">Answer Options</h6>
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-primary btn-sm"
+                      (click)="addOption()">
+                      <fa-icon icon="plus" class="me-1"></fa-icon>
+                      Add Option
+                    </button>
+                  </div>
+
+                  <div formArrayName="options">
+                    @for (option of optionsFormArray.controls; track option; let i = $index) {
+                      <div [formGroupName]="i" class="row align-items-center mb-2">
+                        <div class="col-md-8">
+                          <input 
+                            type="text" 
+                            class="form-control" 
+                            formControlName="optionText"
+                            [placeholder]="'Option ' + (i + 1)">
+                        </div>
+                        <div class="col-md-2">
+                          <input 
+                            type="number" 
+                            class="form-control" 
+                            formControlName="value"
+                            placeholder="Value">
+                        </div>
+                        <div class="col-md-2">
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-danger btn-sm w-100"
+                            (click)="removeOption(i)"
+                            [disabled]="optionsFormArray.length <= 2">
+                            <fa-icon icon="trash"></fa-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  @if (optionsFormArray.length < 2) {
+                    <div class="text-warning small">
+                      <fa-icon icon="asterisk"></fa-icon>
+                      Choice questions need at least 2 options
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Form Actions -->
+              <div class="border-top pt-3 mt-4">
+                <div class="d-flex gap-2">
+                  <button 
+                    type="submit" 
+                    class="btn btn-success"
+                    [disabled]="editForm.invalid || isSaving">
+                    @if (isSaving) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                    }
+                    <fa-icon icon="save" class="me-2"></fa-icon>
+                    {{ editingQuestion ? 'Update Question' : 'Create Question' }}
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-secondary"
+                    (click)="cancelEdit()">
+                    <fa-icon icon="times" class="me-2"></fa-icon>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+
+      <!-- Questions List -->
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Existing Questions</h5>
+        </div>
+        <div class="card-body p-0">
+          @if (isLoading) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div class="mt-2">Loading questions...</div>
+            </div>
+          } @else if (questions().length === 0) {
+            <div class="text-center py-5 text-muted">
+              <fa-icon icon="list" class="mb-3" style="font-size: 3rem;"></fa-icon>
+              <h6>No questions found</h6>
+              <p class="mb-0">Create your first question to get started</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Question</th>
+                    <th>Type</th>
+                    <th>Step</th>
+                    <th>Required</th>
+                    <th>Category</th>
+                    <th>Language</th>
+                    <th width="150">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (question of questions(); track question.id) {
+                    <tr>
+                      <td>
+                        <div class="fw-medium">{{ question.questionText }}</div>
+                        @if (question.id) {
+                          <small class="text-muted">ID: {{ question.id }}</small>
+                        }
+                      </td>
+                      <td>
+                        <span class="badge bg-info">
+                          {{ getQuestionTypeLabel(question.questionType || '') }}
+                        </span>
+                      </td>
+                      <td>{{ question.stepNumber || '-' }}</td>
+                      <td>
+                        @if (question.isRequired) {
+                          <span class="badge bg-warning text-dark">Required</span>
+                        } @else {
+                          <span class="badge bg-secondary">Optional</span>
+                        }
+                      </td>
+                      <td>{{ question.category || '-' }}</td>
+                      <td>
+                        <span class="badge bg-light text-dark">
+                          {{ question.language?.toUpperCase() || 'EN' }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group" role="group">
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-primary btn-sm"
+                            (click)="startEdit(question)"
+                            [disabled]="showEditForm"
+                            title="Edit Question">
+                            <fa-icon icon="pencil-alt"></fa-icon>
+                          </button>
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="deleteQuestion(question)"
+                            title="Delete Question">
+                            <fa-icon icon="trash"></fa-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

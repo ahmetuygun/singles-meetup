@@ -11,6 +11,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface TestQuestionRepository extends JpaRepository<TestQuestion, Long> {
-    @Query("SELECT DISTINCT q FROM TestQuestion q LEFT JOIN FETCH q.options")
+    @Query("SELECT DISTINCT q FROM TestQuestion q LEFT JOIN FETCH q.options ORDER BY q.stepNumber ASC, q.id ASC")
     List<TestQuestion> findAllWithOptions();
+    
+    @Query("SELECT q FROM TestQuestion q ORDER BY q.stepNumber ASC, q.id ASC")
+    List<TestQuestion> findAll();
 }

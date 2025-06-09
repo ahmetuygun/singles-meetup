@@ -44,6 +44,10 @@ export class TestQuestionService {
     return this.http.get<ITestQuestion[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
+  queryWithOptions(): Observable<EntityArrayResponseType> {
+    return this.http.get<ITestQuestion[]>(`${this.resourceUrl}/with-options`, { observe: 'response' });
+  }
+
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }

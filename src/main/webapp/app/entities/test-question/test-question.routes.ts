@@ -7,6 +7,11 @@ import TestQuestionResolve from './route/test-question-routing-resolve.service';
 const testQuestionRoute: Routes = [
   {
     path: '',
+    loadComponent: () => import('./question-manager/question-manager.component').then(m => m.QuestionManagerComponent),
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'old-list',
     loadComponent: () => import('./list/test-question.component').then(m => m.TestQuestionComponent),
     data: {
       defaultSort: `id,${ASC}`,

@@ -168,6 +168,18 @@
                 <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
               </a>
             </li>
+            <li>
+              <a
+                class="dropdown-item"
+                routerLink="/test-question"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="list" [fixedWidth]="true"></fa-icon>
+                <span>Question Manager</span>
+              </a>
+            </li>
             <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
             <li>
               <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">

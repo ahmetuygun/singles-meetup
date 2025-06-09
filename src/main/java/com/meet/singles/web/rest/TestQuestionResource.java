@@ -86,7 +86,32 @@ public class TestQuestionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        testQuestion = testQuestionRepository.save(testQuestion);
+        // Find the existing question and update its options properly
+        TestQuestion existingQuestion = testQuestionRepository.findById(id).orElseThrow();
+        
+        // Update basic fields
+        existingQuestion.setQuestionText(testQuestion.getQuestionText());
+        existingQuestion.setQuestionType(testQuestion.getQuestionType());
+        existingQuestion.setStepNumber(testQuestion.getStepNumber());
+        existingQuestion.setIsRequired(testQuestion.getIsRequired());
+        existingQuestion.setCategory(testQuestion.getCategory());
+        existingQuestion.setLanguage(testQuestion.getLanguage());
+        
+        // Handle options - this will properly trigger orphan removal
+        if (testQuestion.getOptions() != null) {
+            // Clear existing options (orphan removal will delete them)
+            existingQuestion.getOptions().clear();
+            // Add new options
+            testQuestion.getOptions().forEach(option -> {
+                option.setQuestion(existingQuestion);
+                existingQuestion.addOptions(option);
+            });
+        } else {
+            // If no options provided, clear all options
+            existingQuestion.getOptions().clear();
+        }
+
+        testQuestion = testQuestionRepository.save(existingQuestion);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, testQuestion.getId().toString()))
             .body(testQuestion);
