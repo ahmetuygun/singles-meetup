@@ -1,10 +1,13 @@
 package com.meet.singles.web.rest;
 
 import com.meet.singles.domain.UserTicket;
+import com.meet.singles.domain.UserEvent;
 import com.meet.singles.domain.PersonProfile;
 import com.meet.singles.domain.Ticket;
+import com.meet.singles.domain.Event;
 import com.meet.singles.domain.enumeration.PaymentStatus;
 import com.meet.singles.repository.UserTicketRepository;
+import com.meet.singles.repository.UserEventRepository;
 import com.meet.singles.repository.PersonProfileRepository;
 import com.meet.singles.repository.TicketRepository;
 import com.meet.singles.security.SecurityUtils;
@@ -13,9 +16,11 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +47,18 @@ public class UserTicketResource {
     private String applicationName;
 
     private final UserTicketRepository userTicketRepository;
+    private final UserEventRepository userEventRepository;
     private final PersonProfileRepository personProfileRepository;
     private final TicketRepository ticketRepository;
 
     public UserTicketResource(
         UserTicketRepository userTicketRepository,
+        UserEventRepository userEventRepository,
         PersonProfileRepository personProfileRepository,
         TicketRepository ticketRepository
     ) {
         this.userTicketRepository = userTicketRepository;
+        this.userEventRepository = userEventRepository;
         this.personProfileRepository = personProfileRepository;
         this.ticketRepository = ticketRepository;
     }
@@ -72,10 +80,18 @@ public class UserTicketResource {
         PersonProfile personProfile = personProfileRepository.findByInternalUserLogin(currentUserLogin)
             .orElseThrow(() -> new BadRequestAlertException("Person profile not found", ENTITY_NAME, "profilenotfound"));
 
+        // Track unique events for UserEvent creation
+        Set<Event> uniqueEvents = new HashSet<>();
+        
         List<UserTicket> userTickets = purchaseRequest.getTicketSelections().stream()
             .map(selection -> {
                 Ticket ticket = ticketRepository.findById(selection.getTicketId())
                     .orElseThrow(() -> new BadRequestAlertException("Ticket not found", ENTITY_NAME, "ticketnotfound"));
+                
+                // Track the event for UserEvent creation
+                if (ticket.getEvent() != null) {
+                    uniqueEvents.add(ticket.getEvent());
+                }
                 
                 BigDecimal totalPrice = ticket.getPrice().multiply(BigDecimal.valueOf(selection.getQuantity()));
                 BigDecimal bookingFee = totalPrice.multiply(BigDecimal.valueOf(0.1)); // 10% booking fee
@@ -95,6 +111,24 @@ public class UserTicketResource {
                 return userTicketRepository.save(userTicket);
             })
             .toList();
+
+        // Create UserEvent records for each unique event (if not already exists)
+        for (Event event : uniqueEvents) {
+            Optional<UserEvent> existingUserEvent = userEventRepository.findByPersonProfileAndEvent(personProfile, event);
+            if (existingUserEvent.isEmpty()) {
+                UserEvent userEvent = new UserEvent();
+                userEvent.setPersonProfile(personProfile);
+                userEvent.setEvent(event);
+                userEvent.setStatus("REGISTERED");
+                userEvent.setCheckedIn(false);
+                userEvent.setMatchCompleted(false);
+                userEvent.setPaymentStatus(PaymentStatus.PAID);
+                userEventRepository.save(userEvent);
+                log.debug("Created UserEvent for person {} and event {}", personProfile.getId(), event.getId());
+            } else {
+                log.debug("UserEvent already exists for person {} and event {}", personProfile.getId(), event.getId());
+            }
+        }
 
         return ResponseEntity.ok(userTickets);
     }

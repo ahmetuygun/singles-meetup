@@ -69,7 +69,16 @@
     <!-- Admin Actions (if admin) -->
     <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="border-top pt-4">
       <h6 class="text-muted mb-3">Admin Actions</h6>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 flex-wrap">
+        <button 
+          type="button" 
+          (click)="viewEventJoiners()" 
+          class="btn btn-outline-success"
+        >
+          <fa-icon icon="users" class="me-2"></fa-icon>
+          View Participants
+        </button>
+        
         <button 
           type="button" 
           [routerLink]="['/event', eventRef.id, 'edit']" 

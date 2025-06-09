@@ -36,6 +36,17 @@ const eventRoute: Routes = [
     },
     canActivate: [UserRouteAccessService],
   },
+  {
+    path: ':id/joiners',
+    loadComponent: () => import('./joiners/event-joiners.component').then(m => m.EventJoinersComponent),
+    resolve: {
+      event: EventResolve,
+    },
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: ['ROLE_ADMIN'],
+    },
+  },
 ];
 
 export default eventRoute;

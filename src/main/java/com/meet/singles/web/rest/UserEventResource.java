@@ -149,11 +149,16 @@ public class UserEventResource {
     /**
      * {@code GET  /user-events} : get all the userEvents.
      *
+     * @param eventId optional filter by event ID
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of userEvents in body.
      */
     @GetMapping("")
-    public List<UserEvent> getAllUserEvents() {
+    public List<UserEvent> getAllUserEvents(@RequestParam(required = false) Long eventId) {
         LOG.debug("REST request to get all UserEvents");
+        if (eventId != null) {
+            LOG.debug("Filtering UserEvents by event ID: {}", eventId);
+            return userEventRepository.findByEventIdWithPersonProfile(eventId);
+        }
         return userEventRepository.findAll();
     }
 

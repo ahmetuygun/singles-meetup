@@ -5,7 +5,9 @@
         <h1 class="display-4">Welcome to Singles Meetup</h1>
         <p class="lead">Find your perfect match at our exciting events</p>
         <div class="d-flex flex-row justify-content-center align-items-center gap-3 my-4">
-          <button class="btn btn-warning btn-lg px-4 py-2" (click)="goToLanding()">Book your seat</button>
+          @if (!account()) {
+            <button class="btn btn-warning btn-lg px-4 py-2" (click)="goToLanding()">Book your seat</button>
+          }
           <button class="btn btn-outline-light btn-lg px-4 py-2">View events</button>
         </div>
       </div>
