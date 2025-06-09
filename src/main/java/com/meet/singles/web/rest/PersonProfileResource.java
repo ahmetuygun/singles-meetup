@@ -226,6 +226,7 @@ public class PersonProfileResource {
         // Set default values for required fields
         newProfile.setDob(java.time.LocalDate.of(1990, 1, 1)); // Default DOB
         newProfile.setGender("Not specified"); // Default gender
+        newProfile.setTestCompleted(false); // Default test not completed
         
         PersonProfile savedProfile = personProfileRepository.save(newProfile);
         LOG.debug("Created new PersonProfile for user: {}", userLogin);

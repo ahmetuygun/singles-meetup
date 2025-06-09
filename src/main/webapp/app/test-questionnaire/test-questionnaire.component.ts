@@ -4,6 +4,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginService } from 'app/login/login.service';
+import { PersonProfileService } from 'app/entities/person-profile/service/person-profile.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 interface TestAnswerOption {
   id: number;
@@ -32,10 +34,30 @@ export class TestQuestionnaireComponent implements OnInit {
   questions: TestQuestion[] = [];
   currentStep = 0;
   answers: any = {};
+  testAlreadyCompleted = false;
+  isSubmitting = false;
 
-  constructor(private http: HttpClient, private router: Router, private loginService: LoginService) {}
+  constructor(
+    private http: HttpClient, 
+    private router: Router, 
+    private loginService: LoginService,
+    private personProfileService: PersonProfileService,
+    private accountService: AccountService
+  ) {}
 
   ngOnInit(): void {
+    // Check if user is authenticated and has already completed the test
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.personProfileService.getCurrentUserProfile().subscribe(profileResponse => {
+          const profile = profileResponse.body;
+          if (profile?.testCompleted) {
+            this.testAlreadyCompleted = true;
+          }
+        });
+      }
+    });
+
     this.http.get<TestQuestion[]>('/api/test-questions/with-options').subscribe(data => {
       this.questions = data.sort((a, b) => a.stepNumber - b.stepNumber);
     });
@@ -58,10 +80,41 @@ export class TestQuestionnaireComponent implements OnInit {
   }
 
   submit() {
-    // Save answers to localStorage
-    localStorage.setItem('questionnaireAnswers', JSON.stringify(this.answers));
-    console.info('Questionnaire answers saved:', this.answers);
-    this.loginService.login();
+    if (this.isSubmitting) return; // Prevent multiple submissions
+    
+    this.isSubmitting = true;
+    
+    // Check if user is already authenticated
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        // User is authenticated, save answers directly
+        console.info('User is authenticated, saving questionnaire answers directly:', this.answers);
+        this.saveAnswersDirectly();
+      } else {
+        // User is not authenticated, save to localStorage and redirect to login
+        localStorage.setItem('questionnaireAnswers', JSON.stringify(this.answers));
+        console.info('User not authenticated, saving to localStorage and redirecting to login:', this.answers);
+        this.loginService.login();
+      }
+    });
+  }
+
+  private saveAnswersDirectly(): void {
+    // Send answers directly to backend API
+    this.http.post('/api/questionnaire-answers', this.answers).subscribe({
+      next: (response) => {
+        console.info('Questionnaire answers saved successfully:', response);
+        this.isSubmitting = false;
+        // Redirect to questionnaire success page
+        this.router.navigate(['/questionnaire-success']);
+      },
+      error: (error) => {
+        console.error('Failed to save questionnaire answers:', error);
+        this.isSubmitting = false;
+        // Handle error - could show an error message
+        alert('There was an error saving your responses. Please try again.');
+      }
+    });
   }
 
   toggleMultiChoice(questionId: number, value: number): void {
@@ -97,5 +150,13 @@ export class TestQuestionnaireComponent implements OnInit {
 
   selectMultiChoice(questionId: number, value: number): void {
     this.toggleMultiChoice(questionId, value);
+  }
+
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
+
+  retakeTest(): void {
+    this.testAlreadyCompleted = false;
   }
 } 

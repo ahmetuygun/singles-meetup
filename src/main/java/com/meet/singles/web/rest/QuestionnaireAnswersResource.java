@@ -79,6 +79,7 @@ public class QuestionnaireAnswersResource {
                 newProfile.setLastName(user.getLastName() != null ? user.getLastName() : "");
                 newProfile.setDob(LocalDate.of(1990, 1, 1)); // Default date
                 newProfile.setGender("Not specified"); // Default gender
+                newProfile.setTestCompleted(false); // Default test not completed
                 
                 return personProfileRepository.save(newProfile);
             });
@@ -121,7 +122,11 @@ public class QuestionnaireAnswersResource {
             }
         }
 
-        log.info("Successfully saved questionnaire answers for user: {}", currentUserLogin.get());
+        // Mark test as completed
+        personProfile.setTestCompleted(true);
+        personProfileRepository.save(personProfile);
+
+        log.info("Successfully saved questionnaire answers for user: {} and marked test as completed", currentUserLogin.get());
         return ResponseEntity.ok(Map.of("message", "Questionnaire answers saved successfully"));
     }
 } 

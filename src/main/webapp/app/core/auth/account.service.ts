@@ -63,13 +63,15 @@ export class AccountService {
           return this.personProfileService.getCurrentUserProfile().pipe(
             tap((profileResponse) => {
               console.log('PersonProfile ensured for user:', account.login);
+              const profile = profileResponse.body;
+              this.navigateBasedOnTestCompletion(profile);
             }),
             catchError((error) => {
               console.error('Error ensuring PersonProfile:', error);
+              this.navigateToStoredUrl();
               return of(null); // Continue even if profile creation fails
             }),
             switchMap(() => {
-              this.navigateToStoredUrl();
               return of(account);
             })
           );
@@ -108,5 +110,17 @@ export class AccountService {
       this.stateStorageService.clearUrl();
       this.router.navigateByUrl(previousUrl);
     }
+  }
+
+  private navigateBasedOnTestCompletion(profile: any): void {
+    // Check if test is completed
+    if (profile && profile.testCompleted === false) {
+      console.log('User has not completed test, redirecting to questionnaire');
+      this.router.navigate(['/questionnaire']);
+      return;
+    }
+    
+    // If test is completed, proceed with normal navigation
+    this.navigateToStoredUrl();
   }
 }

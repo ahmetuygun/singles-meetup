@@ -1,6 +1,32 @@
 <div class="container py-4">
   <div class="mx-auto" style="max-width: 400px;">
-    <div class="mb-3">
+    
+    <!-- Test Already Completed Message -->
+    <div *ngIf="testAlreadyCompleted" class="text-center">
+      <div class="card border-success">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+          </div>
+          <h4 class="card-title text-success">Test Already Completed!</h4>
+          <p class="card-text text-muted">
+            You have already completed the questionnaire. If you want to retake it, click the button below.
+          </p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary" (click)="goHome()">
+              <i class="bi bi-house"></i> Go Home
+            </button>
+            <button class="btn btn-warning" (click)="retakeTest()">
+              <i class="bi bi-arrow-clockwise"></i> Retake Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regular Questionnaire -->
+    <div *ngIf="!testAlreadyCompleted">
+      <div class="mb-3">
       <div class="progress" style="height: 0.5rem;">
         <div
           class="progress-bar bg-info"
@@ -74,9 +100,11 @@
       <button *ngIf="!isLastStep()" class="btn btn-primary px-4" (click)="next()" [disabled]="!currentQuestion || !isAnswered(currentQuestion)">
         Next <i class="bi bi-arrow-right"></i>
       </button>
-      <button *ngIf="isLastStep()" class="btn btn-success px-4" (click)="submit()" [disabled]="!currentQuestion || !isAnswered(currentQuestion)">
-        Submit
+      <button *ngIf="isLastStep()" class="btn btn-success px-4" (click)="submit()" [disabled]="!currentQuestion || !isAnswered(currentQuestion) || isSubmitting">
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
       </button>
     </div>
+    </div> <!-- End Regular Questionnaire -->
   </div>
 </div>

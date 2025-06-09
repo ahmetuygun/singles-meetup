@@ -11,6 +11,7 @@ export interface IPersonProfile {
   bio?: string | null;
   interests?: string | null;
   location?: string | null;
+  testCompleted?: boolean | null;
   internalUser?: Pick<IUser, 'id'> | null;
   events?: IEvent[] | null;
 }
