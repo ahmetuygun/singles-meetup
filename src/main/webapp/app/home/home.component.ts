@@ -32,4 +32,14 @@ export default class HomeComponent implements OnInit {
   goToLanding(): void {
     this.router.navigate(['/landing']);
   }
+
+  scrollToEvents(): void {
+    const eventsSection = document.getElementById('events-section');
+    if (eventsSection) {
+      eventsSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }
 }

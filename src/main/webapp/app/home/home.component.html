@@ -1,24 +1,35 @@
 <div class="hero-section">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8 text-center">
-        <h1 class="display-4">Welcome to Singles Meetup</h1>
-        <p class="lead">Find your perfect match at our exciting events</p>
+      <div class="col-md-6 text-center">
+        <div class="location-badge mb-4">
+          <i class="fas fa-map-marker-alt me-2"></i>
+          Dublin
+        </div>
+        
+        <h1 class="hero-title mb-3">EVERY WEDNESDAY</h1>
+        <h2 class="hero-subtitle mb-4">STRANGERS MEET<br>FOR DINNER.</h2>
+        
+        <p class="hero-description mb-5">
+          Book your seat now and <strong>meet 5 strangers over dinner</strong>, 
+          all matched by our personality algorithm.
+        </p>
+        
         <div class="d-flex flex-row justify-content-center align-items-center gap-3 my-4">
           @if (!account()) {
             <button class="btn btn-warning btn-lg px-4 py-2" (click)="goToLanding()">Book your seat</button>
           }
-          <button class="btn btn-outline-light btn-lg px-4 py-2">View events</button>
+          <button class="btn btn-light btn-lg px-4 py-2" (click)="scrollToEvents()">View events</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container">
+<div class="container mt-5" id="events-section">
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <h2 class="text-left mb-4">Upcoming Events</h2>
+      <h2 class="text-left mb-2">Upcoming Events</h2>
       <jhi-event />
     </div>
   </div>
