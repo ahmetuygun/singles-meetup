@@ -81,6 +81,12 @@
     padding: 1rem 0;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  .event-list-container::-webkit-scrollbar {
+    display: none; /* WebKit */
   }
 
   .event-cards-container {
