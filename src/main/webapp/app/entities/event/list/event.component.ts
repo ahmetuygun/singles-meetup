@@ -64,6 +64,11 @@ export class EventComponent implements OnInit {
     return eventDate.format('HH:mm');
   }
 
+  getFormattedEventDate(eventDate: Dayjs | null | undefined): string {
+    if (!eventDate) return '';
+    return eventDate.format('D MMM, HH.mm');
+  }
+
   navigateToEvent(id: number): void {
     this.router.navigate(['/event', id, 'view']);
   }

@@ -29,43 +29,53 @@
 
   <div class="event-list-container">
     @if (isLoading) {
-      <div class="text-center">
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        <span class="ms-2">Loading...</span>
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+        <div class="mt-2 text-muted">Loading events...</div>
       </div>
     } @else if (events().length === 0) {
-      <div class="alert alert-warning">
-        <span>No events found</span>
+      <div class="alert alert-warning mx-3">
+        <strong>No events found</strong>
+        <p class="mb-0 mt-2">Check back later for upcoming events!</p>
       </div>
     } @else {
       <div class="event-cards-container">
         @for (event of events(); track trackId($index, event)) {
-          <div class="event-card" (click)="navigateToEvent(event.id)">
-            <div class="event-image">
+          <div class="card shadow-lg border-0 rounded-4 event-card-bootstrap" style="min-width: 280px; max-width: 320px; cursor: pointer;" (click)="navigateToEvent(event.id)">
+            <div class="position-relative overflow-hidden rounded-top-4" style="height: 200px;">
               @if (event.image) {
-                <img [src]="'data:' + event.imageContentType + ';base64,' + event.image" [alt]="event.name" />
+                <img [src]="'data:' + event.imageContentType + ';base64,' + event.image" [alt]="event.name" 
+                     class="w-100 h-100" style="object-fit: cover;" />
               } @else {
-                <div class="placeholder-image">🎉</div>
+                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                  <span class="display-1">🎉</span>
+                </div>
               }
             </div>
-            <div class="event-details">
-              <h3 class="event-name">{{ event.name }}</h3>
-              <p class="event-description">{{ event.description }}</p>
-              <div class="event-info">
-                <div class="event-date">
-                  <span class="emoji">📅</span>
-                  <div class="date-time">
-                    <div class="date">{{ event.eventDate | formatMediumDate }}</div>
-                    <div class="time">{{ getEventHour(event.eventDate) }}</div>
+            
+                        <div class="card-body p-4 d-flex flex-column" style="min-height: 250px;">
+              <h5 class="card-title fw-bold text-dark mb-3 lh-sm">{{ event.name }}</h5>
+              
+              <div class="mb-3">
+                <div class="d-flex gap-2">
+                  <div class="flex-fill">
+                    <div class="alert alert-light d-flex align-items-center fs-6 py-2 w-100 event-badge">
+                      <i class="fas fa-calendar-alt me-2" style="font-size: 0.8rem;"></i>
+                      <span class="fw-medium">{{ getFormattedEventDate(event.eventDate) }}</span>
+                    </div>
+                  </div>
+                  <div class="flex-fill">
+                    <div class="alert alert-light d-flex align-items-center fs-6 py-2 w-100 event-badge">
+                      <i class="fas fa-map-marker-alt me-2" style="font-size: 0.8rem;"></i>
+                      <span class="fw-medium">{{ event.venue?.name || 'TBD' }}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="event-venue">
-                  <span class="emoji">📍</span>
-                  <span>{{ event.venue?.name || 'TBD' }}</span>
-                </div>
               </div>
-
-
+              
+              <p class="card-text text-muted flex-grow-1 mb-0" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ event.description }}
+              </p>
             </div>
           </div>
         }
@@ -91,176 +101,39 @@
 
   .event-cards-container {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     padding: 0 1rem;
     min-width: min-content;
     width: 100%;
   }
 
-  .event-card {
-    flex: 0 0 260px;
-    width: 260px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+  .event-card-bootstrap {
+    flex-shrink: 0;
     scroll-snap-align: start;
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .event-card:hover {
-    transform: translateY(-2px);
+  .event-card-bootstrap:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
   }
 
-  .event-image {
-    width: 100%;
-    height: 200px;
+  .event-badge {
+    margin-bottom: 0 !important;
+    padding: 0.375rem 0.75rem !important;
+    min-height: 2.5rem;
+    font-size: 0.875rem !important;
+    background-color: transparent !important;
+    border: 1px solid #dee2e6;
+  }
+
+  .event-badge i {
+    flex-shrink: 0;
+  }
+
+  .event-badge span {
+    white-space: nowrap;
     overflow: hidden;
-    background: #f5f5f5;
-  }
-
-  .event-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .placeholder-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    background: #f0f0f0;
-  }
-
-  .event-details {
-    padding: 1.25rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .event-name {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
-  }
-
-  .event-description {
-    margin: 0 0 1rem;
-    font-size: 0.9rem;
-    color: #666;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    flex-grow: 1;
-  }
-
-  .event-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: auto;
-  }
-
-  .event-date, .event-venue {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .date-time {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .date {
-    font-weight: 500;
-  }
-
-  .time {
-    font-size: 0.9em;
-    color: #666;
-  }
-
-  .emoji {
-    font-size: 1rem;
-  }
-
-  .book-button {
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background-color: #2c3e50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: center;
-    width: 100%;
-    max-width: 200px;
-  }
-
-  .book-button:hover {
-    background-color: #34495e;
-  }
-
-  /* Tablet */
-  @media (min-width: 768px) {
-    .event-card {
-      flex: 0 0 320px;
-      width: 320px;
-      min-height: 450px;
-    }
-
-    .event-image {
-      height: 240px;
-    }
-
-    .event-details {
-      padding: 1.5rem;
-    }
-
-    .event-name {
-      font-size: 1.25rem;
-    }
-
-    .event-description, .event-info {
-      font-size: 1rem;
-    }
-
-    .book-button {
-      padding: 0.85rem 1.75rem;
-      font-size: 1rem;
-    }
-  }
-
-  /* Desktop */
-  @media (min-width: 1024px) {
-    .event-card {
-      flex: 0 0 300px;
-      width: 300px;
-    }
-  }
-
-  /* Large Desktop */
-  @media (min-width: 1440px) {
-    .event-card {
-      flex: 0 0 280px;
-      width: 280px;
-    }
+    text-overflow: ellipsis;
   }
 </style>
