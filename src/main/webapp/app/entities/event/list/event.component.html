@@ -41,7 +41,7 @@
     } @else {
       <div class="event-cards-container">
         @for (event of events(); track trackId($index, event)) {
-          <div class="card border-0 rounded-4 event-card-bootstrap" style="min-width: 280px; max-width: 320px; cursor: pointer;" (click)="navigateToEvent(event.id)">
+          <div class="alert alert-dismissible alert-warning step-alert card rounded-4 event-card-bootstrap" style="min-width: 280px; max-width: 320px; cursor: pointer;" (click)="navigateToEvent(event.id)">
             <div class="position-relative overflow-hidden rounded-top-4" style="height: 200px;">
               @if (event.image) {
                 <img [src]="'data:' + event.imageContentType + ';base64,' + event.image" [alt]="event.name"

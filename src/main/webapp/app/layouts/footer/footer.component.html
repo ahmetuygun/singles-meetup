@@ -1,3 +1,78 @@
-<div class="footer">
-  <p jhiTranslate="footer">This is your footer</p>
-</div>
+<footer class="bg-warning text-dark py-5 my-2">
+  <div class="container">
+    <!-- Logo Section -->
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <div class="footer-logo">
+          <i class="fas fa-heart text-danger fs-2 me-2"></i>
+          <span class="fs-3 fw-bold">Singles Meetup</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stylish Separator -->
+    <div class="row">
+      <div class="col-12 mb-4">
+        <div class="footer-separator">
+          <div class="separator-line"></div>
+               </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Who are we section -->
+      <div class="col-md-4 mb-4 text-center text-md-start">
+        <h5 class="fw-bold mb-3">Who are we</h5>
+        <p class="small">
+          We're passionate about creating meaningful connections between like-minded individuals. 
+          Our platform brings together singles in Dublin through carefully curated events and 
+          personality-matched dinners, fostering genuine relationships in a comfortable, 
+          welcoming environment.
+        </p>
+      </div>
+      
+      <!-- Navigation Links -->
+      <div class="col-md-4 mb-4 text-center text-md-start">
+        <h5 class="fw-bold mb-3">Quick Links</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <a href="javascript:void(0)" (click)="scrollToHowItWorks()" class="text-dark text-decoration-none">
+              <i class="fas fa-info-circle me-2"></i>How It Works
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="javascript:void(0)" (click)="scrollToEvents()" class="text-dark text-decoration-none">
+              <i class="fas fa-calendar-alt me-2"></i>View Events
+            </a>
+          </li>
+          <li class="mb-2" *ngIf="account">
+            <a routerLink="/my-tickets" class="text-dark text-decoration-none">
+              <i class="fas fa-ticket-alt me-2"></i>My Tickets
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Brand and Copyright -->
+      <div class="col-md-4 mb-4 text-center text-md-start">
+        <h5 class="fw-bold mb-3">Contact</h5>
+        <p class="mb-2 small">
+          <i class="fas fa-map-marker-alt me-2"></i>Dublin, Ireland
+        </p>
+        <p class="mb-3 small">
+          <i class="fas fa-envelope me-2"></i>hello&#64;singlesmeetup.ie
+        </p>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div class="row">
+      <div class="col-12">
+        <hr class="my-4 border-dark">
+        <p class="text-center mb-0 small">
+          © {{ currentYear }} Singles Meetup. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
