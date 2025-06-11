@@ -1,4 +1,4 @@
-<div class="container py-4">
+<div class="container py-4" style="min-height: 100vh;">
   <div class="mx-auto" style="max-width: 400px;">
     
     <!-- Test Already Completed Message -->
@@ -26,21 +26,22 @@
 
     <!-- Regular Questionnaire -->
     <div *ngIf="!testAlreadyCompleted">
-      <div class="mb-3">
-      <div class="progress" style="height: 0.5rem;">
-        <div
-          class="progress-bar bg-info"
-          role="progressbar"
-          [style.width.%]="((currentStep + 1) / questions.length) * 100"
-          [attr.aria-valuenow]="((currentStep + 1) / questions.length) * 100"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
+      <!-- Progress Bar - Fixed at top -->
+      <div class="mb-4 sticky-top bg-white py-2" style="top: 0; z-index: 100;">
+        <div class="progress" style="height: 0.75rem;">
+          <div
+            class="progress-bar bg-info"
+            role="progressbar"
+            [style.width.%]="((currentStep + 1) / questions.length) * 100"
+            [attr.aria-valuenow]="((currentStep + 1) / questions.length) * 100"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+          </div>
         </div>
       </div>
-    </div>
 
-    <div *ngIf="currentQuestion" class="mt-4">
+    <div *ngIf="currentQuestion" class="mt-3" style="padding-top: 2rem;">
       <div class="fw-bold fs-4 text-center mb-4" [innerHTML]="formatQuestionText(currentQuestion?.questionText || '')"></div>
 
       <!-- SINGLE_CHOICE -->
@@ -84,12 +85,92 @@
         <input type="date" class="form-control form-control-lg" [(ngModel)]="answers[currentQuestion.id]" />
       </div>
 
-      <!-- AUTOCOMPLETE_INPUT -->
-      <div *ngIf="currentQuestion.questionType === 'AUTOCOMPLETE_INPUT'">
-        <input type="text" class="form-control form-control-lg" [(ngModel)]="answers[currentQuestion.id]" placeholder="Start typing..." list="autocompleteOptions" />
-        <datalist id="autocompleteOptions">
-          <option *ngFor="let opt of currentQuestion.options" [value]="opt.optionText"></option>
-        </datalist>
+              <!-- COUNTRY_SELECTION -->
+        <div *ngIf="currentQuestion.questionType === 'COUNTRY_SELECTION'">
+        <div class="position-relative">
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            [(ngModel)]="answers[currentQuestion.id]" 
+            (input)="onLocationInput($event)"
+            placeholder="Start typing a country name..." 
+            autocomplete="off" />
+          
+          <!-- Custom dropdown for filtered countries -->
+          <div *ngIf="filteredCountries.length > 0" 
+               class="position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow-sm" 
+               style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+                         <div *ngFor="let country of filteredCountries" 
+                  class="px-3 py-2 border-bottom"
+                  (click)="selectCountry(country)"
+                  style="cursor: pointer;"
+                  (mouseenter)="onCountryHover($event, true)"
+                  (mouseleave)="onCountryHover($event, false)">
+               {{ country }}
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOB_SELECTION -->
+      <div *ngIf="currentQuestion.questionType === 'JOB_SELECTION'">
+        <div class="position-relative">
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            [(ngModel)]="answers[currentQuestion.id]" 
+            (input)="onJobInput($event)"
+            placeholder="Start typing your job title..." 
+            autocomplete="off" />
+          
+          <!-- Custom dropdown for filtered jobs -->
+          <div *ngIf="filteredJobs.length > 0" 
+               class="position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow-sm" 
+               style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+            <div *ngFor="let job of filteredJobs" 
+                 class="px-3 py-2 border-bottom"
+                 (click)="selectJob(job)"
+                 style="cursor: pointer;"
+                 (mouseenter)="onJobHover($event, true)"
+                 (mouseleave)="onJobHover($event, false)">
+              {{ job }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONE_TO_FIVE -->
+      <div *ngIf="currentQuestion.questionType === 'ONE_TO_FIVE'" [attr.data-question-id]="currentQuestion.id">
+        <div class="d-flex flex-column align-items-center">
+          <!-- Rating Scale with Labels -->
+          <div class="d-flex align-items-center justify-content-center w-100 mb-3 px-2">
+            <!-- First extreme label -->
+            <div class="text-muted text-center me-2" style="flex: 0 0 60px; font-size: 0.75rem; line-height: 1.1;">
+              {{ getFirstExtremeLabel(currentQuestion) }}
+            </div>
+            
+            <!-- Number buttons 1-5 -->
+            <div class="d-flex gap-1 justify-content-center mx-2" [attr.data-question]="currentQuestion.id">
+              <button
+                *ngFor="let num of [1,2,3,4,5]; trackBy: trackByNumber"
+                class="btn rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; font-weight: bold; font-size: 0.9rem; transition: none !important;"
+                [class.btn-warning]="getCurrentAnswer() === num"
+                [class.btn-outline-warning]="getCurrentAnswer() !== num"
+                [class.text-white]="getCurrentAnswer() === num"
+                [class.text-dark]="getCurrentAnswer() !== num"
+                [attr.data-selected]="getCurrentAnswer() === num"
+                (click)="selectSingleChoice(currentQuestion.id, num)">
+                {{ num }}
+              </button>
+            </div>
+            
+            <!-- Second extreme label -->
+            <div class="text-muted text-center ms-2" style="flex: 0 0 60px; font-size: 0.75rem; line-height: 1.1;">
+              {{ getSecondExtremeLabel(currentQuestion) }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -107,4 +188,7 @@
     </div>
     </div> <!-- End Regular Questionnaire -->
   </div>
+  
+  <!-- Spacer to push footer below the fold -->
+  <div style="height: 30vh;"></div>
 </div>

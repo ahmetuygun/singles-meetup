@@ -7,7 +7,10 @@
       "TEXT_INPUT": "TEXT_INPUT",
       "NUMBER_INPUT": "NUMBER_INPUT",
       "DATE_INPUT": "DATE_INPUT",
-      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT"
+      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT",
+      "COUNTRY_SELECTION": "Länderauswahl",
+      "JOB_SELECTION": "Berufsauswahl",
+      "ONE_TO_FIVE": "Bewertungsskala (1-5)"
     }
   }
 }

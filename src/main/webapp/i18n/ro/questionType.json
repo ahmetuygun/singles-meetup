@@ -7,7 +7,10 @@
       "TEXT_INPUT": "TEXT_INPUT",
       "NUMBER_INPUT": "NUMBER_INPUT",
       "DATE_INPUT": "DATE_INPUT",
-      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT"
+      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT",
+      "COUNTRY_SELECTION": "Selecția Țării",
+      "JOB_SELECTION": "Selecția Locului de Muncă",
+      "ONE_TO_FIVE": "Scală de Evaluare (1-5)"
     }
   }
 }

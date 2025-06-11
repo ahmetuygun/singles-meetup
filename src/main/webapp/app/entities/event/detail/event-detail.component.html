@@ -1,11 +1,13 @@
 @if (event(); as eventRef) {
   <div class="container py-4">
-    <!-- Back Button -->
-    <div class="mb-4">
-      <button type="button" class="btn btn-light rounded-circle p-2" (click)="previousState()" style="width: 40px; height: 40px;">
-        <fa-icon icon="times" class="text-dark"></fa-icon>
-      </button>
-    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <!-- Back Button -->
+        <div class="mb-4">
+          <button type="button" class="btn btn-light rounded-circle p-2" (click)="previousState()" style="width: 40px; height: 40px;">
+            <fa-icon icon="times" class="text-dark"></fa-icon>
+          </button>
+        </div>
 
     <!-- Event Image -->
     <div class="mb-4">
@@ -118,8 +120,10 @@
       </div>
     </div>
 
-    <jhi-alert-error />
-    <jhi-alert />
+        <jhi-alert-error />
+        <jhi-alert />
+      </div>
+    </div>
   </div>
 
   <!-- QR Scanner Modal -->

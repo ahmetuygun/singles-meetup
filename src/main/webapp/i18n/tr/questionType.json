@@ -7,7 +7,10 @@
       "TEXT_INPUT": "TEXT_INPUT",
       "NUMBER_INPUT": "NUMBER_INPUT",
       "DATE_INPUT": "DATE_INPUT",
-      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT"
+      "AUTOCOMPLETE_INPUT": "AUTOCOMPLETE_INPUT",
+      "COUNTRY_SELECTION": "Ülke Seçimi",
+      "JOB_SELECTION": "Meslek Seçimi",
+      "ONE_TO_FIVE": "Derecelendirme Ölçeği (1-5)"
     }
   }
 }

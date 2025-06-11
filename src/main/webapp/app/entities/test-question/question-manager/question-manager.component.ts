@@ -251,6 +251,8 @@ export class QuestionManagerComponent implements OnInit {
       case 'NUMBER_INPUT': return 'Number Input';
       case 'DATE_INPUT': return 'Date Input';
       case 'AUTOCOMPLETE_INPUT': return 'Autocomplete';
+      case 'COUNTRY_SELECTION': return 'Country Selection';
+      case 'JOB_SELECTION': return 'Job Selection';
       default: return type;
     }
   }

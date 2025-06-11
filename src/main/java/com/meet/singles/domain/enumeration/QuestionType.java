@@ -10,4 +10,7 @@ public enum QuestionType {
     NUMBER_INPUT,
     DATE_INPUT,
     AUTOCOMPLETE_INPUT,
+    COUNTRY_SELECTION,
+    JOB_SELECTION,
+    ONE_TO_FIVE,
 }

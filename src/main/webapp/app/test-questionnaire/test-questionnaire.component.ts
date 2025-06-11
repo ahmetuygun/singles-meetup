@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { LoginService } from 'app/login/login.service';
 import { PersonProfileService } from 'app/entities/person-profile/service/person-profile.service';
 import { AccountService } from 'app/core/auth/account.service';
+import { COUNTRIES } from './countries';
+import { JOBS } from './jobs';
 
 interface TestAnswerOption {
   id: number;
@@ -36,6 +38,9 @@ export class TestQuestionnaireComponent implements OnInit {
   answers: any = {};
   testAlreadyCompleted = false;
   isSubmitting = false;
+  countries = COUNTRIES;
+  filteredCountries: string[] = [];
+  filteredJobs: string[] = [];
 
   constructor(
     private http: HttpClient, 
@@ -65,6 +70,10 @@ export class TestQuestionnaireComponent implements OnInit {
 
   get currentQuestion(): TestQuestion | undefined {
     return this.questions[this.currentStep];
+  }
+
+  getCurrentAnswer(): number | undefined {
+    return this.currentQuestion ? this.answers[this.currentQuestion.id] : undefined;
   }
 
   next() {
@@ -142,7 +151,8 @@ export class TestQuestionnaireComponent implements OnInit {
   }
 
   selectSingleChoice(questionId: number, value: number): void {
-    this.answers[questionId] = value;
+    // Create a new object to trigger change detection
+    this.answers = { ...this.answers, [questionId]: value };
     if (!this.isLastStep()) {
       setTimeout(() => this.next(), 300);
     }
@@ -158,5 +168,75 @@ export class TestQuestionnaireComponent implements OnInit {
 
   retakeTest(): void {
     this.testAlreadyCompleted = false;
+  }
+
+  getFirstExtremeLabel(question: TestQuestion): string {
+    // Find the option with value 1 (first extreme)
+    const firstOption = question.options?.find(opt => opt.value === 1);
+    return firstOption?.optionText || '';
+  }
+
+  getSecondExtremeLabel(question: TestQuestion): string {
+    // Find the option with value 2 (second extreme)
+    const secondOption = question.options?.find(opt => opt.value === 2);
+    return secondOption?.optionText || '';
+  }
+
+  isNumberSelected(questionId: number, num: number): boolean {
+    return this.answers[questionId] === num;
+  }
+
+  trackByNumber(index: number, num: number): number {
+    return num;
+  }
+
+  onLocationInput(event: any): void {
+    const value = event.target.value.toLowerCase();
+    if (value.length > 0) {
+      this.filteredCountries = this.countries
+        .filter(country => country.toLowerCase().includes(value))
+        .slice(0, 10); // Limit to 10 suggestions
+    } else {
+      this.filteredCountries = [];
+    }
+  }
+
+  selectCountry(country: string): void {
+    if (this.currentQuestion) {
+      this.answers[this.currentQuestion.id] = country;
+      this.filteredCountries = [];
+    }
+  }
+
+  onCountryHover(event: Event, isEnter: boolean): void {
+    const target = event.target as HTMLElement;
+    if (target) {
+      target.style.backgroundColor = isEnter ? '#f8f9fa' : 'white';
+    }
+  }
+
+  onJobInput(event: any): void {
+    const value = event.target.value;
+    if (value && value.length > 0) {
+      this.filteredJobs = JOBS.filter(job => 
+        job.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 10); // Limit to 10 results
+    } else {
+      this.filteredJobs = [];
+    }
+  }
+
+  selectJob(job: string): void {
+    if (this.currentQuestion) {
+      this.answers[this.currentQuestion.id] = job;
+      this.filteredJobs = [];
+    }
+  }
+
+  onJobHover(event: Event, isEnter: boolean): void {
+    const target = event.target as HTMLElement;
+    if (target) {
+      target.style.backgroundColor = isEnter ? '#f8f9fa' : 'white';
+    }
   }
 } 
