@@ -208,3 +208,56 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   }
 }
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* ==========================================================================
+   Solid Shadow Circle Button
+   ========================================================================== */
+
+.solid-shadow-circle {
+  /* Shape and Size */
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  
+  /* Core Style */
+  background: #ffc700 !important;
+  color: #000 !important;
+  border: 2px solid #000 !important;
+  box-shadow: 4px 4px 0px #000;
+  
+  /* Font and Alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  
+  /* Behavior */
+  cursor: pointer;
+  user-select: none; /* Disables text selection */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  -webkit-tap-highlight-color: transparent; /* Disables tap highlight on mobile */
+}
+
+/* "Pressed" state when button is selected or active */
+.solid-shadow-circle.selected,
+.solid-shadow-circle:active {
+  background: #eab600 !important; /* Darker shade for selected state */
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000;
+}
+
+/* Ensure no hover effects on mobile where it can get "stuck" */
+@media (hover: none) {
+  .solid-shadow-circle:hover {
+    background: #ffc700 !important;
+    transform: none;
+    box-shadow: 4px 4px 0px #000;
+  }
+
+  .solid-shadow-circle.selected:hover {
+    background: #eab600 !important;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+  }
+}

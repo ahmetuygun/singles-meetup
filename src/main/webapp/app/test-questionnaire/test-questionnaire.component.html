@@ -150,19 +150,13 @@
             </div>
             
             <!-- Number buttons 1-5 -->
-            <div class="d-flex gap-1 justify-content-center mx-2" [attr.data-question]="currentQuestion.id">
-              <button
-                *ngFor="let num of [1,2,3,4,5]; trackBy: trackByNumber"
-                class="btn rounded-circle d-flex align-items-center justify-content-center"
-                style="width: 40px; height: 40px; font-weight: bold; font-size: 0.9rem; transition: none !important;"
-                [class.btn-warning]="getCurrentAnswer() === num"
-                [class.btn-outline-warning]="getCurrentAnswer() !== num"
-                [class.text-white]="getCurrentAnswer() === num"
-                [class.text-dark]="getCurrentAnswer() !== num"
-                [attr.data-selected]="getCurrentAnswer() === num"
-                (click)="selectSingleChoice(currentQuestion.id, num)">
-                {{ num }}
-              </button>
+            <div class="d-flex gap-2 justify-content-center mx-2" [attr.data-question]="currentQuestion.id">
+                <div *ngFor="let num of [1,2,3,4,5]; trackBy: trackByNumber"
+                    class="solid-shadow-circle"
+                    [class.selected]="getCurrentAnswer(num)"
+                    (click)="selectSingleChoice(currentQuestion.id, num)">
+                    {{ num }}
+                </div>
             </div>
             
             <!-- Second extreme label -->

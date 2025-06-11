@@ -72,8 +72,17 @@ export class TestQuestionnaireComponent implements OnInit {
     return this.questions[this.currentStep];
   }
 
-  getCurrentAnswer(): number | undefined {
-    return this.currentQuestion ? this.answers[this.currentQuestion.id] : undefined;
+  getCurrentAnswer(num: number): boolean {
+    if (!this.currentQuestion) {
+      return false;
+    }
+    const isSelected = this.answers[this.currentQuestion.id] === num;
+    // Keep a simplified log to confirm the check
+    console.log(
+      `Check: Is button ${num} selected for Question ID ${this.currentQuestion.id}?`,
+      isSelected
+    );
+    return isSelected;
   }
 
   next() {
