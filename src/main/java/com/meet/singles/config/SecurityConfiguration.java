@@ -98,6 +98,7 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(HttpMethod.GET, "/api/test-answer-options").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/test-questions/with-options").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/questionnaire-answers/profile/**").permitAll()
                     .requestMatchers(mvc.pattern("/api/**")).authenticated()
                     .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()

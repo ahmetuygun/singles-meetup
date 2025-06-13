@@ -15,6 +15,8 @@ import com.meet.singles.security.SecurityUtils;
 import jakarta.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -641,5 +643,128 @@ public class QuestionnaireAnswersResource {
 
         log.info("Successfully saved questionnaire answers (legacy) for user: {} and marked test as completed", userLogin);
         return ResponseEntity.ok(Map.of("message", "Questionnaire answers saved successfully"));
+    }
+
+    /**
+     * {@code GET  /questionnaire-answers/profile/{profileId}} : Get all questions with options and answers for a specific profile.
+     * This endpoint is useful for testing and debugging purposes.
+     *
+     * @param profileId the profile ID to get answers for
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the questions with answers
+     */
+    @GetMapping("/questionnaire-answers/profile/{profileId}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> getQuestionnaireAnswersForProfile(@PathVariable Long profileId) {
+        log.debug("REST request to get questionnaire answers for profile: {}", profileId);
+
+        // Check if profile exists
+        Optional<PersonProfile> profileOpt = personProfileRepository.findById(profileId);
+        if (profileOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        PersonProfile profile = profileOpt.get();
+        
+        // Get all questions with their options
+        List<TestQuestion> allQuestions = testQuestionRepository.findAllWithOptions();
+        
+        // Get all answers for this profile
+        List<UserTestAnswer> userAnswers = userTestAnswerRepository.findByPersonProfile(profile);
+        Map<Long, UserTestAnswer> answerMap = userAnswers.stream()
+            .collect(java.util.stream.Collectors.toMap(
+                answer -> answer.getQuestion().getId(),
+                answer -> answer
+            ));
+        
+        // Build the response
+        List<Map<String, Object>> questionsWithAnswers = new ArrayList<>();
+        
+        for (TestQuestion question : allQuestions) {
+            Map<String, Object> questionData = new HashMap<>();
+            questionData.put("questionId", question.getId());
+            questionData.put("questionText", question.getQuestionText());
+            questionData.put("questionType", question.getQuestionType());
+            questionData.put("category", question.getCategory());
+            questionData.put("stepNumber", question.getStepNumber());
+            questionData.put("isRequired", question.getIsRequired());
+            questionData.put("editable", question.getEditable());
+            questionData.put("language", question.getLanguage());
+            
+            // Add options
+            List<Map<String, Object>> options = new ArrayList<>();
+            if (question.getOptions() != null) {
+                for (TestAnswerOption option : question.getOptions()) {
+                    Map<String, Object> optionData = new HashMap<>();
+                    optionData.put("id", option.getId());
+                    optionData.put("optionText", option.getOptionText());
+                    optionData.put("value", option.getValue());
+                    options.add(optionData);
+                }
+            }
+            questionData.put("options", options);
+            
+            // Add answer if exists
+            UserTestAnswer userAnswer = answerMap.get(question.getId());
+            if (userAnswer != null) {
+                Map<String, Object> answerData = new HashMap<>();
+                answerData.put("answerId", userAnswer.getId());
+                answerData.put("answerValue", userAnswer.getAnswerValue());
+                answerData.put("answerText", userAnswer.getAnswerText());
+                answerData.put("timestamp", userAnswer.getTimestamp());
+                questionData.put("answer", answerData);
+            } else {
+                questionData.put("answer", null);
+            }
+            
+            questionsWithAnswers.add(questionData);
+        }
+        
+        // Build profile information
+        Map<String, Object> profileData = new HashMap<>();
+        profileData.put("profileId", profile.getId());
+        profileData.put("firstName", profile.getFirstName());
+        profileData.put("lastName", profile.getLastName());
+        profileData.put("dob", profile.getDob());
+        profileData.put("gender", profile.getGender());
+        profileData.put("testCompleted", profile.getTestCompleted());
+        if (profile.getInternalUser() != null) {
+            profileData.put("userLogin", profile.getInternalUser().getLogin());
+            profileData.put("userEmail", profile.getInternalUser().getEmail());
+        }
+        
+        // Build final response
+        Map<String, Object> response = new HashMap<>();
+        response.put("profile", profileData);
+        response.put("questions", questionsWithAnswers);
+        response.put("totalQuestions", allQuestions.size());
+        response.put("answeredQuestions", userAnswers.size());
+        response.put("generatedAt", java.time.Instant.now());
+        
+        log.debug("Generated questionnaire data for profile {}: {} questions, {} answers", 
+                 profileId, allQuestions.size(), userAnswers.size());
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * {@code GET  /questionnaire-answers/profile/user/{userLogin}} : Get all questions with options and answers for a specific user login.
+     * This endpoint is useful for testing and debugging purposes.
+     *
+     * @param userLogin the user login to get answers for
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the questions with answers
+     */
+    @GetMapping("/questionnaire-answers/profile/user/{userLogin}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> getQuestionnaireAnswersForUser(@PathVariable String userLogin) {
+        log.debug("REST request to get questionnaire answers for user: {}", userLogin);
+
+        // Find profile by user login
+        Optional<PersonProfile> profileOpt = personProfileRepository.findByInternalUserLogin(userLogin);
+        if (profileOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Delegate to the profile ID endpoint
+        return getQuestionnaireAnswersForProfile(profileOpt.get().getId());
     }
 }
