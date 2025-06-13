@@ -13,11 +13,18 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.Cache;
 
 /**
  * REST controller for managing {@link com.meet.singles.domain.TestQuestion}.
@@ -36,8 +43,11 @@ public class TestQuestionResource {
 
     private final TestQuestionRepository testQuestionRepository;
 
-    public TestQuestionResource(TestQuestionRepository testQuestionRepository) {
+    private final CacheManager cacheManager;
+
+    public TestQuestionResource(TestQuestionRepository testQuestionRepository, CacheManager cacheManager) {
         this.testQuestionRepository = testQuestionRepository;
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -189,14 +199,46 @@ public class TestQuestionResource {
     }
 
     /**
-     * {@code GET  /test-questions/with-options} : get all the testQuestions with their answer options.
+     * {@code GET  /test-questions/with-options} : get all the testQuestions with their options.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of testQuestions with their options in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of testQuestions in body.
      */
     @GetMapping("/with-options")
-    public List<TestQuestion> getAllTestQuestionsWithOptions() {
-        LOG.debug("REST request to get all TestQuestions with their options");
-        return testQuestionRepository.findAllWithOptions();
+    public ResponseEntity<List<TestQuestion>> getAllTestQuestionsWithOptions() {
+        LOG.debug("REST request to get all TestQuestions with options");
+        
+        // Clear potentially stale cache entries
+        clearTestQuestionCaches();
+        
+        List<TestQuestion> questions = testQuestionRepository.findAllWithOptions();
+        return ResponseEntity.ok().body(questions);
+    }
+
+    private void clearTestQuestionCaches() {
+        try {
+            // Clear TestQuestion cache
+            Cache testQuestionCache = cacheManager.getCache("com.meet.singles.domain.TestQuestion");
+            if (testQuestionCache != null) {
+                testQuestionCache.clear();
+                LOG.debug("Cleared TestQuestion cache");
+            }
+            
+            // Clear UserTestAnswer cache
+            Cache userTestAnswerCache = cacheManager.getCache("com.meet.singles.domain.UserTestAnswer");
+            if (userTestAnswerCache != null) {
+                userTestAnswerCache.clear();
+                LOG.debug("Cleared UserTestAnswer cache");
+            }
+            
+            // Clear TestAnswerOption cache
+            Cache testAnswerOptionCache = cacheManager.getCache("com.meet.singles.domain.TestAnswerOption");
+            if (testAnswerOptionCache != null) {
+                testAnswerOptionCache.clear();
+                LOG.debug("Cleared TestAnswerOption cache");
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to clear caches: {}", e.getMessage());
+        }
     }
 
     /**

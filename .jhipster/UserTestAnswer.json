@@ -6,12 +6,15 @@
   "fields": [
     {
       "fieldName": "answerValue",
-      "fieldType": "Integer",
-      "fieldValidateRules": ["required"]
+      "fieldType": "Integer"
     },
     {
       "fieldName": "timestamp",
       "fieldType": "Instant"
+    },
+    {
+      "fieldName": "answerText",
+      "fieldType": "String"
     }
   ],
   "name": "UserTestAnswer",

@@ -2,6 +2,7 @@ package com.meet.singles.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.meet.singles.domain.enumeration.QuestionType;
+import com.meet.singles.domain.enumeration.CategoryType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -43,20 +44,24 @@ public class TestQuestion implements Serializable {
     @Column(name = "is_required", nullable = false)
     private Boolean isRequired;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private String category;
+    private CategoryType category;
 
     @NotNull
     @Column(name = "language", nullable = false)
     private String language;
+
+    @NotNull
+    @Column(name = "editable", nullable = false)
+    private Boolean editable = true;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "selectedAnswers", "question" }, allowSetters = true)
     private Set<TestAnswerOption> options = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "question")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
     @JsonIgnoreProperties(value = { "question", "personProfile", "answer" }, allowSetters = true)
     private Set<UserTestAnswer> answers = new HashSet<>();
 
@@ -127,16 +132,16 @@ public class TestQuestion implements Serializable {
         this.isRequired = isRequired;
     }
 
-    public String getCategory() {
+    public CategoryType getCategory() {
         return this.category;
     }
 
-    public TestQuestion category(String category) {
+    public TestQuestion category(CategoryType category) {
         this.setCategory(category);
         return this;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(CategoryType category) {
         this.category = category;
     }
 
@@ -151,6 +156,19 @@ public class TestQuestion implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public Boolean getEditable() {
+        return this.editable;
+    }
+
+    public TestQuestion editable(Boolean editable) {
+        this.setEditable(editable);
+        return this;
+    }
+
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
     }
 
     public Set<TestAnswerOption> getOptions() {
@@ -245,6 +263,7 @@ public class TestQuestion implements Serializable {
             ", isRequired='" + getIsRequired() + "'" +
             ", category='" + getCategory() + "'" +
             ", language='" + getLanguage() + "'" +
+            ", editable='" + getEditable() + "'" +
             "}";
     }
 }

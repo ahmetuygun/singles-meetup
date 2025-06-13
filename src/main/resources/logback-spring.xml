@@ -79,4 +79,7 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
+    <!-- Questionnaire debugging -->
+    <logger name="com.meet.singles.web.rest.QuestionnaireAnswersResource" level="DEBUG"/>
+
 </configuration>

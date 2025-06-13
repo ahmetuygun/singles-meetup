@@ -172,10 +172,10 @@
       <button class="btn btn-danger" (click)="prev()" [disabled]="currentStep === 0">
         <i class="bi bi-arrow-left"></i> Previous
       </button>
-      <button *ngIf="!isLastStep()" class="btn btn-primary px-4" (click)="next()" [disabled]="!currentQuestion || !isAnswered(currentQuestion)">
-        Next <i class="bi bi-arrow-right"></i>
+      <button *ngIf="!isLastStep()" class="btn btn-primary px-4" (click)="next()" [disabled]="currentQuestion?.questionType !== 'INFO' && (!currentQuestion || !isAnswered(currentQuestion))">
+        {{ currentQuestion?.questionType === 'INFO' ? 'Continue' : 'Next' }} <i class="bi bi-arrow-right"></i>
       </button>
-      <button *ngIf="isLastStep()" class="btn btn-success px-4" (click)="submit()" [disabled]="!currentQuestion || !isAnswered(currentQuestion) || isSubmitting">
+      <button *ngIf="isLastStep()" class="btn btn-success px-4" (click)="submit()" [disabled]="currentQuestion?.questionType !== 'INFO' && (!currentQuestion || !isAnswered(currentQuestion) || isSubmitting)">
         <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
         {{ isSubmitting ? 'Submitting...' : 'Submit' }}
       </button>
@@ -186,3 +186,19 @@
   <!-- Spacer to push footer below the fold -->
   <div style="height: 30vh;"></div>
 </div>
+
+<!-- Retake Confirmation Modal -->
+<!-- Retake Modal Template -->
+<ng-template #retakeModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Retake Test</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
+  </div>
+  <div class="modal-body">
+    <p>You have already taken the test before. Do you want to delete the old one and save a new one?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.close('retake')">Yes, retake</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+  </div>
+</ng-template>

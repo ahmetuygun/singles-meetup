@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the editable column to the test_question table.
+    -->
+    <changeSet id="20250613000003-1" author="jhipster">
+        <addColumn tableName="test_question">
+            <column name="editable" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!--
+        Update identity category questions to be non-editable
+    -->
+    <changeSet id="20250613000003-2" author="jhipster">
+        <update tableName="test_question">
+            <column name="editable" valueBoolean="false"/>
+            <where>category IN ('USERNAME', 'DOB', 'GENDER')</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog> 

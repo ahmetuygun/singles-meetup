@@ -25,12 +25,14 @@ public class UserTestAnswer implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Column(name = "answer_value", nullable = false)
+    @Column(name = "answer_value")
     private Integer answerValue;
 
     @Column(name = "timestamp")
     private Instant timestamp;
+
+    @Column(name = "answer_text")
+    private String answerText;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "options", "answers" }, allowSetters = true)
@@ -83,6 +85,19 @@ public class UserTestAnswer implements Serializable {
 
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getAnswerText() {
+        return this.answerText;
+    }
+
+    public void setAnswerText(String answerText) {
+        this.answerText = answerText;
+    }
+
+    public UserTestAnswer answerText(String answerText) {
+        this.setAnswerText(answerText);
+        return this;
     }
 
     public TestQuestion getQuestion() {
@@ -150,6 +165,7 @@ public class UserTestAnswer implements Serializable {
             "id=" + getId() +
             ", answerValue=" + getAnswerValue() +
             ", timestamp='" + getTimestamp() + "'" +
+            ", answerText='" + getAnswerText() + "'" +
             "}";
     }
 }

@@ -192,13 +192,13 @@ public class PersonProfileResource {
     }
 
     /**
-     * {@code GET  /person-profiles/current} : get or create the current user's profile.
+     * {@code GET  /person-profiles/current} : get the current user's profile.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the personProfile.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the personProfile, or {@code 404 (Not Found)} if no profile exists.
      */
     @GetMapping("/current")
     public ResponseEntity<PersonProfile> getCurrentUserProfile() {
-        LOG.debug("REST request to get or create current user's PersonProfile");
+        LOG.debug("REST request to get current user's PersonProfile");
         
         String userLogin = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new RuntimeException("Current user login not found"));
@@ -210,28 +210,9 @@ public class PersonProfileResource {
             return ResponseEntity.ok(existingProfile.get());
         }
         
-        // Create new profile if it doesn't exist
-        Optional<User> user = userRepository.findOneByLogin(userLogin);
-        if (user.isEmpty()) {
-            throw new RuntimeException("User not found: " + userLogin);
-        }
-        
-        PersonProfile newProfile = new PersonProfile();
-        newProfile.setInternalUser(user.get());
-        // Set basic info from user account if available, with defaults for required fields
-        newProfile.setFirstName(user.get().getFirstName() != null && !user.get().getFirstName().isEmpty() 
-            ? user.get().getFirstName() : "User");
-        newProfile.setLastName(user.get().getLastName() != null && !user.get().getLastName().isEmpty() 
-            ? user.get().getLastName() : "User");
-        // Set default values for required fields
-        newProfile.setDob(java.time.LocalDate.of(1990, 1, 1)); // Default DOB
-        newProfile.setGender("Not specified"); // Default gender
-        newProfile.setTestCompleted(false); // Default test not completed
-        
-        PersonProfile savedProfile = personProfileRepository.save(newProfile);
-        LOG.debug("Created new PersonProfile for user: {}", userLogin);
-        
-        return ResponseEntity.ok(savedProfile);
+        // Return 404 if no profile exists - profile should be created through questionnaire submission
+        LOG.debug("No PersonProfile found for user: {}", userLogin);
+        return ResponseEntity.notFound().build();
     }
 
     /**

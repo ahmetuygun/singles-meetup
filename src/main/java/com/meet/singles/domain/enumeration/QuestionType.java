@@ -13,4 +13,5 @@ public enum QuestionType {
     COUNTRY_SELECTION,
     JOB_SELECTION,
     ONE_TO_FIVE,
+    INFO,
 }

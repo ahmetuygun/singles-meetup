@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginService } from 'app/login/login.service';
 import { PersonProfileService } from 'app/entities/person-profile/service/person-profile.service';
 import { AccountService } from 'app/core/auth/account.service';
@@ -23,16 +24,39 @@ interface TestQuestion {
   isRequired: boolean;
   category: string;
   language: string;
+  editable: boolean;
   options: TestAnswerOption[];
+  answers: any[];
+}
+
+// DTOs for the new API
+interface OptionDTO {
+  id: number;
+  optionText: string;
+  value: number;
+}
+
+interface QuestionAnswerDTO {
+  questionId: number;
+  questionText: string;
+  questionType: string;
+  category: string;
+  options: OptionDTO[];
+  answerValue: any;
+  editable: boolean;
+}
+
+interface QuestionnaireSubmissionDTO {
+  questions: QuestionAnswerDTO[];
 }
 
 @Component({
   selector: 'app-test-questionnaire',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, HttpClientModule, FormsModule, NgbModule],
   templateUrl: './test-questionnaire.component.html',
 })
-export class TestQuestionnaireComponent implements OnInit {
+export class TestQuestionnaireComponent implements OnInit, AfterViewInit {
   questions: TestQuestion[] = [];
   currentStep = 0;
   answers: any = {};
@@ -41,6 +65,9 @@ export class TestQuestionnaireComponent implements OnInit {
   countries = COUNTRIES;
   filteredCountries: string[] = [];
   filteredJobs: string[] = [];
+  @ViewChild('retakeModal') retakeModal?: TemplateRef<any>;
+  private retakeRequested = false;
+  private modalService = inject(NgbModal);
 
   constructor(
     private http: HttpClient, 
@@ -68,8 +95,12 @@ export class TestQuestionnaireComponent implements OnInit {
     });
   }
 
-  get currentQuestion(): TestQuestion | undefined {
-    return this.questions[this.currentStep];
+  ngAfterViewInit(): void {
+    console.log('ngAfterViewInit - retakeModal template ref:', this.retakeModal);
+  }
+
+  get currentQuestion(): TestQuestion | null {
+    return this.questions[this.currentStep] || null;
   }
 
   getCurrentAnswer(num: number): boolean {
@@ -77,11 +108,10 @@ export class TestQuestionnaireComponent implements OnInit {
       return false;
     }
     const isSelected = this.answers[this.currentQuestion.id] === num;
-    // Keep a simplified log to confirm the check
-    console.log(
-      `Check: Is button ${num} selected for Question ID ${this.currentQuestion.id}?`,
-      isSelected
-    );
+    // console.log(
+    //   `Check: Is button ${num} selected for Question ID ${this.currentQuestion.id}?`,
+    //   isSelected
+    // );
     return isSelected;
   }
 
@@ -99,29 +129,67 @@ export class TestQuestionnaireComponent implements OnInit {
 
   submit() {
     if (this.isSubmitting) return; // Prevent multiple submissions
-    
     this.isSubmitting = true;
-    
-    // Check if user is already authenticated
+
     this.accountService.identity().subscribe(account => {
       if (account) {
-        // User is authenticated, save answers directly
-        console.info('User is authenticated, saving questionnaire answers directly:', this.answers);
-        this.saveAnswersDirectly();
+        // Check if user has completed test before (either from initial load or retake scenario)
+        this.personProfileService.getCurrentUserProfile().subscribe(profileResponse => {
+          const profile = profileResponse.body;
+          console.log('Submit - Profile testCompleted:', profile?.testCompleted);
+          console.log('Submit - retakeRequested:', this.retakeRequested);
+          
+          if (profile?.testCompleted && !this.retakeRequested) {
+            // Show Bootstrap modal for retake confirmation
+            console.log('Showing retake modal');
+            this.openRetakeModal();
+          } else {
+            // Save answers directly (either first time or confirmed retake)
+            console.log('Saving answers directly with retake:', this.retakeRequested);
+            this.saveAnswersDirectly(this.retakeRequested); // retake=true if retakeRequested
+          }
+        });
       } else {
-        // User is not authenticated, save to localStorage and redirect to login
-        localStorage.setItem('questionnaireAnswers', JSON.stringify(this.answers));
-        console.info('User not authenticated, saving to localStorage and redirecting to login:', this.answers);
+        // Store answers in new format for after login
+        const submissionData = this.prepareSubmissionData();
+        localStorage.setItem('questionnaireAnswers', JSON.stringify(submissionData));
         this.loginService.login();
       }
     });
   }
 
-  private saveAnswersDirectly(): void {
-    // Send answers directly to backend API
-    this.http.post('/api/questionnaire-answers', this.answers).subscribe({
+  private openRetakeModal(): void {
+    if (this.retakeModal) {
+      const modalRef = this.modalService.open(this.retakeModal, { centered: true });
+      modalRef.result.then((result) => {
+        console.log('Modal result:', result);
+        if (result === 'retake') {
+          this.retakeRequested = true;
+          this.saveAnswersDirectly(true); // retake=true
+        } else {
+          this.isSubmitting = false; // Reset if cancelled
+        }
+      }).catch((error) => {
+        console.log('Modal dismissed:', error);
+        this.isSubmitting = false; // Reset if dismissed
+      });
+    }
+  }
+
+  private saveAnswersDirectly(retake: boolean = false): void {
+    console.log('saveAnswersDirectly called with retake:', retake);
+    
+    // Prepare submission data with question details
+    const submissionData = this.prepareSubmissionData();
+    console.log('Submission data:', submissionData);
+    
+    // Use the new API endpoint
+    const url = retake ? '/api/questionnaire-answers-v2?retake=true' : '/api/questionnaire-answers-v2';
+    console.log('API URL:', url);
+    
+    this.http.post(url, submissionData).subscribe({
       next: (response) => {
-        console.info('Questionnaire answers saved successfully:', response);
+        console.log('Questionnaire answers saved successfully:', response);
         this.isSubmitting = false;
         // Redirect to questionnaire success page
         this.router.navigate(['/questionnaire-success']);
@@ -133,6 +201,35 @@ export class TestQuestionnaireComponent implements OnInit {
         alert('There was an error saving your responses. Please try again.');
       }
     });
+  }
+
+  private prepareSubmissionData(): QuestionnaireSubmissionDTO {
+    const questionAnswers: QuestionAnswerDTO[] = [];
+    
+    // Only include questions that have answers
+    for (const question of this.questions) {
+      const answerValue = this.answers[question.id];
+      if (answerValue !== undefined && answerValue !== null && answerValue !== '') {
+        // Convert options to DTO format
+        const optionDTOs: OptionDTO[] = question.options.map(option => ({
+          id: option.id,
+          optionText: option.optionText,
+          value: option.value
+        }));
+
+        questionAnswers.push({
+          questionId: question.id,
+          questionText: question.questionText,
+          questionType: question.questionType,
+          category: question.category,
+          options: optionDTOs,
+          answerValue: answerValue,
+          editable: question.editable
+        });
+      }
+    }
+
+    return { questions: questionAnswers };
   }
 
   toggleMultiChoice(questionId: number, value: number): void {
@@ -160,8 +257,8 @@ export class TestQuestionnaireComponent implements OnInit {
   }
 
   selectSingleChoice(questionId: number, value: number): void {
-    // Create a new object to trigger change detection
-    this.answers = { ...this.answers, [questionId]: value };
+    this.answers[questionId] = value;
+    // Auto-navigate to next question after a short delay (except on last step)
     if (!this.isLastStep()) {
       setTimeout(() => this.next(), 300);
     }
@@ -176,7 +273,11 @@ export class TestQuestionnaireComponent implements OnInit {
   }
 
   retakeTest(): void {
+    console.log('retakeTest called - setting flags');
     this.testAlreadyCompleted = false;
+    this.retakeRequested = true; // Mark that user wants to retake
+    console.log('testAlreadyCompleted:', this.testAlreadyCompleted);
+    console.log('retakeRequested:', this.retakeRequested);
   }
 
   getFirstExtremeLabel(question: TestQuestion): string {
@@ -214,6 +315,10 @@ export class TestQuestionnaireComponent implements OnInit {
     if (this.currentQuestion) {
       this.answers[this.currentQuestion.id] = country;
       this.filteredCountries = [];
+      // Auto-navigate to next question after a short delay (except on last step)
+      if (!this.isLastStep()) {
+        setTimeout(() => this.next(), 300);
+      }
     }
   }
 
@@ -239,6 +344,10 @@ export class TestQuestionnaireComponent implements OnInit {
     if (this.currentQuestion) {
       this.answers[this.currentQuestion.id] = job;
       this.filteredJobs = [];
+      // Auto-navigate to next question after a short delay (except on last step)
+      if (!this.isLastStep()) {
+        setTimeout(() => this.next(), 300);
+      }
     }
   }
 

@@ -7,6 +7,7 @@ export interface IUserTestAnswer {
   id: number;
   answerValue?: number | null;
   timestamp?: dayjs.Dayjs | null;
+  answerText?: string | null;
   question?: ITestQuestion | null;
   personProfile?: IPersonProfile | null;
   answer?: ITestAnswerOption | null;
