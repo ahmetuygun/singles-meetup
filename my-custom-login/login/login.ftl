@@ -46,6 +46,15 @@
     <!-- Title -->
     <h1 class="text-3xl font-bold mb-8 text-center text-black">Sign in</h1>
     
+    <!-- Error Messages -->
+    <#if message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
+      <div class="mb-6 p-4 rounded-lg <#if message.type = 'success'>bg-green-50 border border-green-200<#elseif message.type = 'warning'>bg-yellow-50 border border-yellow-200<#elseif message.type = 'error'>bg-red-50 border border-red-200<#else>bg-blue-50 border border-blue-200</#if>">
+        <p class="<#if message.type = 'success'>text-green-600<#elseif message.type = 'warning'>text-yellow-600<#elseif message.type = 'error'>text-red-600<#else>text-blue-600</#if> text-sm font-medium">
+          ${kcSanitize(message.summary)?no_esc}
+        </p>
+      </div>
+    </#if>
+    
     <!-- Login Form -->
     <form action="${url.loginAction}" method="post" class="space-y-6">
       <!-- Email Input -->
