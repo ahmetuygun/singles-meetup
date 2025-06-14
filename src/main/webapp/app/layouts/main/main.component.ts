@@ -1,7 +1,8 @@
 import { Component, OnInit, Renderer2, RendererFactory2, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
+import { filter } from 'rxjs/operators';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
@@ -31,6 +32,13 @@ export default class MainComponent implements OnInit {
   ngOnInit(): void {
     // try to log in automatically
     this.accountService.identity().subscribe();
+
+    // Scroll to top on route changes
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        window.scrollTo(0, 0);
+      });
 
     this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
       this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
