@@ -134,19 +134,28 @@ export class TestQuestionnaireComponent implements OnInit, AfterViewInit {
     this.accountService.identity().subscribe(account => {
       if (account) {
         // Check if user has completed test before (either from initial load or retake scenario)
-        this.personProfileService.getCurrentUserProfile().subscribe(profileResponse => {
-          const profile = profileResponse.body;
-          console.log('Submit - Profile testCompleted:', profile?.testCompleted);
-          console.log('Submit - retakeRequested:', this.retakeRequested);
-          
-          if (profile?.testCompleted && !this.retakeRequested) {
-            // Show Bootstrap modal for retake confirmation
-            console.log('Showing retake modal');
-            this.openRetakeModal();
-          } else {
-            // Save answers directly (either first time or confirmed retake)
-            console.log('Saving answers directly with retake:', this.retakeRequested);
-            this.saveAnswersDirectly(this.retakeRequested); // retake=true if retakeRequested
+        this.personProfileService.getCurrentUserProfile().subscribe({
+          next: (profileResponse) => {
+            const profile = profileResponse.body;
+            console.log('Submit - Profile testCompleted:', profile?.testCompleted);
+            console.log('Submit - retakeRequested:', this.retakeRequested);
+            
+            if (profile?.testCompleted && !this.retakeRequested) {
+              // Show Bootstrap modal for retake confirmation
+              console.log('Showing retake modal');
+              this.openRetakeModal();
+            } else {
+              // Save answers directly (either first time or confirmed retake)
+              console.log('Saving answers directly with retake:', this.retakeRequested);
+              this.saveAnswersDirectly(this.retakeRequested); // retake=true if retakeRequested
+            }
+          },
+          error: (error) => {
+            console.log('Submit - Error getting profile:', error);
+            // If 404 (no profile exists) or any other error, proceed with saving answers
+            // This is likely a new user who hasn't completed the questionnaire yet
+            console.log('No existing profile found, saving answers directly');
+            this.saveAnswersDirectly(false); // First time submission
           }
         });
       } else {

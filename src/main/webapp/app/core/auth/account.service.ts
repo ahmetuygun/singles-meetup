@@ -59,17 +59,36 @@ export class AccountService {
             this.translateService.use(account.langKey);
           }
 
-          // Ensure PersonProfile exists for the authenticated user
+          // Check if PersonProfile exists for the authenticated user
           return this.personProfileService.getCurrentUserProfile().pipe(
             tap((profileResponse) => {
-              console.log('PersonProfile ensured for user:', account.login);
+              console.log('PersonProfile found for user:', account.login);
               const profile = profileResponse.body;
               this.navigateBasedOnTestCompletion(profile);
             }),
             catchError((error) => {
-              console.error('Error ensuring PersonProfile:', error);
+              console.log('PersonProfile error for user:', account.login, 'Error:', error);
+              
+              // If 404 error, it means no person profile exists
+              if (error.status === 404) {
+                console.log('No PersonProfile found for user');
+                
+                // Check if there are saved questionnaire answers to process first
+                const savedAnswers = localStorage.getItem('questionnaireAnswers');
+                if (savedAnswers) {
+                  console.log('Found saved questionnaire answers, redirecting to questionnaire-success');
+                  this.router.navigate(['/questionnaire-success']);
+                } else {
+                  console.log('No saved answers, redirecting to questionnaire');
+                  this.router.navigate(['/questionnaire']);
+                }
+                return of(null);
+              }
+              
+              // For other errors, proceed with normal navigation
+              console.error('Error getting PersonProfile:', error);
               this.navigateToStoredUrl();
-              return of(null); // Continue even if profile creation fails
+              return of(null);
             }),
             switchMap(() => {
               return of(account);
@@ -115,8 +134,17 @@ export class AccountService {
   private navigateBasedOnTestCompletion(profile: any): void {
     // Check if test is completed
     if (profile && profile.testCompleted === false) {
-      console.log('User has not completed test, redirecting to questionnaire');
-      this.router.navigate(['/questionnaire']);
+      console.log('User has not completed test');
+      
+      // Check if there are saved questionnaire answers to process first
+      const savedAnswers = localStorage.getItem('questionnaireAnswers');
+      if (savedAnswers) {
+        console.log('Found saved questionnaire answers, redirecting to questionnaire-success');
+        this.router.navigate(['/questionnaire-success']);
+      } else {
+        console.log('No saved answers, redirecting to questionnaire');
+        this.router.navigate(['/questionnaire']);
+      }
       return;
     }
     

@@ -23,7 +23,6 @@
     <include file="config/liquibase/changelog/20250109000001_add_qr_code_to_user_event.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250109000002_update_user_test_answer_schema.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250613000003_add_editable_to_test_question.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20250613000004_add_test_field_to_person_profile.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20250607111636_added_entity_constraints_PersonProfile.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250607111638_added_entity_constraints_TestAnswerOption.xml" relativeToChangelogFile="false"/>
