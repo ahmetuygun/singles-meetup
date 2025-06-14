@@ -62,6 +62,11 @@ export default class NavbarComponent implements OnInit {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
+    
+    // Ensure English is set as default language
+    if (!this.translateService.currentLang) {
+      this.translateService.use('en');
+    }
   }
 
   changeLanguage(languageKey: string): void {

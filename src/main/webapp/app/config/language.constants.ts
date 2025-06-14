@@ -3,15 +3,15 @@
     They are written in English to avoid character encoding issues (not a perfect solution)
 */
 export const LANGUAGES: string[] = [
-  'en',
-  'ca',
-  'fr',
-  'de',
-  'it',
-  'pl',
-  'pt-br',
-  'ro',
-  'es',
-  'tr',
+  'en', // English - Primary language
+  'tr', // Turkish
+  'fr', // French
+  'de', // German
+  'es', // Spanish
+  'it', // Italian
+  'pl', // Polish
+  'pt-br', // Portuguese (Brazil)
+  'ro', // Romanian
+  'ca', // Catalan
   // jhipster-needle-i18n-language-constant - JHipster will add/remove languages in this array
 ];
