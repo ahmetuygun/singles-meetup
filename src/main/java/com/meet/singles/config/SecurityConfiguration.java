@@ -3,7 +3,7 @@ package com.meet.singles.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 
-import com.meet.singles.security.*;
+import com.meet.singles.security.AuthoritiesConstants;
 import com.meet.singles.security.SecurityUtils;
 import com.meet.singles.security.oauth2.AudienceValidator;
 import com.meet.singles.security.oauth2.CustomClaimConverter;
@@ -65,6 +65,7 @@ public class SecurityConfiguration {
                 csrf
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+                    .ignoringRequestMatchers("/api/sample-data/**", "/api/seating-assignments/**", "/api/matching/**")
             )
             .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
             .headers(headers ->
@@ -99,6 +100,12 @@ public class SecurityConfiguration {
                     .requestMatchers(HttpMethod.GET, "/api/test-answer-options").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/test-questions/with-options").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/questionnaire-answers/profile/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/seating-assignments/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/seating-assignments/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/sample-data/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/sample-data/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/matching/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/matching/**").permitAll()
                     .requestMatchers(mvc.pattern("/api/**")).authenticated()
                     .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()

@@ -23,7 +23,7 @@ module.exports = async (config, options, targetOptions) => {
     config.plugins.push(
       new WebpackNotifierPlugin({
         title: 'Singles Meetup 2',
-        contentImage: path.join(__dirname, 'logo-jhipster.png'),
+        contentImage: path.join(__dirname, '../src/main/webapp/content/images/logo.svg'),
       }),
     );
   }

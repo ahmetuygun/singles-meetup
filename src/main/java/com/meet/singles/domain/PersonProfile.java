@@ -55,6 +55,9 @@ public class PersonProfile implements Serializable {
     @Column(name = "test_completed", nullable = false)
     private Boolean testCompleted = false;
 
+    @Column(name = "test", nullable = false)
+    private Boolean test = false;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private User internalUser;
@@ -193,6 +196,19 @@ public class PersonProfile implements Serializable {
         this.testCompleted = testCompleted;
     }
 
+    public Boolean getTest() {
+        return this.test;
+    }
+
+    public PersonProfile test(Boolean test) {
+        this.setTest(test);
+        return this;
+    }
+
+    public void setTest(Boolean test) {
+        this.test = test;
+    }
+
     public User getInternalUser() {
         return this.internalUser;
     }
@@ -292,6 +308,7 @@ public class PersonProfile implements Serializable {
             ", interests='" + getInterests() + "'" +
             ", location='" + getLocation() + "'" +
             ", testCompleted='" + getTestCompleted() + "'" +
+            ", test='" + getTest() + "'" +
             "}";
     }
 }

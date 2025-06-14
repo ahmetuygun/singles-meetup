@@ -17,7 +17,8 @@ Navbar
 }
 
 .navbar {
-  padding: 0.2rem 1rem;
+  padding: 0.1rem 1rem;
+  min-height: 70px;
   .dropdown-item.active,
   .dropdown-item.active:focus,
   .dropdown-item.active:hover {
@@ -39,10 +40,10 @@ Navbar
 Logo styles
 ========================================================================== */
 .logo-img {
-  height: 45px;
-  width: 45px;
+  height: 80px;
+  width: 150px;
   display: inline-block;
   vertical-align: middle;
-  background: url('/content/images/logo-jhipster.png') no-repeat center center;
+  background: url('/content/images/logo.svg') no-repeat center center;
   background-size: contain;
 }

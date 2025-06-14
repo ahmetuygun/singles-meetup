@@ -1,0 +1,195 @@
+Here's a concise text summary of the need and algorithm purpose:
+
+**Event Requirements:**
+- 4 rounds of 30-minute sessions
+- Tables of 4 (2 males + 2 females)
+- No repeat meetings between participants
+- Maximize compatibility between tablemates
+
+**Algorithm Purpose:**
+1. Calculate compatibility scores between all participants based on:
+   - Personality traits (40% weight)
+   - Lifestyle preferences (30% weight)
+   - Values/relationship goals (30% weight)
+
+2. Generate seating assignments that:
+   - Maintain strict 2M/2F balance at each table
+   - Ensure each participant meets new people every round
+   - Optimize for highest compatibility at each table
+   - Prevent any two people from meeting more than once
+
+**Key Components:**
+- Compatibility matrix (stores all pairwise scores)
+- Met-with tracking (prevents repeat meetings)
+- Greedy assignment (prioritizes best available matches)
+- Fallback to random when ideal matches exhausted
+
+**Output:**
+4 sets of table assignments (one per round) where:
+- Each person meets 12 new people total
+- All tables are gender-balanced
+- Compatibility is maximized within constraints
+
+**Implementation Notes:**
+- Works best for groups of 16-100 participants
+- Easily adaptable for different:
+  - Group sizes
+  - Question weights
+  - Gender ratios
+- Can be extended for special cases (odd numbers, VIP pairings, etc.)
+
+This approach combines established methods from:
+- Speed dating rotations
+- Stable matching problems
+- Team formation algorithms
+- Social network analysis
+=============================================
+COMPATIBILITY-BASED SEATING ALGORITHM
+=============================================
+
+// MAIN FUNCTION
+FUNCTION main():
+    participants = load_participant_data()
+    males = filter_by_gender(participants, "Male")
+    females = filter_by_gender(participants, "Female")
+    
+    compatibility_matrix = calculate_compatibility_matrix(participants)
+    seating_assignments = generate_seating_assignments(males, females, compatibility_matrix)
+    
+    print_assignments(seating_assignments)
+END FUNCTION
+
+// COMPATIBILITY CALCULATION
+FUNCTION calculate_compatibility_matrix(participants):
+    matrix = new Matrix(participants.length, participants.length)
+    
+    FOR i FROM 0 TO participants.length-1:
+        FOR j FROM i+1 TO participants.length-1:
+            score = calculate_pair_score(participants[i], participants[j])
+            matrix[i][j] = score
+            matrix[j][i] = score
+    
+    RETURN matrix
+END FUNCTION
+
+FUNCTION calculate_pair_score(p1, p2):
+    total_score = 0
+    
+    // Personality (40% weight)
+    personality_score = 
+        compare_answer(p1.q6001, p2.q6001) * 2 +
+        compare_answer(p1.q6004, p2.q6004) * 1.5 +
+        (5 - abs(p1.q6010 - p2.q6010)) + 
+        (5 - abs(p1.q6013 - p2.q6013))
+    total_score += (personality_score / MAX_PERSONALITY_SCORE) * 40
+    
+    // Lifestyle (30% weight)
+    lifestyle_score = 
+        compare_answer(p1.q6022, p2.q6022) * 2 +
+        (5 - abs(p1.q6019 - p2.q6019)) + 
+        (5 - abs(p1.q6028 - p2.q6028))
+    total_score += (lifestyle_score / MAX_LIFESTYLE_SCORE) * 30
+    
+    // Values (30% weight)
+    values_score = 
+        (5 - abs(p1.q6037 - p2.q6037)) + 
+        compare_answer(p1.q6061, p2.q6061) * 3 +
+        compare_answer(p1.q6079, p2.q6079) * 2
+    total_score += (values_score / MAX_VALUES_SCORE) * 30
+    
+    RETURN total_score
+END FUNCTION
+
+FUNCTION compare_answer(a1, a2):
+    IF a1 == a2: RETURN 5
+    ELSE IF are_similar(a1, a2): RETURN 3
+    ELSE: RETURN 1
+END FUNCTION
+
+// SEATING ASSIGNMENT
+FUNCTION generate_seating_assignments(males, females, compatibility):
+    num_rounds = 4
+    num_tables = males.length / 2  // 2M per table
+    met_with = initialize_met_with_matrix(males + females)
+    all_assignments = []
+    
+    FOR round FROM 1 TO num_rounds:
+        round_assignments = []
+        available_males = males.copy()
+        available_females = females.copy()
+        
+        FOR table FROM 1 TO num_tables:
+            m1 = available_males.pop(0)
+            m2 = find_best_match(m1, available_males, compatibility, met_with, "male")
+            possible_females = females_not_met_with(m1, m2, available_females, met_with)
+            f1, f2 = find_best_female_pair(m1, m2, possible_females, compatibility)
+            
+            table = [m1, m2, f1, f2]
+            round_assignments.append(table)
+            update_met_with(table, met_with)
+            
+            available_males.remove(m2)
+            available_females.remove(f1)
+            available_females.remove(f2)
+        
+        all_assignments.append(round_assignments)
+    
+    RETURN all_assignments
+END FUNCTION
+
+// HELPER FUNCTIONS
+FUNCTION find_best_match(person, candidates, compatibility, met_with, gender):
+    best_score = -1
+    best_match = null
+    
+    FOR candidate IN candidates:
+        IF met_with[person.id][candidate.id]: CONTINUE
+        score = compatibility[person.id][candidate.id]
+        IF score > best_score:
+            best_score = score
+            best_match = candidate
+    
+    RETURN best_match OR random_select(candidates)
+END FUNCTION
+
+FUNCTION find_best_female_pair(m1, m2, females, compatibility):
+    best_score = -1
+    best_pair = null
+    
+    FOR i FROM 0 TO females.length-1:
+        FOR j FROM i+1 TO females.length-1:
+            f1 = females[i]
+            f2 = females[j]
+            group_score = 
+                compatibility[m1.id][f1.id] +
+                compatibility[m1.id][f2.id] +
+                compatibility[m2.id][f1.id] +
+                compatibility[m2.id][f2.id] +
+                compatibility[f1.id][f2.id]
+            
+            IF group_score > best_score:
+                best_score = group_score
+                best_pair = [f1, f2]
+    
+    RETURN best_pair OR random_pair(females)
+END FUNCTION
+
+FUNCTION initialize_met_with_matrix(participants):
+    matrix = new Matrix(participants.length, participants.length, false)
+    FOR i FROM 0 TO participants.length-1:
+        matrix[i][i] = true
+    RETURN matrix
+END FUNCTION
+
+FUNCTION update_met_with(table, met_with):
+    FOR i FROM 0 TO table.length-1:
+        FOR j FROM i+1 TO table.length-1:
+            p1 = table[i]
+            p2 = table[j]
+            met_with[p1.id][p2.id] = true
+            met_with[p2.id][p1.id] = true
+END FUNCTION
+
+FUNCTION females_not_met_with(m1, m2, females, met_with):
+    RETURN [f FOR f IN females WHERE NOT met_with[m1.id][f.id] AND NOT met_with[m2.id][f.id]]
+END FUNCTION

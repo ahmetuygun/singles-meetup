@@ -29,4 +29,14 @@ public interface PersonProfileRepository extends PersonProfileRepositoryWithBagR
     }
 
     Optional<PersonProfile> findByInternalUserLogin(String login);
+    
+    List<PersonProfile> findByTestCompletedTrue();
+    
+    List<PersonProfile> findByTestTrue();
+    
+    List<PersonProfile> findByTestFalse();
+    
+    List<PersonProfile> findByTestCompletedTrueAndTestTrue();
+    
+    List<PersonProfile> findByTestCompletedTrueAndTestFalse();
 }
