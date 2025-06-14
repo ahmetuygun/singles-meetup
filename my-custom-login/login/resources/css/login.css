@@ -1,0 +1,29 @@
+/* Custom Keycloak Login Theme Styles */
+
+.solid-shadow-rectangle {
+  background-color: #ffc700 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  transition: all 0.2s ease !important;
+}
+
+.solid-shadow-rectangle:hover {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+.solid-shadow-rectangle:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: 0px 0px 0px #000000 !important;
+}
+
+.social-button {
+  background-color: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.2s ease !important;
+}
+
+.social-button:hover {
+  border-color: #d1d5db !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+} 
