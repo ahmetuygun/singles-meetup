@@ -6,6 +6,11 @@
   margin-bottom: 1rem;
 }
 
+.footer-logo-img {
+  height: 100px;
+  width: 200px;
+}
+
 .footer-separator {
   display: flex;
   align-items: center;
@@ -39,9 +44,11 @@
     text-align: center;
   }
   
-  .footer-logo i {
+  .footer-logo-img {
     margin-bottom: 0.5rem;
     margin-right: 0 !important;
+    height: 80px;
+    width: 160px;
   }
   
   .separator-line {
