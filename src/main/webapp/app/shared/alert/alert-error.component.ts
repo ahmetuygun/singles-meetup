@@ -53,7 +53,12 @@ export class AlertErrorComponent implements OnDestroy {
   }
 
   private addErrorAlert(message?: string, translationKey?: string, translationParams?: Record<string, unknown>): void {
-    this.alertService.addAlert({ type: 'danger', message, translationKey, translationParams }, this.alerts());
+    // Ensure message and translationKey are strings or undefined
+    const safeMessage = typeof message === 'string' ? message : undefined;
+    const safeTranslationKey = typeof translationKey === 'string' ? translationKey : undefined;
+    const safeTranslationParams = translationParams && typeof translationParams === 'object' ? translationParams : undefined;
+    
+    this.alertService.addAlert({ type: 'danger', message: safeMessage, translationKey: safeTranslationKey, translationParams: safeTranslationParams }, this.alerts());
   }
 
   private handleHttpError(response: EventWithContent<unknown> | string): void {
@@ -101,7 +106,9 @@ export class AlertErrorComponent implements OnDestroy {
         httpErrorResponse.error.params,
       );
     } else {
-      this.addErrorAlert(httpErrorResponse.error, httpErrorResponse.error);
+      // Safely handle error response that might not be a string
+      const errorMessage = typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : 'An error occurred';
+      this.addErrorAlert(errorMessage, undefined);
     }
   }
 
@@ -113,7 +120,9 @@ export class AlertErrorComponent implements OnDestroy {
         httpErrorResponse.error.params,
       );
     } else {
-      this.addErrorAlert(httpErrorResponse.error, httpErrorResponse.error);
+      // Safely handle error response that might not be a string
+      const errorMessage = typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : 'An error occurred';
+      this.addErrorAlert(errorMessage, undefined);
     }
   }
 

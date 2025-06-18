@@ -2,7 +2,8 @@ import { Component, OnInit, Renderer2, RendererFactory2, inject } from '@angular
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
-import { filter } from 'rxjs/operators';
+import { filter, delay } from 'rxjs/operators';
+import { timer } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
@@ -30,8 +31,20 @@ export default class MainComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // try to log in automatically
-    this.accountService.identity().subscribe();
+    // Add a delay before trying to authenticate to ensure the application is fully loaded
+    // This prevents the 302 redirect error during page refresh
+    timer(200).subscribe(() => {
+      this.accountService.identity().subscribe({
+        next: (account) => {
+          // Authentication successful or user not authenticated
+          console.log('Authentication check completed', account ? 'User authenticated' : 'User not authenticated');
+        },
+        error: (error) => {
+          // Handle authentication errors gracefully
+          console.log('Authentication check failed, this is normal during initial load', error);
+        }
+      });
+    });
 
     // Scroll to top on route changes
     this.router.events

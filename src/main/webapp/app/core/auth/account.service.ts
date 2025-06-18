@@ -2,8 +2,8 @@ import { Injectable, Signal, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, ReplaySubject, of } from 'rxjs';
-import { catchError, shareReplay, tap, switchMap } from 'rxjs/operators';
+import { Observable, ReplaySubject, of, timer } from 'rxjs';
+import { catchError, shareReplay, tap, switchMap, delay } from 'rxjs/operators';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Account } from 'app/core/auth/account.model';
@@ -14,7 +14,8 @@ import { PersonProfileService } from 'app/entities/person-profile/service/person
 export class AccountService {
   private readonly userIdentity = signal<Account | null>(null);
   private readonly authenticationState = new ReplaySubject<Account | null>(1);
-  private accountCache$?: Observable<Account> | null;
+  private accountCache$?: Observable<Account | null> | null;
+  private isAuthenticationInProgress = false;
 
   private readonly translateService = inject(TranslateService);
   private readonly http = inject(HttpClient);
@@ -47,9 +48,26 @@ export class AccountService {
   }
 
   identity(force?: boolean): Observable<Account | null> {
+    // Check if we're in an OAuth2 authentication flow
+    if (this.isInOAuth2Flow()) {
+      console.log('OAuth2 authentication flow detected, skipping account fetch');
+      return of(null);
+    }
+
+    // Prevent multiple simultaneous authentication attempts
+    if (this.isAuthenticationInProgress && !force) {
+      console.log('Authentication already in progress, returning cached result');
+      return this.accountCache$ || of(null);
+    }
+
     if (!this.accountCache$ || force) {
+      this.isAuthenticationInProgress = true;
       this.accountCache$ = this.fetch().pipe(
-        switchMap((account: Account) => {
+        switchMap((account: Account | null) => {
+          if (!account) {
+            return of(null);
+          }
+          
           this.authenticate(account);
 
           // After retrieve the account info, the language will be changed to
@@ -95,6 +113,13 @@ export class AccountService {
             })
           );
         }),
+        tap(() => {
+          this.isAuthenticationInProgress = false;
+        }),
+        catchError((error) => {
+          this.isAuthenticationInProgress = false;
+          return of(null);
+        }),
         shareReplay(),
       );
     }
@@ -109,8 +134,54 @@ export class AccountService {
     return this.authenticationState.asObservable();
   }
 
-  private fetch(): Observable<Account> {
-    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'));
+  private isInOAuth2Flow(): boolean {
+    const currentUrl = window.location.href;
+    const currentPath = window.location.pathname;
+    
+    // Check if we're in the middle of an OAuth2 flow
+    const isOAuth2Callback = currentPath.includes('/login/oauth2/code/') || 
+                             currentUrl.includes('code=') || 
+                             currentUrl.includes('state=');
+    
+    // Check if we're being redirected to OAuth2 authorization
+    const isOAuth2Authorization = currentPath.includes('/oauth2/authorization/');
+    
+    // Check if we just completed a login (within the last 2 seconds)
+    const lastLoginTime = sessionStorage.getItem('lastLoginTime');
+    const isRecentLogin = lastLoginTime !== null && (Date.now() - parseInt(lastLoginTime)) < 2000;
+    
+    return isOAuth2Callback || isOAuth2Authorization || isRecentLogin;
+  }
+
+  private fetch(): Observable<Account | null> {
+    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account')).pipe(
+      catchError((error) => {
+        console.log('Account fetch error:', error.status, error.message);
+        
+        // Handle authentication redirects (302) and unauthorized (401) gracefully
+        if (error.status === 302 || error.status === 401) {
+          console.log('Authentication required, user will be redirected to login');
+          // Mark that we're starting a login flow
+          sessionStorage.setItem('lastLoginTime', Date.now().toString());
+          return of(null);
+        }
+        
+        // For other errors, wait a bit and retry once
+        if (error.status === 0 || error.status >= 500) {
+          console.log('Network or server error, retrying in 1 second...');
+          return timer(1000).pipe(
+            switchMap(() => this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'))),
+            catchError(() => {
+              console.log('Retry failed, returning null');
+              return of(null);
+            })
+          );
+        }
+        
+        // Re-throw other errors
+        throw error;
+      })
+    );
   }
 
   private navigateToStoredUrl(): void {
@@ -152,3 +223,4 @@ export class AccountService {
     this.navigateToStoredUrl();
   }
 }
+

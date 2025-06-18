@@ -763,8 +763,8 @@
     {
       "id": "6e8deddb-b4d6-4e2e-b389-b397d3f74fcd",
       "clientId": "web_app",
-      "rootUrl": "http://localhost:8080",
-      "adminUrl": "http://localhost:8080",
+      "rootUrl": "https://gotrumeet.com",
+      "adminUrl": "https://gotrumeet.com",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
@@ -776,6 +776,9 @@
         "http://localhost:*",
         "https://127.0.0.1:*",
         "https://localhost:*",
+        "https://gotrumeet.com/*",
+        "https://gotrumeet.com/login/oauth2/code/oidc",
+        "https://gotrumeet.com/",
         "https://oauth.pstmn.io/v1/callback"
       ],
       "webOrigins": ["*"],

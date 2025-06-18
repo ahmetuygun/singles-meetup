@@ -41,6 +41,14 @@ public class LogoutResource {
     ) {
         StringBuilder logoutUrl = new StringBuilder();
         String originUrl = request.getHeader(HttpHeaders.ORIGIN);
+        
+        // Ensure we use HTTPS for production logout redirect
+        if (originUrl != null && originUrl.startsWith("http://gotrumeet.com")) {
+            originUrl = originUrl.replace("http://gotrumeet.com", "https://gotrumeet.com");
+        } else if (originUrl == null || originUrl.isEmpty()) {
+            // Fallback to production URL if Origin header is missing
+            originUrl = "https://gotrumeet.com";
+        }
 
         ClientRegistration clientRegistration = registrationRepository.findByRegistrationId(
             oAuth2AuthenticationToken.getAuthorizedClientRegistrationId()

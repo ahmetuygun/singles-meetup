@@ -490,10 +490,10 @@ public class QuestionnaireAnswersResource {
                 continue;
             }
 
-            Optional<TestQuestion> questionOpt = testQuestionRepository.findById(questionId);
+                Optional<TestQuestion> questionOpt = testQuestionRepository.findById(questionId);
             if (questionOpt.isEmpty() || questionOpt.get().getCategory() == null) continue;
 
-            TestQuestion question = questionOpt.get();
+                    TestQuestion question = questionOpt.get();
             Object answerValue = entry.getValue();
             String strValue = parseStringValue(answerValue);
 

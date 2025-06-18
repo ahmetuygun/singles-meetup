@@ -52,13 +52,18 @@ export class AlertService {
   addAlert(alertToAdd: Omit<Alert, 'id'>, extAlerts?: Alert[]): Alert {
     const alert: Alert = { ...alertToAdd, id: this.alertId++ };
 
-    if (alert.translationKey) {
-      const translatedMessage = this.translateService.instant(alert.translationKey, alert.translationParams);
-      // if translation key exists
-      if (translatedMessage !== `${translationNotFoundMessage}[${alert.translationKey}]`) {
-        alert.message = translatedMessage;
+    if (alert.translationKey && typeof alert.translationKey === 'string') {
+      try {
+        const translatedMessage = this.translateService.instant(alert.translationKey, alert.translationParams);
+        // if translation key exists
+        if (translatedMessage !== `${translationNotFoundMessage}[${alert.translationKey}]`) {
+          alert.message = translatedMessage;
+        }
+        alert.message ??= alert.translationKey;
+      } catch (error) {
+        console.warn('Translation error for key:', alert.translationKey, error);
+        alert.message = alert.translationKey;
       }
-      alert.message ??= alert.translationKey;
     }
 
     alert.message = this.sanitizer.sanitize(SecurityContext.HTML, alert.message ?? '') ?? '';
