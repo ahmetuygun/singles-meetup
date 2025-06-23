@@ -13,9 +13,10 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       tap({
         error: (err: HttpErrorResponse) => {
-          if (!(err.status === 401 && (err.message === '' || err.url?.includes('api/account')))) {
-            this.eventManager.broadcast(new EventWithContent('singlesMeetup2App.httpError', err));
-          }
+          // Automatic alert creation disabled - HTTP errors won't trigger alerts
+          // if (!(err.status === 401 && (err.message === '' || err.url?.includes('api/account')))) {
+          //   this.eventManager.broadcast(new EventWithContent('singlesMeetup2App.httpError', err));
+          // }
         },
       }),
     );

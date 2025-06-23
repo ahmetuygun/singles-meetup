@@ -101,7 +101,8 @@ export class AlertErrorComponent implements OnDestroy {
         httpErrorResponse.error.params,
       );
     } else {
-      this.addErrorAlert(httpErrorResponse.error, httpErrorResponse.error);
+      const errorMessage = typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : JSON.stringify(httpErrorResponse.error);
+      this.addErrorAlert(errorMessage, typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : undefined);
     }
   }
 
@@ -113,7 +114,8 @@ export class AlertErrorComponent implements OnDestroy {
         httpErrorResponse.error.params,
       );
     } else {
-      this.addErrorAlert(httpErrorResponse.error, httpErrorResponse.error);
+      const errorMessage = typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : JSON.stringify(httpErrorResponse.error);
+      this.addErrorAlert(errorMessage, typeof httpErrorResponse.error === 'string' ? httpErrorResponse.error : undefined);
     }
   }
 
