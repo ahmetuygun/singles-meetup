@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  gotrumeet-monitor:
+    image: alpine:latest
+    container_name: gotrumeet-health-monitor
+    restart: unless-stopped
+    command: >
+      sh -c "
+      apk add --no-cache curl &&
+      echo 'Starting health check for https://gotrumeet.com every 3 seconds...' &&
+      while true; do
+        timestamp=$$(date '+%Y-%m-%d %H:%M:%S');
+        if curl -s -f --max-time 10 https://gotrumeet.com > /dev/null; then
+          echo \"$$timestamp - ✅ UP - https://gotrumeet.com\";
+        else
+          echo \"$$timestamp - ❌ DOWN - https://gotrumeet.com\";
+        fi;
+        sleep 3;
+      done
+      "
+    volumes:
+      - ./logs:/logs
+    environment:
+      - TZ=Europe/Istanbul
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge 

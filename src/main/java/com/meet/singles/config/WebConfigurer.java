@@ -70,14 +70,32 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
      * Resolve path prefix to static resources.
      */
     private String resolvePathPrefix() {
-        String fullExecutablePath = decode(this.getClass().getResource("").getPath(), StandardCharsets.UTF_8);
-        String rootPath = Path.of(".").toUri().normalize().getPath();
-        String extractedPath = fullExecutablePath.replace(rootPath, "");
-        int extractionEndIndex = extractedPath.indexOf("target/");
-        if (extractionEndIndex <= 0) {
-            return "";
+        try {
+            String fullExecutablePath = decode(this.getClass().getResource("").getPath(), StandardCharsets.UTF_8);
+            String rootPath = Path.of(".").toUri().normalize().getPath();
+            String extractedPath = fullExecutablePath.replace(rootPath, "");
+            int extractionEndIndex = extractedPath.indexOf("target/");
+            if (extractionEndIndex <= 0) {
+                return "";
+            }
+            String prefix = extractedPath.substring(0, extractionEndIndex);
+            
+            // Fix Windows path issues - remove leading slash and handle drive letters properly
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                if (prefix.startsWith("/") && prefix.length() > 1 && prefix.charAt(2) == ':') {
+                    prefix = prefix.substring(1); // Remove leading slash for Windows drive letters
+                }
+                // Handle nested jar paths that contain colons
+                if (prefix.contains("nested:") || prefix.contains("jar:")) {
+                    return "";  // Skip static asset location for nested JARs
+                }
+            }
+            
+            return prefix;
+        } catch (Exception e) {
+            LOG.warn("Could not resolve path prefix for static assets, skipping custom location", e);
+            return "";  // Return empty string to skip custom static asset location
         }
-        return extractedPath.substring(0, extractionEndIndex);
     }
 
     @Bean

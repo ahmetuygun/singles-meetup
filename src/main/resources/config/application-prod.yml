@@ -39,9 +39,20 @@ spring:
     hikari:
       poolName: Hikari
       auto-commit: false
-
   thymeleaf:
     cache: true
+  security:
+    require-ssl: true
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://auth.gotrumeet.com/realms/jhipster
+        registration:
+          oidc:
+            client-id: web_app
+            client-secret: web_app
+            scope: openid, profile, email, offline_access
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
@@ -65,10 +76,16 @@ spring:
 server:
   port: 8080
   shutdown: graceful # see https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-graceful-shutdown
+  forward-headers-strategy: native # Trust proxy headers for HTTPS detection
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json,image/svg+xml
     min-response-size: 1024
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
 
 # ===================================================================
 # JHipster specific properties
@@ -84,6 +101,14 @@ jhipster:
     ehcache: # Ehcache configuration
       time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
       max-entries: 1000 # Number of objects in each cache entry
+  cors:
+    # Enable CORS for production with your domain
+    allowed-origins: "https://gotrumeet.com"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+    allow-credentials: true
+    max-age: 1800
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
@@ -91,6 +116,9 @@ jhipster:
       host: localhost
       port: 5000
       ring-buffer-size: 512
+  security:
+    content-security-policy: "default-src 'self' https://gotrumeet.com; connect-src 'self' https://gotrumeet.com https://storage.googleapis.com; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data: https://gotrumeet.com; font-src 'self' https://fonts.gstatic.com data:"
+
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

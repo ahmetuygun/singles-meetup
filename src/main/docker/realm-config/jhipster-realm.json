@@ -30,6 +30,7 @@
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": true,
+  "loginTheme": "my-custom-login",
   "registrationEmailAsUsername": false,
   "rememberMe": false,
   "verifyEmail": false,
@@ -776,7 +777,9 @@
         "http://localhost:*",
         "https://127.0.0.1:*",
         "https://localhost:*",
-        "https://oauth.pstmn.io/v1/callback"
+        "https://oauth.pstmn.io/v1/callback",
+        "https://gotrumeet.com/login/oauth2/code/oidc",
+        "https://gotrumeet.com"
       ],
       "webOrigins": ["*"],
       "notBefore": 0,
