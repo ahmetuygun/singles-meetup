@@ -8,12 +8,18 @@ services:
       - SPRING_PROFILES_ACTIVE=prod,api-docs
       - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/singlesMeetup2
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/singlesMeetup2
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI=http://keycloak:9080/realms/jhipster
+
+      # - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI=http://keycloak:9080/realms/jhipster
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_AUTHORIZATION_URI=http://localhost:9080/realms/jhipster/protocol/openid-connect/auth
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_TOKEN_URI=http://keycloak:9080/realms/jhipster/protocol/openid-connect/token
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_USER_INFO_URI=http://keycloak:9080/realms/jhipster/protocol/openid-connect/userinfo
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_JWK_SET_URI=http://keycloak:9080/realms/jhipster/protocol/openid-connect/certs
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_ID=web_app
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=web_app
     ports:
       - 127.0.0.1:8080:8080
+    extra_hosts:
+      - "keycloak:host-gateway"
     healthcheck:
       test:
         - CMD

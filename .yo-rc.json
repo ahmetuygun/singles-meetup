@@ -18,7 +18,7 @@
     "feignClient": null,
     "jhipsterVersion": "8.11.0",
     "languages": ["en", "ca", "fr", "de", "it", "pl", "pt-br", "ro", "es", "tr"],
-    "lastLiquibaseTimestamp": 1749295002000,
+
     "microfrontend": null,
     "microfrontends": [],
     "monorepository": true,
