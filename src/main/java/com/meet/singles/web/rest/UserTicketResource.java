@@ -98,7 +98,14 @@ public class UserTicketResource {
                 }
                 
                 BigDecimal totalPrice = ticket.getPrice().multiply(BigDecimal.valueOf(selection.getQuantity()));
-                BigDecimal bookingFee = totalPrice.multiply(BigDecimal.valueOf(0.1)); // 10% booking fee
+                // Use ticket's booking fee or default to 10% of total price if not set
+        BigDecimal bookingFee = ticket.getBookingFee();
+        if (bookingFee == null) {
+            bookingFee = totalPrice.multiply(BigDecimal.valueOf(0.1)); // Default 10% of total price
+        } else {
+            // If booking fee is set, multiply by quantity
+            bookingFee = bookingFee.multiply(BigDecimal.valueOf(selection.getQuantity()));
+        }
                 
                 UserTicket userTicket = new UserTicket();
                 userTicket.setPersonProfile(personProfile);

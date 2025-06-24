@@ -6,6 +6,8 @@ export interface IVenue {
   capacity?: number | null;
   contactInfo?: string | null;
   photoUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export type NewVenue = Omit<IVenue, 'id'> & { id: null };

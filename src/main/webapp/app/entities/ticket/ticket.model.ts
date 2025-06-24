@@ -5,6 +5,7 @@ export interface ITicket {
   name?: string | null;
   description?: string | null;
   price?: number | null;
+  bookingFee?: number | null;
   quantityAvailable?: number | null;
   quantitySold?: number | null;
   isActive?: boolean | null;

@@ -24,6 +24,8 @@ type VenueFormGroupContent = {
   capacity: FormControl<IVenue['capacity']>;
   contactInfo: FormControl<IVenue['contactInfo']>;
   photoUrl: FormControl<IVenue['photoUrl']>;
+  latitude: FormControl<IVenue['latitude']>;
+  longitude: FormControl<IVenue['longitude']>;
 };
 
 export type VenueFormGroup = FormGroup<VenueFormGroupContent>;
@@ -53,6 +55,8 @@ export class VenueFormService {
       capacity: new FormControl(venueRawValue.capacity),
       contactInfo: new FormControl(venueRawValue.contactInfo),
       photoUrl: new FormControl(venueRawValue.photoUrl),
+      latitude: new FormControl(venueRawValue.latitude),
+      longitude: new FormControl(venueRawValue.longitude),
     });
   }
 

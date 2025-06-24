@@ -43,6 +43,12 @@ public class Venue implements Serializable {
     @Column(name = "photo_url")
     private String photoUrl;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -136,6 +142,32 @@ public class Venue implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public Double getLatitude() {
+        return this.latitude;
+    }
+
+    public Venue latitude(Double latitude) {
+        this.setLatitude(latitude);
+        return this;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return this.longitude;
+    }
+
+    public Venue longitude(Double longitude) {
+        this.setLongitude(longitude);
+        return this;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -166,6 +198,8 @@ public class Venue implements Serializable {
             ", capacity=" + getCapacity() +
             ", contactInfo='" + getContactInfo() + "'" +
             ", photoUrl='" + getPhotoUrl() + "'" +
+            ", latitude=" + getLatitude() +
+            ", longitude=" + getLongitude() +
             "}";
     }
 }

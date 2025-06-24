@@ -103,6 +103,11 @@ export class TicketPurchaseComponent implements OnInit {
     );
   }
 
+  getBookingFeeForTicket(ticket: ITicket): number {
+    // Use ticket's booking fee or default to 10% of ticket price if not set
+    return ticket.bookingFee || (ticket.price || 0) * 0.1;
+  }
+
   onQuantityChange(ticket: ITicket, event: any): void {
     const quantity = parseInt(event.target.value, 10);
     

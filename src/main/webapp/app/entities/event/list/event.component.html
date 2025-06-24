@@ -55,27 +55,27 @@
             </div>
 
                         <div class="card-body p-4 d-flex flex-column" style="min-height: 250px;">
-              <h5 class="card-title fw-bold text-dark mb-3 lh-sm">{{ event.name }}</h5>
+              <h5 class="card-title fw-bold text-dark mb-3 lh-sm" style="font-size: 1.3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ event.name }}</h5>
 
               <div class="mb-3">
                 <div class="d-flex gap-2">
                   <div class="flex-fill">
-                    <div class="alert alert-warning d-flex align-items-center fs-6 py-2 w-100 event-badge">
-                      <i class="fas fa-calendar-alt me-2" style="font-size: 0.8rem;"></i>
+                    <div class="alert alert-warning d-flex align-items-center py-2 w-100 event-badge" style="font-size: 0.95rem;">
+                      <i class="fas fa-calendar-alt me-2" style="font-size: 0.9rem;"></i>
                       <span class="fw-medium">{{ getFormattedEventDate(event.eventDate) }}</span>
                     </div>
                   </div>
                   <div class="flex-fill">
-                    <div class="alert alert-primary d-flex align-items-center fs-6 py-2 w-100 event-badge">
-                      <i class="fas fa-map-marker-alt me-2" style="font-size: 0.8rem;"></i>
+                    <div class="alert alert-primary d-flex align-items-center py-2 w-100 event-badge" style="font-size: 0.95rem;">
+                      <i class="fas fa-map-marker-alt me-2" style="font-size: 0.9rem;"></i>
                       <span class="fw-medium">{{ event.venue?.name || 'TBD' }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <p class="card-text text-muted flex-grow-1 mb-0" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                {{ event.description }}
+              <p class="card-text text-muted flex-grow-1 mb-0" style="font-size: 0.95rem; line-height: 1.4;">
+                {{ event.shortDescription || getPlainTextDescription(event.description) }}
               </p>
             </div>
           </div>
@@ -125,7 +125,6 @@
     margin-bottom: 0 !important;
     padding: 0.375rem 0.75rem !important;
     min-height: 2.5rem;
-    font-size: 0.875rem !important;
     background-color: transparent !important;
     border: 1px solid #dee2e6;
   }
@@ -138,5 +137,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
 </style>

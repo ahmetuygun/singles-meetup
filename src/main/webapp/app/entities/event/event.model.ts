@@ -6,6 +6,7 @@ export interface IEvent {
   id: number;
   name?: string | null;
   description?: string | null;
+  shortDescription?: string | null;
   eventDate?: dayjs.Dayjs | null;
   maxParticipants?: number | null;
   status?: string | null;

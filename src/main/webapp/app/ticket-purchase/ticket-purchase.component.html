@@ -18,7 +18,7 @@
               <h6 class="mb-1 fw-normal">{{ ticket.name }}</h6>
               <div class="text-muted small">
                 €{{ (ticket.price || 0).toFixed(2) }} +
-                <span class="text-muted">€{{ ((ticket.price || 0) * 0.1).toFixed(2) }} booking fee</span>
+                <span class="text-muted">€{{ getBookingFeeForTicket(ticket).toFixed(2) }} booking fee</span>
               </div>
             </div>
 

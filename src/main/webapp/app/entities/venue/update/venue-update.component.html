@@ -67,6 +67,41 @@
           <label class="form-label" for="field_photoUrl" jhiTranslate="singlesMeetup2App.venue.photoUrl">Photo Url</label>
           <input type="text" class="form-control" name="photoUrl" id="field_photoUrl" data-cy="photoUrl" formControlName="photoUrl" />
         </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label" for="field_latitude">Latitude</label>
+              <input 
+                type="number" 
+                step="any" 
+                class="form-control" 
+                name="latitude" 
+                id="field_latitude" 
+                data-cy="latitude" 
+                formControlName="latitude" 
+                placeholder="e.g., 53.3498"
+              />
+              <small class="form-text text-muted">Decimal degrees (e.g., 53.3498 for Dublin)</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label" for="field_longitude">Longitude</label>
+              <input 
+                type="number" 
+                step="any" 
+                class="form-control" 
+                name="longitude" 
+                id="field_longitude" 
+                data-cy="longitude" 
+                formControlName="longitude" 
+                placeholder="e.g., -6.2603"
+              />
+              <small class="form-text text-muted">Decimal degrees (e.g., -6.2603 for Dublin)</small>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div>

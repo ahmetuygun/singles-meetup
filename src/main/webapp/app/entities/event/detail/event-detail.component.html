@@ -29,7 +29,10 @@
     <!-- Location and Date Info Boxes -->
     <div class="row g-3 mb-4">
       <div class="col-6 d-flex">
-        <div class="alert alert-success d-flex align-items-center fs-6 py-2 w-100">
+        <div class="alert alert-success d-flex align-items-center fs-6 py-2 w-100" 
+             [class.clickable]="eventRef.venue" 
+             (click)="navigateToVenue(eventRef.venue?.id)"
+             style="cursor: pointer;">
           <fa-icon icon="map-marker-alt" class="me-3" style="font-size: 1.5rem;"></fa-icon>
           <span class="fw-medium">{{ eventRef.venue?.name || 'TBD' }}</span>
         </div>
@@ -51,7 +54,7 @@
     <div class="mb-5">
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <p class="fs-5 text-muted lh-lg mb-0">{{ eventRef.description }}</p>
+          <div class="fs-5 text-muted lh-lg mb-0" [innerHTML]="eventRef.description"></div>
         </div>
       </div>
     </div>

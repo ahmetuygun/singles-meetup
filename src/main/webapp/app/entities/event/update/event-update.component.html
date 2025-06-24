@@ -28,16 +28,60 @@
           }
         </div>
 
+        @let shortDescriptionRef = editForm.get('shortDescription')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_shortDescription">Short Description</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="shortDescription" 
+            id="field_shortDescription" 
+            data-cy="shortDescription" 
+            formControlName="shortDescription"
+            placeholder="Brief description for event cards (max 255 characters)"
+            maxlength="255" 
+          />
+          @if (shortDescriptionRef.invalid && (shortDescriptionRef.dirty || shortDescriptionRef.touched)) {
+            <div>
+              @if (editForm.get('shortDescription')?.errors?.maxlength) {
+                <small class="form-text text-danger">
+                  Short description cannot exceed 255 characters. Current: {{ editForm.get('shortDescription')?.value?.length || 0 }}/255
+                </small>
+              }
+            </div>
+          }
+          <small class="form-text text-muted">
+            Characters: {{ editForm.get('shortDescription')?.value?.length || 0 }}/255
+          </small>
+        </div>
+
+        @let descriptionRef = editForm.get('description')!;
         <div class="mb-3">
           <label class="form-label" for="field_description" jhiTranslate="singlesMeetup2App.event.description">Description</label>
-          <input
-            type="text"
-            class="form-control"
-            name="description"
-            id="field_description"
-            data-cy="description"
-            formControlName="description"
-          />
+          <div class="NgxEditor__Wrapper" id="field_description">
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+            <ngx-editor
+              style="display: block; min-height: 400px; max-height: 600px; overflow-y: auto;"
+              formControlName="description"
+              data-cy="description"
+              id="field_description"
+              [editor]="editor"
+              [disabled]="false"
+              [placeholder]="'Write your event description here...'"
+            ></ngx-editor>
+          </div>
+          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
+            <div>
+              @if (editForm.get('description')?.errors?.maxlength) {
+                <small class="form-text text-danger">
+                  Description cannot exceed 5000 characters. Current: {{ editForm.get('description')?.value?.length || 0 }}/5000
+                </small>
+              }
+            </div>
+          }
+          <small class="form-text text-muted">
+            Characters: {{ editForm.get('description')?.value?.length || 0 }}/5000
+          </small>
         </div>
 
         @let eventDateRef = editForm.get('eventDate')!;
@@ -91,7 +135,7 @@
         @let priceRef = editForm.get('price')!;
         <div class="mb-3">
           <label class="form-label" for="field_price" jhiTranslate="singlesMeetup2App.event.price">Price</label>
-          <input type="number" class="form-control" name="price" id="field_price" data-cy="price" formControlName="price" />
+          <input type="number" step="0.01" min="0" class="form-control" name="price" id="field_price" data-cy="price" formControlName="price" />
           @if (priceRef.invalid && (priceRef.dirty || priceRef.touched)) {
             <div>
               @if (editForm.get('price')?.errors?.required) {
@@ -151,27 +195,144 @@
           <select class="form-control" id="field_venue" data-cy="venue" name="venue" formControlName="venue" [compareWith]="compareVenue">
             <option [ngValue]="null"></option>
             @for (venueOption of venuesSharedCollection; track $index) {
-              <option [ngValue]="venueOption">{{ venueOption.id }}</option>
+              <option [ngValue]="venueOption">{{ venueOption.name }}</option>
             }
           </select>
         </div>
 
-        <div class="mb-3">
-          <label for="field_participants" jhiTranslate="singlesMeetup2App.event.participants">Participants</label>
-          <select
-            class="form-control"
-            id="field_participants"
-            data-cy="participants"
-            multiple
-            name="participants"
-            formControlName="participants"
-            [compareWith]="comparePersonProfile"
-          >
-            @for (personProfileOption of personProfilesSharedCollection; track $index) {
-              <option [ngValue]="personProfileOption">{{ personProfileOption.id }}</option>
-            }
-          </select>
+        <!-- Ticket Management Section -->
+        <div class="mb-4">
+          <h4 class="mb-3">Event Tickets</h4>
+          
+          <!-- Existing Tickets -->
+          @if (eventTickets.length > 0) {
+            <div class="mb-4">
+              <h6 class="mb-3">Current Tickets</h6>
+              @for (ticket of eventTickets; track $index) {
+                <div class="card mb-3 border-secondary">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-4">
+                        <strong>{{ ticket.name }}</strong>
+                      </div>
+                      <div class="col-md-2">
+                        <span class="badge bg-primary">€{{ ticket.price }}</span>
+                      </div>
+                      <div class="col-md-2">
+                        <small class="text-muted">+€{{ (ticket.bookingFee || 0).toFixed(2) }} fee</small>
+                      </div>
+                      <div class="col-md-2">
+                        <small class="text-muted">Qty: {{ ticket.quantityAvailable }}</small>
+                      </div>
+                      <div class="col-md-1">
+                        <span [class]="ticket.isActive ? 'badge bg-success' : 'badge bg-secondary'">
+                          {{ ticket.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTicket($index)">
+                          <fa-icon icon="trash"></fa-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Add New Ticket Form -->
+          <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+              <h6 class="mb-0">Add New Ticket</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Ticket Name *</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [value]="newTicket.name"
+                      (input)="onTicketNameChange($any($event.target).value)"
+                      placeholder="e.g., General Admission, VIP"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="mb-3">
+                    <label class="form-label">Price (€) *</label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      class="form-control" 
+                      [value]="newTicket.price"
+                      (input)="onTicketPriceChange($any($event.target).valueAsNumber)"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="mb-3">
+                    <label class="form-label">Booking Fee (€)</label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      class="form-control" 
+                      [value]="newTicket.bookingFee"
+                      (input)="onTicketBookingFeeChange($any($event.target).valueAsNumber)"
+                      placeholder="1.20"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      class="form-control" 
+                      [(ngModel)]="newTicket.quantityAvailable"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="mb-3">
+                    <label class="form-label">Active</label>
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        [(ngModel)]="newTicket.isActive"
+                        id="isActiveCheck"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  Debug: Name: "{{ newTicket.name }}", Price: {{ newTicket.price }}, Booking Fee: {{ newTicket.bookingFee }}
+                </small>
+                <button 
+                  type="button" 
+                  class="btn btn-primary" 
+                  (click)="addTicket()"
+                  [disabled]="!newTicket.name || !newTicket.name.trim() || newTicket.price === null || newTicket.price === undefined || newTicket.price < 0"
+                >
+                  <fa-icon icon="plus"></fa-icon>
+                  Add Ticket
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
 
       <div>

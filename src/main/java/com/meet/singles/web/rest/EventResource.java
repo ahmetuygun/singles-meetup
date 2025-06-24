@@ -50,13 +50,22 @@ public class EventResource {
     @PostMapping("")
     public ResponseEntity<Event> createEvent(@Valid @RequestBody Event event) throws URISyntaxException {
         LOG.debug("REST request to save Event : {}", event);
+        LOG.debug("Event details - name: '{}', description: '{}', eventDate: '{}', price: '{}', venue: '{}'", 
+                  event.getName(), event.getDescription(), event.getEventDate(), event.getPrice(), event.getVenue());
+        LOG.debug("Event validation - name null: {}, eventDate null: {}, price null: {}", 
+                  event.getName() == null, event.getEventDate() == null, event.getPrice() == null);
         if (event.getId() != null) {
             throw new BadRequestAlertException("A new event cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        event = eventRepository.save(event);
-        return ResponseEntity.created(new URI("/api/events/" + event.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, event.getId().toString()))
-            .body(event);
+        try {
+            event = eventRepository.save(event);
+            return ResponseEntity.created(new URI("/api/events/" + event.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, event.getId().toString()))
+                .body(event);
+        } catch (Exception e) {
+            LOG.error("Error saving event: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**
@@ -164,7 +173,7 @@ public class EventResource {
     @GetMapping("")
     public List<Event> getAllEvents() {
         LOG.debug("REST request to get all Events");
-        return eventRepository.findAll();
+        return eventRepository.findAllWithVenue();
     }
 
     /**
@@ -176,7 +185,7 @@ public class EventResource {
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEvent(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Event : {}", id);
-        Optional<Event> event = eventRepository.findById(id);
+        Optional<Event> event = eventRepository.findByIdWithVenue(id);
         return ResponseUtil.wrapOrNotFound(event);
     }
 
