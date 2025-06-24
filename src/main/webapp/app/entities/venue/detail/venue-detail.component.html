@@ -1,54 +1,72 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (venue(); as venueRef) {
-      <div>
-        <h2 data-cy="venueDetailsHeading"><span jhiTranslate="singlesMeetup2App.venue.detail.title">Venue</span></h2>
+@if (venue(); as venueRef) {
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <!-- Back Button -->
+        <div class="mb-4">
+          <button type="button" class="btn btn-light rounded-circle p-2" (click)="previousState()" style="width: 40px; height: 40px;">
+            <fa-icon icon="arrow-left" class="text-dark"></fa-icon>
+          </button>
+        </div>
 
-        <hr />
+        <!-- Venue Header -->
+        <div class="mb-4">
+          <h1 class="display-5 fw-bold">{{ venueRef.name }}</h1>
+          <p class="lead text-muted">
+            <fa-icon icon="map-marker-alt" class="me-2"></fa-icon>
+            {{ venueRef.address }}
+            @if (venueRef.city) {
+              , {{ venueRef.city }}
+            }
+          </p>
+        </div>
+
+        <!-- Map Section -->
+        @if (venueRef.latitude && venueRef.longitude) {
+          <div class="mb-5">
+            <h3 class="mb-3">Location</h3>
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-0">
+                <iframe
+                  [src]="getGoogleMapsEmbedUrl(venueRef.latitude!, venueRef.longitude!, venueRef.name!)"
+                  width="100%"
+                  height="400"
+                  style="border: 0; border-radius: 0.375rem;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="mb-5">
+            <div class="alert alert-info">
+              <fa-icon icon="info-circle" class="me-2"></fa-icon>
+              Map location not available for this venue.
+            </div>
+          </div>
+        }
+
+        <!-- Admin Actions -->
+        <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="border-top pt-4">
+          <h6 class="text-muted mb-3">Admin Actions</h6>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" [routerLink]="['/venue', venueRef.id, 'edit']" class="btn btn-outline-primary">
+              <fa-icon icon="pencil-alt" class="me-2"></fa-icon>
+              Edit Venue
+            </button>
+            
+            <button type="button" (click)="delete(venueRef)" class="btn btn-outline-danger">
+              <fa-icon icon="times" class="me-2"></fa-icon>
+              Delete Venue
+            </button>
+          </div>
+        </div>
 
         <jhi-alert-error />
-
         <jhi-alert />
-
-        <dl class="row-md jh-entity-details">
-          <dt><span jhiTranslate="global.field.id">ID</span></dt>
-          <dd>
-            <span>{{ venueRef.id }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.name">Name</span></dt>
-          <dd>
-            <span>{{ venueRef.name }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.address">Address</span></dt>
-          <dd>
-            <span>{{ venueRef.address }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.city">City</span></dt>
-          <dd>
-            <span>{{ venueRef.city }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.capacity">Capacity</span></dt>
-          <dd>
-            <span>{{ venueRef.capacity }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.contactInfo">Contact Info</span></dt>
-          <dd>
-            <span>{{ venueRef.contactInfo }}</span>
-          </dd>
-          <dt><span jhiTranslate="singlesMeetup2App.venue.photoUrl">Photo Url</span></dt>
-          <dd>
-            <span>{{ venueRef.photoUrl }}</span>
-          </dd>
-        </dl>
-
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
-        </button>
-
-        <button type="button" [routerLink]="['/venue', venueRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
-        </button>
       </div>
-    }
+    </div>
   </div>
-</div>
+}

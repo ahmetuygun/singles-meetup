@@ -58,7 +58,7 @@ export class EventDetailComponent {
 
   formatEventDate(eventDate: any): string {
     if (!eventDate) return '';
-    return eventDate.format('dddd, MMMM D, YYYY [at] HH:mm');
+    return eventDate.format('D MMM, HH.mm');
   }
 
   openTicketPurchase(): void {
@@ -72,6 +72,12 @@ export class EventDetailComponent {
     const eventId = this.event()?.id;
     if (eventId) {
       this.router.navigate(['/event', eventId, 'joiners']);
+    }
+  }
+
+  navigateToVenue(venueId: number | undefined): void {
+    if (venueId) {
+      this.router.navigate(['/venue', venueId, 'view']);
     }
   }
 

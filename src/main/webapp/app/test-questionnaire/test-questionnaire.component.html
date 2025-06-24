@@ -47,26 +47,26 @@
       <!-- SINGLE_CHOICE -->
       <div *ngIf="currentQuestion.questionType === 'SINGLE_CHOICE'">
         <div class="d-flex flex-column align-items-center gap-3">
-          <button
+          <div
             *ngFor="let opt of currentQuestion.options"
-            class="btn btn-warning btn-lg w-100"
-            [class.active]="answers[currentQuestion.id] === opt.value"
+            class="solid-shadow-rectangle"
+            [class.selected]="answers[currentQuestion.id] === opt.value"
             (click)="selectSingleChoice(currentQuestion.id, opt.value)">
             {{ opt.optionText }}
-          </button>
+          </div>
         </div>
       </div>
 
       <!-- MULTIPLE_CHOICE -->
       <div *ngIf="currentQuestion.questionType === 'MULTIPLE_CHOICE'">
         <div class="d-flex flex-column align-items-center gap-3">
-          <button
+          <div
             *ngFor="let opt of currentQuestion.options"
-            class="btn btn-warning btn-lg w-100"
-            [class.active]="(answers[currentQuestion.id] || []).includes(opt.value)"
+            class="solid-shadow-rectangle"
+            [class.selected]="(answers[currentQuestion.id] || []).includes(opt.value)"
             (click)="selectMultiChoice(currentQuestion.id, opt.value)">
             {{ opt.optionText }}
-          </button>
+          </div>
         </div>
       </div>
 

@@ -27,12 +27,13 @@ type EventFormRawValue = FormValueOf<IEvent>;
 
 type NewEventFormRawValue = FormValueOf<NewEvent>;
 
-type EventFormDefaults = Pick<NewEvent, 'id' | 'eventDate' | 'participants'>;
+type EventFormDefaults = Pick<NewEvent, 'id' | 'eventDate'>;
 
 type EventFormGroupContent = {
   id: FormControl<EventFormRawValue['id'] | NewEvent['id']>;
   name: FormControl<EventFormRawValue['name']>;
   description: FormControl<EventFormRawValue['description']>;
+  shortDescription: FormControl<EventFormRawValue['shortDescription']>;
   eventDate: FormControl<EventFormRawValue['eventDate']>;
   maxParticipants: FormControl<EventFormRawValue['maxParticipants']>;
   status: FormControl<EventFormRawValue['status']>;
@@ -40,7 +41,6 @@ type EventFormGroupContent = {
   image: FormControl<EventFormRawValue['image']>;
   imageContentType: FormControl<EventFormRawValue['imageContentType']>;
   venue: FormControl<EventFormRawValue['venue']>;
-  participants: FormControl<EventFormRawValue['participants']>;
 };
 
 export type EventFormGroup = FormGroup<EventFormGroupContent>;
@@ -63,7 +63,12 @@ export class EventFormService {
       name: new FormControl(eventRawValue.name, {
         validators: [Validators.required],
       }),
-      description: new FormControl(eventRawValue.description),
+      description: new FormControl(eventRawValue.description, {
+        validators: [Validators.maxLength(5000)],
+      }),
+      shortDescription: new FormControl(eventRawValue.shortDescription, {
+        validators: [Validators.maxLength(255)],
+      }),
       eventDate: new FormControl(eventRawValue.eventDate, {
         validators: [Validators.required],
       }),
@@ -75,7 +80,6 @@ export class EventFormService {
       image: new FormControl(eventRawValue.image),
       imageContentType: new FormControl(eventRawValue.imageContentType),
       venue: new FormControl(eventRawValue.venue),
-      participants: new FormControl(eventRawValue.participants ?? []),
     });
   }
 
@@ -99,7 +103,6 @@ export class EventFormService {
     return {
       id: null,
       eventDate: currentTime,
-      participants: [],
     };
   }
 
@@ -116,7 +119,6 @@ export class EventFormService {
     return {
       ...event,
       eventDate: event.eventDate ? event.eventDate.format(DATE_TIME_FORMAT) : undefined,
-      participants: event.participants ?? [],
     };
   }
 }

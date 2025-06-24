@@ -69,6 +69,14 @@ export class EventComponent implements OnInit {
     return eventDate.format('D MMM, HH.mm');
   }
 
+  getPlainTextDescription(description: string | null | undefined): string {
+    if (!description) return '';
+    // Create a temporary div to strip HTML tags
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = description;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  }
+
   navigateToEvent(id: number): void {
     this.router.navigate(['/event', id, 'view']);
   }

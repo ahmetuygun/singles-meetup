@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -6,14 +6,15 @@ import { finalize, map } from 'rxjs/operators';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxEditorModule, Editor, Toolbar, toHTML } from 'ngx-editor';
 
 import { AlertError } from 'app/shared/alert/alert-error.model';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 import { IVenue } from 'app/entities/venue/venue.model';
 import { VenueService } from 'app/entities/venue/service/venue.service';
-import { IPersonProfile } from 'app/entities/person-profile/person-profile.model';
-import { PersonProfileService } from 'app/entities/person-profile/service/person-profile.service';
+import { ITicket, NewTicket } from 'app/entities/ticket/ticket.model';
+import { TicketService } from 'app/entities/ticket/service/ticket.service';
 import { EventService } from '../service/event.service';
 import { IEvent } from '../event.model';
 import { EventFormGroup, EventFormService } from './event-form.service';
@@ -21,21 +22,30 @@ import { EventFormGroup, EventFormService } from './event-form.service';
 @Component({
   selector: 'jhi-event-update',
   templateUrl: './event-update.component.html',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, NgxEditorModule],
 })
-export class EventUpdateComponent implements OnInit {
+export class EventUpdateComponent implements OnInit, OnDestroy {
   isSaving = false;
   event: IEvent | null = null;
+  editor!: Editor;
+  toolbar: Toolbar = [
+    ['bold', 'italic'],
+    ['underline'],
+    ['ordered_list', 'bullet_list'],
+    [{ heading: ['h1', 'h2', 'h3'] }],
+    ['link'],
+  ];
 
   venuesSharedCollection: IVenue[] = [];
-  personProfilesSharedCollection: IPersonProfile[] = [];
+  eventTickets: ITicket[] = [];
+  newTicket: NewTicket = this.getEmptyTicket();
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected eventService = inject(EventService);
   protected eventFormService = inject(EventFormService);
   protected venueService = inject(VenueService);
-  protected personProfileService = inject(PersonProfileService);
+  protected ticketService = inject(TicketService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
 
@@ -44,18 +54,22 @@ export class EventUpdateComponent implements OnInit {
 
   compareVenue = (o1: IVenue | null, o2: IVenue | null): boolean => this.venueService.compareVenue(o1, o2);
 
-  comparePersonProfile = (o1: IPersonProfile | null, o2: IPersonProfile | null): boolean =>
-    this.personProfileService.comparePersonProfile(o1, o2);
-
   ngOnInit(): void {
+    this.editor = new Editor();
+    
     this.activatedRoute.data.subscribe(({ event }) => {
       this.event = event;
       if (event) {
         this.updateForm(event);
+        this.loadEventTickets(event.id);
       }
 
       this.loadRelationshipsOptions();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.editor.destroy();
   }
 
   byteSize(base64String: string): string {
@@ -90,6 +104,25 @@ export class EventUpdateComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const event = this.eventFormService.getEvent(this.editForm);
+    
+    // Convert ngx-editor document object to HTML string
+    function isRecordStringAny(obj: any): obj is Record<string, any> {
+      return typeof obj === 'object' && obj !== null;
+    }
+
+    if (isRecordStringAny(event.description)) {
+      const html = toHTML(event.description);
+      event.description = html;
+    }
+    
+    // Validate description length
+    if (event.description && event.description.length > 5000) {
+      console.error('Description too long:', event.description.length);
+      alert('Description cannot exceed 5000 characters. Current length: ' + event.description.length);
+      this.isSaving = false;
+      return;
+    }
+    
     if (event.id !== null) {
       this.subscribeToSaveResponse(this.eventService.update(event));
     } else {
@@ -121,10 +154,6 @@ export class EventUpdateComponent implements OnInit {
     this.eventFormService.resetForm(this.editForm, event);
 
     this.venuesSharedCollection = this.venueService.addVenueToCollectionIfMissing<IVenue>(this.venuesSharedCollection, event.venue);
-    this.personProfilesSharedCollection = this.personProfileService.addPersonProfileToCollectionIfMissing<IPersonProfile>(
-      this.personProfilesSharedCollection,
-      ...(event.participants ?? []),
-    );
   }
 
   protected loadRelationshipsOptions(): void {
@@ -133,18 +162,104 @@ export class EventUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IVenue[]>) => res.body ?? []))
       .pipe(map((venues: IVenue[]) => this.venueService.addVenueToCollectionIfMissing<IVenue>(venues, this.event?.venue)))
       .subscribe((venues: IVenue[]) => (this.venuesSharedCollection = venues));
+  }
 
-    this.personProfileService
-      .query()
-      .pipe(map((res: HttpResponse<IPersonProfile[]>) => res.body ?? []))
-      .pipe(
-        map((personProfiles: IPersonProfile[]) =>
-          this.personProfileService.addPersonProfileToCollectionIfMissing<IPersonProfile>(
-            personProfiles,
-            ...(this.event?.participants ?? []),
-          ),
-        ),
-      )
-      .subscribe((personProfiles: IPersonProfile[]) => (this.personProfilesSharedCollection = personProfiles));
+  getEmptyTicket(): NewTicket {
+    return {
+      id: null,
+      name: '',
+      description: null,
+      price: 0,
+      bookingFee: 0,
+      quantityAvailable: 1,
+      quantitySold: 0,
+      isActive: true,
+      genderRestriction: null,
+      earlyBird: null,
+      event: null
+    };
+  }
+
+  loadEventTickets(eventId: number): void {
+    if (eventId) {
+      this.ticketService.getTicketsByEvent(eventId).subscribe({
+        next: (res) => {
+          this.eventTickets = res.body || [];
+        },
+        error: (error) => {
+          console.error('Error loading event tickets:', error);
+        }
+      });
+    }
+  }
+
+  addTicket(): void {
+    if (this.newTicket.name && this.newTicket.name.trim() && this.newTicket.price !== null && this.newTicket.price !== undefined && this.newTicket.price >= 0) {
+      if (this.event?.id) {
+        // For existing events, save to backend
+        const ticketToCreate = {
+          ...this.newTicket,
+          event: { id: this.event!.id, name: this.event!.name || '' }
+        };
+        
+        this.ticketService.create(ticketToCreate).subscribe({
+          next: (res) => {
+            if (res.body) {
+              this.eventTickets.push(res.body);
+              this.newTicket = this.getEmptyTicket();
+            }
+          },
+          error: (error) => {
+            console.error('Error creating ticket:', error);
+            alert('Error creating ticket. Please try again.');
+          }
+        });
+      } else {
+        // For new events, just add to local array (will be saved when event is saved)
+        const tempTicket: ITicket = {
+          ...this.newTicket,
+          id: Date.now(), // Temporary ID
+          event: null
+        };
+        this.eventTickets.push(tempTicket);
+        this.newTicket = this.getEmptyTicket();
+      }
+    } else {
+      alert('Please fill in the ticket name and set a valid price (0 or higher).');
+    }
+  }
+
+  removeTicket(index: number): void {
+    const ticket = this.eventTickets[index];
+    if (ticket.id && ticket.id > 0) {
+      // Delete from backend if it has a real ID
+      this.ticketService.delete(ticket.id).subscribe({
+        next: () => {
+          this.eventTickets.splice(index, 1);
+        },
+        error: (error) => {
+          console.error('Error deleting ticket:', error);
+        }
+      });
+    } else {
+      // Just remove from local array if it's a temporary ticket
+      this.eventTickets.splice(index, 1);
+    }
+  }
+
+  // Debug method to test binding
+  onTicketNameChange(value: string): void {
+    console.log('Name changed to:', value);
+    this.newTicket.name = value;
+  }
+
+  onTicketPriceChange(value: number): void {
+    console.log('Price changed to:', value);
+    this.newTicket.price = value;
+  }
+
+  onTicketBookingFeeChange(value: number): void {
+    console.log('Booking fee changed to:', value);
+    this.newTicket.bookingFee = value;
   }
 }

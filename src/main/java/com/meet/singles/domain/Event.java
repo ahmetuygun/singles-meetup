@@ -32,8 +32,13 @@ public class Event implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Size(max = 5000)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Size(max = 255)
+    @Column(name = "short_description")
+    private String shortDescription;
 
     @NotNull
     @Column(name = "event_date", nullable = false)
@@ -57,6 +62,7 @@ public class Event implements Serializable {
     private String imageContentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "events" }, allowSetters = true)
     private Venue venue;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "events")
@@ -103,6 +109,19 @@ public class Event implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+    public Event shortDescription(String shortDescription) {
+        this.setShortDescription(shortDescription);
+        return this;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     public ZonedDateTime getEventDate() {
@@ -156,6 +175,8 @@ public class Event implements Serializable {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
+
+
 
     public byte[] getImage() {
         return this.image;
@@ -253,6 +274,7 @@ public class Event implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
+            ", shortDescription='" + getShortDescription() + "'" +
             ", eventDate='" + getEventDate() + "'" +
             ", maxParticipants=" + getMaxParticipants() +
             ", status='" + getStatus() + "'" +

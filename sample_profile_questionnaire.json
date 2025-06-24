@@ -1,0 +1,831 @@
+{
+  "totalQuestions": 30,
+  "answeredQuestions": 27,
+  "profile": {
+    "userLogin": "admin",
+    "firstName": "ahmet",
+    "lastName": "uygun",
+    "testCompleted": true,
+    "gender": "Female",
+    "profileId": 16551,
+    "dob": "2025-06-14",
+    "userEmail": "admin@localhost"
+  },
+  "questions": [
+    {
+      "isRequired": false,
+      "questionId": 6087,
+      "answer": null,
+      "editable": true,
+      "options": [],
+      "language": "en",
+      "stepNumber": 0,
+      "category": "INTRODUCTION",
+      "questionType": "INFO",
+      "questionText": "Welcome to our personality assessment! This questionnaire will help us understand your preferences and match you with compatible people at our events. Please answer all questions honestly for the best results."
+    },
+    {
+      "isRequired": true,
+      "questionId": 14050,
+      "answer": {
+        "answerId": 16529,
+        "answerValue": null,
+        "answerText": "ahmet uygun",
+        "timestamp": "2025-06-13T17:20:26.465554Z"
+      },
+      "editable": false,
+      "options": [],
+      "language": "en",
+      "stepNumber": 1,
+      "category": "USERNAME",
+      "questionType": "TEXT_INPUT",
+      "questionText": "What is your name?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 14100,
+      "answer": {
+        "answerId": 16530,
+        "answerValue": 2,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:20:26.466317Z"
+      },
+      "editable": false,
+      "options": [
+        {
+          "id": 14150,
+          "optionText": "Male",
+          "value": 1
+        },
+        {
+          "id": 14200,
+          "optionText": "Female",
+          "value": 2
+        },
+        {
+          "id": 14250,
+          "optionText": "Non-binary",
+          "value": 3
+        },
+        {
+          "id": 14300,
+          "optionText": "Prefer not to say",
+          "value": 4
+        }
+      ],
+      "language": "en",
+      "stepNumber": 2,
+      "category": "GENDER",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "What is your gender?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 14350,
+      "answer": {
+        "answerId": 16531,
+        "answerValue": null,
+        "answerText": "2025-06-14",
+        "timestamp": "2025-06-13T17:20:26.466650Z"
+      },
+      "editable": false,
+      "options": [],
+      "language": "en",
+      "stepNumber": 3,
+      "category": "DOB",
+      "questionType": "DATE_INPUT",
+      "questionText": "What is your date of birth?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6001,
+      "answer": {
+        "answerId": 16607,
+        "answerValue": 2,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.062869Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6002,
+          "optionText": "Based on logic",
+          "value": 1
+        },
+        {
+          "id": 6003,
+          "optionText": "Based on emotions",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 4,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "How do you usually make decisions?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6004,
+      "answer": {
+        "answerId": 16608,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.063586Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6005,
+          "optionText": "Thinker",
+          "value": 1
+        },
+        {
+          "id": 6006,
+          "optionText": "Feeler",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 5,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "Are you more of a thinker or feeler?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6007,
+      "answer": {
+        "answerId": 16609,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.063889Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6008,
+          "optionText": "I like plans",
+          "value": 1
+        },
+        {
+          "id": 6009,
+          "optionText": "I go with the flow",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 6,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "How do you handle unexpected changes?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6010,
+      "answer": {
+        "answerId": 16610,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.064130Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6011,
+          "optionText": "Very introverted",
+          "value": 1
+        },
+        {
+          "id": 6012,
+          "optionText": "Very extroverted",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 7,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How outgoing are you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6013,
+      "answer": {
+        "answerId": 16611,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.064393Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6014,
+          "optionText": "Not important",
+          "value": 1
+        },
+        {
+          "id": 6015,
+          "optionText": "Very important",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 8,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How important are deep conversations to you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6016,
+      "answer": {
+        "answerId": 16612,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.064663Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6017,
+          "optionText": "Not romantic",
+          "value": 1
+        },
+        {
+          "id": 6018,
+          "optionText": "Extremely romantic",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 9,
+      "category": "PERSONALITY_COMMUNICATION",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How romantic are you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6019,
+      "answer": {
+        "answerId": 16613,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.064959Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6020,
+          "optionText": "Not active",
+          "value": 1
+        },
+        {
+          "id": 6021,
+          "optionText": "Very active",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 10,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How physically active are you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6022,
+      "answer": {
+        "answerId": 16614,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.065257Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6023,
+          "optionText": "Relaxing and quiet",
+          "value": 1
+        },
+        {
+          "id": 6024,
+          "optionText": "Out and social",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 11,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "What's your ideal weekend like?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6025,
+      "answer": {
+        "answerId": 16615,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.065597Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6026,
+          "optionText": "Rarely",
+          "value": 1
+        },
+        {
+          "id": 6027,
+          "optionText": "Very often",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 12,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How often do you feel stressed?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6028,
+      "answer": {
+        "answerId": 16616,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.065914Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6029,
+          "optionText": "Not important",
+          "value": 1
+        },
+        {
+          "id": 6030,
+          "optionText": "Very important",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 13,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How important is physical touch in a relationship?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6031,
+      "answer": {
+        "answerId": 16617,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.066233Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6032,
+          "optionText": "Not at all",
+          "value": 1
+        },
+        {
+          "id": 6033,
+          "optionText": "I love it",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 14,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "Do you enjoy edgy or politically incorrect humor?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6034,
+      "answer": {
+        "answerId": 16618,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.066538Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6035,
+          "optionText": "Not at all",
+          "value": 1
+        },
+        {
+          "id": 6036,
+          "optionText": "Very creative",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 15,
+      "category": "LIFESTYLE_HABITS",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How creative do you consider yourself?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6037,
+      "answer": {
+        "answerId": 16619,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.068014Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6038,
+          "optionText": "Not important",
+          "value": 1
+        },
+        {
+          "id": 6039,
+          "optionText": "Extremely important",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 16,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How important is family in your life?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6040,
+      "answer": {
+        "answerId": 16620,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.068536Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6041,
+          "optionText": "Not at all",
+          "value": 1
+        },
+        {
+          "id": 6042,
+          "optionText": "Very much",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 17,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How spiritual or religious are you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6043,
+      "answer": {
+        "answerId": 16621,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.069555Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6044,
+          "optionText": "Not important",
+          "value": 1
+        },
+        {
+          "id": 6045,
+          "optionText": "Very important",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 18,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How important is it that your partner shares your values?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6046,
+      "answer": {
+        "answerId": 16622,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.069757Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6047,
+          "optionText": "Not important",
+          "value": 1
+        },
+        {
+          "id": 6048,
+          "optionText": "Very important",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 19,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How important is it to have shared hobbies with a partner?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6049,
+      "answer": {
+        "answerId": 16623,
+        "answerValue": 3,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.069940Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6050,
+          "optionText": "Not at all",
+          "value": 1
+        },
+        {
+          "id": 6051,
+          "optionText": "Very much",
+          "value": 2
+        }
+      ],
+      "language": "en",
+      "stepNumber": 20,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "ONE_TO_FIVE",
+      "questionText": "How driven or ambitious are you?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6052,
+      "answer": {
+        "answerId": 16624,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.070162Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6053,
+          "optionText": "Single",
+          "value": 1
+        },
+        {
+          "id": 6054,
+          "optionText": "In a relationship",
+          "value": 2
+        },
+        {
+          "id": 6055,
+          "optionText": "Prefer not to say",
+          "value": 3
+        }
+      ],
+      "language": "en",
+      "stepNumber": 21,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "What is your relationship status?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6056,
+      "answer": null,
+      "editable": true,
+      "options": [
+        {
+          "id": 6057,
+          "optionText": "No",
+          "value": 1
+        },
+        {
+          "id": 6058,
+          "optionText": "Yes",
+          "value": 2
+        },
+        {
+          "id": 6059,
+          "optionText": "Not sure",
+          "value": 3
+        },
+        {
+          "id": 6060,
+          "optionText": "Prefer not to say",
+          "value": 4
+        }
+      ],
+      "language": "en",
+      "stepNumber": 22,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "Do you want to have (more) children?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6061,
+      "answer": {
+        "answerId": 16625,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.070712Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6062,
+          "optionText": "Long-term relationship",
+          "value": 1
+        },
+        {
+          "id": 6063,
+          "optionText": "Dating with potential",
+          "value": 2
+        },
+        {
+          "id": 6064,
+          "optionText": "Something casual",
+          "value": 3
+        },
+        {
+          "id": 6065,
+          "optionText": "Just meeting people",
+          "value": 4
+        }
+      ],
+      "language": "en",
+      "stepNumber": 23,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "What are you looking for right now?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6066,
+      "answer": {
+        "answerId": 16626,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.071109Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6067,
+          "optionText": "Yes",
+          "value": 1
+        },
+        {
+          "id": 6068,
+          "optionText": "No",
+          "value": 2
+        },
+        {
+          "id": 6069,
+          "optionText": "Occasionally",
+          "value": 3
+        }
+      ],
+      "language": "en",
+      "stepNumber": 24,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "Do you smoke or vape?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6070,
+      "answer": {
+        "answerId": 16627,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.071348Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6071,
+          "optionText": "Yes",
+          "value": 1
+        },
+        {
+          "id": 6072,
+          "optionText": "No",
+          "value": 2
+        },
+        {
+          "id": 6073,
+          "optionText": "Occasionally",
+          "value": 3
+        }
+      ],
+      "language": "en",
+      "stepNumber": 25,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "Do you drink alcohol?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6079,
+      "answer": {
+        "answerId": 16628,
+        "answerValue": 1,
+        "answerText": null,
+        "timestamp": "2025-06-13T17:21:35.071534Z"
+      },
+      "editable": true,
+      "options": [
+        {
+          "id": 6080,
+          "optionText": "Women",
+          "value": 1
+        },
+        {
+          "id": 6081,
+          "optionText": "Men",
+          "value": 2
+        },
+        {
+          "id": 6082,
+          "optionText": "Everyone",
+          "value": 3
+        },
+        {
+          "id": 6083,
+          "optionText": "Prefer not to say",
+          "value": 4
+        }
+      ],
+      "language": "en",
+      "stepNumber": 26,
+      "category": "VALUES_RELATIONSHIP_ATTITUDES",
+      "questionType": "SINGLE_CHOICE",
+      "questionText": "What genders are you open to dating?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6085,
+      "answer": {
+        "answerId": 16629,
+        "answerValue": null,
+        "answerText": "Armenia",
+        "timestamp": "2025-06-13T17:21:35.071754Z"
+      },
+      "editable": true,
+      "options": [],
+      "language": "en",
+      "stepNumber": 29,
+      "category": "IDENTITY_RELATIONSHIP_INTENTIONS",
+      "questionType": "COUNTRY_SELECTION",
+      "questionText": "Where are you from?"
+    },
+    {
+      "isRequired": true,
+      "questionId": 6086,
+      "answer": {
+        "answerId": 16606,
+        "answerValue": null,
+        "answerText": "Project Manager",
+        "timestamp": "2025-06-13T17:20:26.478263Z"
+      },
+      "editable": false,
+      "options": [],
+      "language": "en",
+      "stepNumber": 30,
+      "category": "JOB",
+      "questionType": "JOB_SELECTION",
+      "questionText": "What is your profession?"
+    },
+    {
+      "isRequired": false,
+      "questionId": 6088,
+      "answer": null,
+      "editable": true,
+      "options": [],
+      "language": "en",
+      "stepNumber": 31,
+      "category": "CONCLUSION",
+      "questionType": "INFO",
+      "questionText": "Thank you for completing our personality assessment! Your responses will help us create better matches and recommend events that align with your interests. Click Submit to finish."
+    }
+  ],
+  "generatedAt": "2025-06-13T17:36:57.046704Z"
+}

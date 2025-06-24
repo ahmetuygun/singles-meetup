@@ -54,8 +54,10 @@ export class PaymentComponent implements OnInit {
   }
 
   getBookingFees(): number {
-    // 10% booking fee on the total ticket price
-    return this.getTotalPrice() * 0.1;
+    return this.selectedTickets().reduce((total, selection) => {
+      const ticketBookingFee = selection.ticket.bookingFee || (selection.ticket.price || 0) * 0.1; // Default 10% if not set
+      return total + (ticketBookingFee * selection.quantity);
+    }, 0);
   }
 
   getTotalWithFees(): number {
