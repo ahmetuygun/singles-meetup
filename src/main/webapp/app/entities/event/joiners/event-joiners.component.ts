@@ -169,12 +169,11 @@ export class EventJoinersComponent implements OnInit {
           );
           this.userEvents.set(serverUpdatedUserEvents);
         }
-        console.log(`Participant ${updatedStatus ? 'checked in' : 'checked out'} successfully`);
+        // Participant status updated successfully
       },
       error: (error) => {
         // Revert on error
         this.userEvents.set(currentUserEvents);
-        console.error('Failed to update check-in status:', error);
         // The user will see the UI revert, indicating the operation failed
       }
     });

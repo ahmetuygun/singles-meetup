@@ -230,14 +230,13 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
             this.close();
           }
           if (err && !(err instanceof NotFoundException)) {
-            console.error('QR scanning error:', err);
+            // QR scanning error
           }
         }
       );
 
       this.scanning = false;
     } catch (error) {
-      console.error('Error starting QR scanner:', error);
       this.cameraError = 'Unable to access camera. Please check permissions and try again.';
       this.scanning = false;
     }

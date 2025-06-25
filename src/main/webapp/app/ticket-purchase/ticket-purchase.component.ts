@@ -56,7 +56,7 @@ export class TicketPurchaseComponent implements OnInit {
         this.tickets.set(response.body || []);
       },
       error: (error) => {
-        console.error('Error loading tickets:', error);
+        // Error loading tickets
       }
     });
   }

@@ -127,7 +127,6 @@ export class EventDetailComponent {
           this.manualEntryComponent.onValidationComplete();
         }
         
-        console.error('Error validating QR code:', error);
         alert('Error validating QR code. Please try again.');
       }
     });

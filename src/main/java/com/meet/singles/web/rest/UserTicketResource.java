@@ -146,9 +146,7 @@ public class UserTicketResource {
                 userEvent.setPaymentStatus(PaymentStatus.PAID);
                 userEvent.setQrCode(qrCode);
                 userEventRepository.save(userEvent);
-                log.debug("Created UserEvent with QR code for person {} and event {}", personProfile.getId(), event.getId());
             } else {
-                log.debug("UserEvent already exists for person {} and event {}", personProfile.getId(), event.getId());
                 
                 // Update existing UserEvent with QR code if it doesn't have one
                 UserEvent userEvent = existingUserEvent.get();
@@ -164,7 +162,6 @@ public class UserTicketResource {
                     String qrCode = qrCodeService.generateTicketQrCode(ticketCode, event.getId(), personProfile.getId());
                     userEvent.setQrCode(qrCode);
                     userEventRepository.save(userEvent);
-                    log.debug("Updated existing UserEvent with QR code for person {} and event {}", personProfile.getId(), event.getId());
                 }
             }
         }
@@ -188,14 +185,6 @@ public class UserTicketResource {
             .orElseThrow(() -> new BadRequestAlertException("Person profile not found", ENTITY_NAME, "profilenotfound"));
 
         List<UserTicket> userTickets = userTicketRepository.findByPersonProfileIdWithTicketAndEvent(personProfile.getId());
-        
-        // Debug log to check if event information is loaded
-        for (UserTicket userTicket : userTickets) {
-            log.info("UserTicket: {}, Ticket: {}, Event: {}", 
-                userTicket.getId(), 
-                userTicket.getTicket() != null ? userTicket.getTicket().getName() : "null",
-                userTicket.getTicket() != null && userTicket.getTicket().getEvent() != null ? userTicket.getTicket().getEvent().getName() : "null");
-        }
         
         return userTickets;
     }
