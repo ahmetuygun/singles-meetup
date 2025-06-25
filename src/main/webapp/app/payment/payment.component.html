@@ -46,25 +46,50 @@
       <h5 class="text-dark mb-4 fw-semibold">Select Payment Type</h5>
 
       <!-- Apple Pay Option -->
-      <div class="border-bottom py-4">
-        <div class="d-flex align-items-center">
-          <div class="form-check me-4">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="paymentMethod"
-              id="applePay"
-              value="apple"
-              [checked]="selectedPaymentMethod() === 'apple'"
-              (change)="selectPaymentMethod('apple')"
-              style="transform: scale(1.2);"
-            >
-          </div>
+      @if (applePayAvailable()) {
+        <div class="border-bottom py-4">
           <div class="d-flex align-items-center">
-            <img src="content/images/apple-pay.png" alt="Apple Pay" style="height: 45px; width: auto;">
+            <div class="form-check me-4">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="paymentMethod"
+                id="applePay"
+                value="apple"
+                [checked]="selectedPaymentMethod() === 'apple'"
+                (change)="selectPaymentMethod('apple')"
+                style="transform: scale(1.2);"
+              >
+            </div>
+            <div class="d-flex align-items-center">
+              <img src="content/images/apple-pay.png" alt="Apple Pay" style="height: 45px; width: auto;">
+            </div>
           </div>
         </div>
-      </div>
+      }
+
+      <!-- Google Pay Option -->
+      @if (googlePayAvailable()) {
+        <div class="border-bottom py-4">
+          <div class="d-flex align-items-center">
+            <div class="form-check me-4">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="paymentMethod"
+                id="googlePay"
+                value="google"
+                [checked]="selectedPaymentMethod() === 'google'"
+                (change)="selectPaymentMethod('google')"
+                style="transform: scale(1.2);"
+              >
+            </div>
+            <div class="d-flex align-items-center">
+              <img src="content/images/google-pay.png" alt="Google Pay" style="height: 45px; width: auto;">
+            </div>
+          </div>
+        </div>
+      }
 
       <!-- Card Payment Option -->
       <div class="py-4">
@@ -89,74 +114,17 @@
     <!-- Card Form (shown when card payment is selected) -->
     @if (selectedPaymentMethod() === 'card') {
       <div class="mb-5">
-        <!-- Card Number -->
+        <!-- Stripe Card Element Container -->
         <div class="mb-5">
           <label class="form-label text-dark fw-medium mb-3">
-            Card Number <span class="text-danger">*</span>
+            Card Details <span class="text-danger">*</span>
           </label>
-          <input
-            type="text"
-            class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
-            placeholder="1234 1234 1234 1234"
-            [value]="cardNumber()"
-            (input)="formatCardNumber($event)"
-            maxlength="19"
-            style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
-          >
-        </div>
-
-        <!-- Name on Card -->
-        <div class="mb-5">
-          <label class="form-label text-dark fw-medium mb-3">
-            Name On Card <span class="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
-            placeholder="John Smith"
-            [value]="cardName()"
-            (input)="onCardNameChange($event)"
-            style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
-          >
-        </div>
-
-        <!-- Expiry Date and Security Code Row -->
-        <div class="row gx-4">
-          <div class="col-6">
-            <div class="mb-5">
-              <label class="form-label text-dark fw-medium mb-3">
-                Expires End <span class="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2"
-                placeholder="MM / YY"
-                [value]="expiryDate()"
-                (input)="formatExpiryDate($event)"
-                maxlength="5"
-                style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
-              >
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="mb-5">
-              <label class="form-label text-dark fw-medium mb-3">
-                Security Code <span class="text-danger">*</span>
-              </label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control bg-transparent border-0 border-bottom border-dark text-dark fs-5 pb-2 pe-5"
-                  placeholder="CVC"
-                  [value]="securityCode()"
-                  (input)="onSecurityCodeChange($event)"
-                  maxlength="4"
-                  style="background: transparent !important; box-shadow: none; border-radius: 0; border-width: 2px !important;"
-                >
-                <fa-icon icon="lock" class="position-absolute text-dark" style="right: 0; bottom: 8px; font-size: 18px;"></fa-icon>
-              </div>
-            </div>
-          </div>
+          <div 
+            id="stripe-card-element"
+            class="p-3 border-bottom border-dark"
+            style="min-height: 50px; background: transparent;"
+          ></div>
+          <small class="text-muted">Secure payment powered by Stripe</small>
         </div>
 
         <!-- Save Card Checkbox -->
@@ -176,7 +144,7 @@
           </div>
         </div>
       </div>
-          }
+    }
 
     <!-- Event Details -->
     @if (event()) {
@@ -211,6 +179,9 @@
             Processing...
           } @else if (selectedPaymentMethod() === 'apple') {
             <img src="content/images/apple-pay.png" alt="Apple Pay" class="me-2" style="height: 45px; width: auto;">
+            €{{ getTotalWithFees().toFixed(2) }}
+          } @else if (selectedPaymentMethod() === 'google') {
+            <img src="content/images/google-pay.png" alt="Google Pay" class="me-2" style="height: 45px; width: auto;">
             €{{ getTotalWithFees().toFixed(2) }}
           } @else {
             <fa-icon icon="lock" class="me-2 text-white"></fa-icon>

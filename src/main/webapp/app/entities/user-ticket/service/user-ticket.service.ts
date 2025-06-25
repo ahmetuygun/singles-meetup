@@ -27,6 +27,7 @@ export type EntityArrayResponseType = HttpResponse<IUserTicket[]>;
 export interface PurchaseRequest {
   ticketSelections: TicketSelection[];
   paymentMethod: string;
+  stripePaymentIntentId?: string; // Optional for Stripe payments
 }
 
 export interface TicketSelection {

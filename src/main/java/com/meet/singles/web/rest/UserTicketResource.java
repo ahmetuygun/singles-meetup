@@ -12,7 +12,10 @@ import com.meet.singles.repository.PersonProfileRepository;
 import com.meet.singles.repository.TicketRepository;
 import com.meet.singles.security.SecurityUtils;
 import com.meet.singles.service.QrCodeService;
+import com.meet.singles.service.StripeService;
 import com.meet.singles.web.rest.errors.BadRequestAlertException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,19 +55,22 @@ public class UserTicketResource {
     private final PersonProfileRepository personProfileRepository;
     private final TicketRepository ticketRepository;
     private final QrCodeService qrCodeService;
+    private final StripeService stripeService;
 
     public UserTicketResource(
         UserTicketRepository userTicketRepository,
         UserEventRepository userEventRepository,
         PersonProfileRepository personProfileRepository,
         TicketRepository ticketRepository,
-        QrCodeService qrCodeService
+        QrCodeService qrCodeService,
+        StripeService stripeService
     ) {
         this.userTicketRepository = userTicketRepository;
         this.userEventRepository = userEventRepository;
         this.personProfileRepository = personProfileRepository;
         this.ticketRepository = ticketRepository;
         this.qrCodeService = qrCodeService;
+        this.stripeService = stripeService;
     }
 
     /**
@@ -83,6 +89,21 @@ public class UserTicketResource {
         
         PersonProfile personProfile = personProfileRepository.findByInternalUserLogin(currentUserLogin)
             .orElseThrow(() -> new BadRequestAlertException("Person profile not found", ENTITY_NAME, "profilenotfound"));
+
+        // Validate Stripe payment if payment intent ID is provided
+        if (purchaseRequest.getStripePaymentIntentId() != null) {
+            try {
+                PaymentIntent paymentIntent = stripeService.retrievePaymentIntent(purchaseRequest.getStripePaymentIntentId());
+                if (!"succeeded".equals(paymentIntent.getStatus())) {
+                    throw new BadRequestAlertException("Payment not completed", ENTITY_NAME, "paymentnotcompleted");
+                }
+                // Update payment method to reflect Stripe payment
+                purchaseRequest.setPaymentMethod("stripe");
+            } catch (StripeException e) {
+                log.error("Error validating Stripe payment", e);
+                throw new BadRequestAlertException("Invalid payment intent", ENTITY_NAME, "invalidpaymentintent");
+            }
+        }
 
         // Track unique events for UserEvent creation
         Set<Event> uniqueEvents = new HashSet<>();
@@ -217,6 +238,7 @@ public class UserTicketResource {
     public static class PurchaseRequest {
         private List<TicketSelection> ticketSelections;
         private String paymentMethod;
+        private String stripePaymentIntentId; // For Stripe payments
 
         public List<TicketSelection> getTicketSelections() {
             return ticketSelections;
@@ -232,6 +254,14 @@ public class UserTicketResource {
 
         public void setPaymentMethod(String paymentMethod) {
             this.paymentMethod = paymentMethod;
+        }
+
+        public String getStripePaymentIntentId() {
+            return stripePaymentIntentId;
+        }
+
+        public void setStripePaymentIntentId(String stripePaymentIntentId) {
+            this.stripePaymentIntentId = stripePaymentIntentId;
         }
     }
 

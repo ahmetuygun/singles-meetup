@@ -90,3 +90,9 @@ jhipster:
 # ===================================================================
 
 # application:
+
+# Stripe Configuration
+stripe:
+  secret-key: sk_test_51234567890abcdef # Replace with your actual Stripe test secret key
+  publishable-key: pk_test_51234567890abcdef # Replace with your actual Stripe test publishable key
+  webhook-secret: whsec_test_51234567890abcdef # Replace with your actual Stripe webhook secret
