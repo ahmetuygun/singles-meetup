@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-center">
-  <div class="col-8">
+  <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-7">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-event-heading" data-cy="EventCreateUpdateHeading" jhiTranslate="singlesMeetup2App.event.home.createOrEditLabel">
         Create or edit a Event
@@ -209,20 +209,74 @@
             <div class="mb-4">
               <h6 class="mb-3">Current Tickets</h6>
               @for (ticket of eventTickets; track $index) {
-                <div class="card mb-3 border-secondary">
-                  <div class="card-body">
-                    <div class="row align-items-center">
+                <div class="card mb-3 border-0 shadow-sm">
+                  <div class="card-body p-3">
+                    <!-- Mobile-first layout -->
+                    <div class="d-md-none">
+                      <!-- Ticket Header -->
+                      <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1">
+                          <h6 class="mb-1 fw-bold text-dark">{{ ticket.name }}</h6>
+                          <div class="d-flex align-items-center gap-2">
+                            <fa-icon icon="ticket-alt" class="text-muted" style="font-size: 0.875rem;"></fa-icon>
+                            <small class="text-muted">Ticket Type</small>
+                          </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTicket($index)" title="Delete ticket">
+                          <fa-icon icon="trash"></fa-icon>
+                        </button>
+                      </div>
+                      
+                      <!-- Ticket Details -->
+                      <div class="row g-2 mb-3">
+                        <div class="col-6">
+                          <div class="bg-light rounded p-2 text-center">
+                            <div class="fw-bold text-primary fs-5">€{{ ticket.price }}</div>
+                            <small class="text-muted">Base Price</small>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="bg-light rounded p-2 text-center">
+                            <div class="fw-bold text-secondary">+€{{ (ticket.bookingFee || 0).toFixed(2) }}</div>
+                            <small class="text-muted">Booking Fee</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Additional Info -->
+                      <div class="border-top pt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center">
+                            <fa-icon icon="users" class="text-muted me-1" style="font-size: 0.875rem;"></fa-icon>
+                            <small class="text-muted">Quantity: <span class="fw-semibold">{{ ticket.quantityAvailable }}</span></small>
+                          </div>
+                          <span [class]="ticket.isActive ? 'badge bg-success' : 'badge bg-secondary'">
+                            <fa-icon [icon]="ticket.isActive ? 'check-circle' : 'pause-circle'" class="me-1"></fa-icon>
+                            {{ ticket.isActive ? 'Active' : 'Inactive' }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Desktop layout -->
+                    <div class="row align-items-center d-none d-md-flex">
                       <div class="col-md-4">
-                        <strong>{{ ticket.name }}</strong>
+                        <div class="d-flex align-items-center">
+                          <fa-icon icon="ticket-alt" class="text-muted me-2"></fa-icon>
+                          <strong>{{ ticket.name }}</strong>
+                        </div>
                       </div>
                       <div class="col-md-2">
-                        <span class="badge bg-primary">€{{ ticket.price }}</span>
+                        <span class="badge bg-primary fs-6">€{{ ticket.price }}</span>
                       </div>
                       <div class="col-md-2">
                         <small class="text-muted">+€{{ (ticket.bookingFee || 0).toFixed(2) }} fee</small>
                       </div>
                       <div class="col-md-2">
-                        <small class="text-muted">Qty: {{ ticket.quantityAvailable }}</small>
+                        <small class="text-muted">
+                          <fa-icon icon="users" class="me-1"></fa-icon>
+                          Qty: {{ ticket.quantityAvailable }}
+                        </small>
                       </div>
                       <div class="col-md-1">
                         <span [class]="ticket.isActive ? 'badge bg-success' : 'badge bg-secondary'">
@@ -230,7 +284,7 @@
                         </span>
                       </div>
                       <div class="col-md-1">
-                        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTicket($index)">
+                        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTicket($index)" title="Delete ticket">
                           <fa-icon icon="trash"></fa-icon>
                         </button>
                       </div>
@@ -248,7 +302,7 @@
             </div>
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                   <div class="mb-3">
                     <label class="form-label">Ticket Name *</label>
                     <input 
@@ -261,7 +315,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                   <div class="mb-3">
                     <label class="form-label">Price (€) *</label>
                     <input 
@@ -275,7 +329,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                   <div class="mb-3">
                     <label class="form-label">Booking Fee (€)</label>
                     <input 
@@ -289,7 +343,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                   <div class="mb-3">
                     <label class="form-label">Quantity</label>
                     <input 
@@ -300,10 +354,10 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-6 col-md-1">
                   <div class="mb-3">
                     <label class="form-label">Active</label>
-                    <div class="form-check">
+                    <div class="form-check mt-2">
                       <input 
                         class="form-check-input" 
                         type="checkbox" 
@@ -315,10 +369,7 @@
                 </div>
               </div>
               
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">
-                  Debug: Name: "{{ newTicket.name }}", Price: {{ newTicket.price }}, Booking Fee: {{ newTicket.bookingFee }}
-                </small>
+              <div class="d-flex justify-content-end">
                 <button 
                   type="button" 
                   class="btn btn-primary" 

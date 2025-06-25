@@ -146,13 +146,11 @@ export class PaymentComponent implements OnInit {
 
     this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
       next: (response) => {
-        console.log('Purchase completed:', response.body);
         this.isProcessing.set(false);
         alert('Payment processed successfully!');
         this.router.navigate(['/my-tickets']);
       },
       error: (error) => {
-        console.error('Purchase failed:', error);
         this.isProcessing.set(false);
         alert('Payment failed. Please try again.');
       }

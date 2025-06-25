@@ -22,8 +22,7 @@ export class VenueDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('VenueDetailComponent initialized');
-    console.log('Venue input:', this.venue());
+    // Component initialized
   }
 
   getGoogleMapsEmbedUrl(lat: number, lng: number, name: string): SafeResourceUrl {

@@ -117,7 +117,6 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
     
     // Validate description length
     if (event.description && event.description.length > 5000) {
-      console.error('Description too long:', event.description.length);
       alert('Description cannot exceed 5000 characters. Current length: ' + event.description.length);
       this.isSaving = false;
       return;
@@ -187,7 +186,7 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
           this.eventTickets = res.body || [];
         },
         error: (error) => {
-          console.error('Error loading event tickets:', error);
+          // Error loading event tickets
         }
       });
     }
@@ -210,7 +209,6 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
             }
           },
           error: (error) => {
-            console.error('Error creating ticket:', error);
             alert('Error creating ticket. Please try again.');
           }
         });
@@ -238,7 +236,7 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
           this.eventTickets.splice(index, 1);
         },
         error: (error) => {
-          console.error('Error deleting ticket:', error);
+          // Error deleting ticket
         }
       });
     } else {
@@ -247,19 +245,15 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Debug method to test binding
   onTicketNameChange(value: string): void {
-    console.log('Name changed to:', value);
     this.newTicket.name = value;
   }
 
   onTicketPriceChange(value: number): void {
-    console.log('Price changed to:', value);
     this.newTicket.price = value;
   }
 
   onTicketBookingFeeChange(value: number): void {
-    console.log('Booking fee changed to:', value);
     this.newTicket.bookingFee = value;
   }
 }
