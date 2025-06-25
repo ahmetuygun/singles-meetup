@@ -41,8 +41,8 @@
     } @else {
       <div class="event-cards-container">
         @for (event of events(); track trackId($index, event)) {
-          <div class="card border-0 rounded-4 event-card-bootstrap" style="min-width: 280px; max-width: 320px; cursor: pointer;" (click)="navigateToEvent(event.id)">
-            <div class="position-relative overflow-hidden rounded-top-4" style="height: 200px;">
+          <div class="card border-0 rounded-4 event-card-bootstrap" (click)="navigateToEvent(event.id)">
+            <div class="position-relative overflow-hidden rounded-top-4 event-card-image">
               @if (event.image) {
                 <img [src]="'data:' + event.imageContentType + ';base64,' + event.image" [alt]="event.name"
                      class="w-100 h-100" style="object-fit: cover;" />
@@ -54,27 +54,27 @@
               <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25"></div>
             </div>
 
-                        <div class="card-body p-4 d-flex flex-column" style="min-height: 250px;">
-              <h5 class="card-title fw-bold text-dark mb-3 lh-sm" style="font-size: 1.3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ event.name }}</h5>
+            <div class="card-body p-3 d-flex flex-column event-card-body">
+              <h5 class="card-title fw-bold text-dark mb-2 lh-sm event-card-title">{{ event.name }}</h5>
 
               <div class="mb-3">
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-1">
                   <div class="flex-fill">
-                    <div class="alert alert-warning d-flex align-items-center py-2 w-100 event-badge" style="font-size: 0.95rem;">
-                      <i class="fas fa-calendar-alt me-2" style="font-size: 0.9rem;"></i>
-                      <span class="fw-medium">{{ getFormattedEventDate(event.eventDate) }}</span>
+                    <div class="alert alert-warning d-flex align-items-center py-1 px-2 w-100 event-badge">
+                      <i class="fas fa-calendar-alt me-1 event-badge-icon"></i>
+                      <span class="fw-medium event-badge-text">{{ getFormattedEventDate(event.eventDate) }}</span>
                     </div>
                   </div>
                   <div class="flex-fill">
-                    <div class="alert alert-primary d-flex align-items-center py-2 w-100 event-badge" style="font-size: 0.95rem;">
-                      <i class="fas fa-map-marker-alt me-2" style="font-size: 0.9rem;"></i>
-                      <span class="fw-medium">{{ event.venue?.name || 'TBD' }}</span>
+                    <div class="alert alert-primary d-flex align-items-center py-1 px-2 w-100 event-badge">
+                      <i class="fas fa-map-marker-alt me-1 event-badge-icon"></i>
+                      <span class="fw-medium event-badge-text">{{ event.venue?.name || 'TBD' }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <p class="card-text text-muted flex-grow-1 mb-0" style="font-size: 0.95rem; line-height: 1.4;">
+              <p class="card-text text-muted flex-grow-1 mb-0 event-card-description">
                 {{ event.shortDescription || getPlainTextDescription(event.description) }}
               </p>
             </div>
@@ -89,7 +89,7 @@
   .event-list-container {
     width: 100%;
     overflow-x: auto;
-    padding: 1rem 1rem;
+    padding: 1rem 0.5rem;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     scrollbar-width: none; /* Firefox */
@@ -102,8 +102,8 @@
 
   .event-cards-container {
     display: flex;
-    gap: 1.5rem;
-    padding: 0 1rem;
+    gap: 1rem;
+    padding: 0 0.5rem;
     min-width: min-content;
     width: 100%;
   }
@@ -112,31 +112,139 @@
     flex-shrink: 0;
     scroll-snap-align: start;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid #000 !important;
-    box-shadow: 5px 5px #000 !important;
+    border: 2px solid #000 !important;
+    box-shadow: 6px 6px 0 #000 !important;
+    cursor: pointer;
+    
+    /* Mobile-first approach: 1.5 cards visible on mobile */
+    width: 65vw;
+    max-width: 280px;
+    min-width: 240px;
+  }
+
+  /* Responsive sizing for different screen sizes */
+  @media (min-width: 576px) {
+    .event-card-bootstrap {
+      width: 300px;
+      max-width: 320px;
+    }
+    
+    .event-cards-container {
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .event-card-bootstrap {
+      width: 320px;
+    }
   }
 
   .event-card-bootstrap:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 3px 3px #000 !important;
+    transform: translate(3px, 3px);
+    box-shadow: 3px 3px 0 #000 !important;
+  }
+
+  .event-card-image {
+    height: 160px;
+  }
+
+  /* Mobile image height adjustment */
+  @media (min-width: 576px) {
+    .event-card-image {
+      height: 200px;
+    }
+  }
+
+  .event-card-body {
+    min-height: 200px;
+    padding: 0.75rem !important;
+  }
+
+  @media (min-width: 576px) {
+    .event-card-body {
+      min-height: 250px;
+      padding: 1rem !important;
+    }
+  }
+
+  .event-card-title {
+    font-size: 1.1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 576px) {
+    .event-card-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem !important;
+    }
+  }
+
+  .event-card-description {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (min-width: 576px) {
+    .event-card-description {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      -webkit-line-clamp: 4;
+    }
   }
 
   .event-badge {
     margin-bottom: 0 !important;
-    padding: 0.375rem 0.75rem !important;
-    min-height: 2.5rem;
+    padding: 0.4rem 0.5rem !important;
+    min-height: auto;
     background-color: transparent !important;
-    border: 1px solid #dee2e6;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.75rem;
   }
 
-  .event-badge i {
+  @media (min-width: 576px) {
+    .event-badge {
+      padding: 0.5rem 0.75rem !important;
+      min-height: 2.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .event-badge-icon {
+    font-size: 0.8rem;
     flex-shrink: 0;
   }
 
-  .event-badge span {
+  @media (min-width: 576px) {
+    .event-badge-icon {
+      font-size: 0.9rem;
+    }
+  }
+
+  .event-badge-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
+
+  @media (min-width: 576px) {
+    .event-badge-text {
+      font-size: 0.8rem;
+    }
   }
 </style>
