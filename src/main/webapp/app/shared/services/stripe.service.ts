@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { loadStripe, Stripe, StripeElements, StripeCardElement, PaymentRequest, PaymentRequestPaymentMethodEvent } from '@stripe/stripe-js';
 import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,13 @@ export class StripeService {
         await this.loadStripeConfig();
       }
       if (this.stripePublishableKey) {
-        this.stripe = await loadStripe(this.stripePublishableKey);
+        try {
+          this.stripe = await loadStripe(this.stripePublishableKey);
+          console.log('Stripe loaded successfully');
+        } catch (error) {
+          console.error('Failed to load Stripe:', error);
+          throw new Error('Failed to initialize Stripe');
+        }
       } else {
         throw new Error('Failed to load Stripe configuration');
       }
@@ -32,12 +39,22 @@ export class StripeService {
   private async loadStripeConfig(): Promise<void> {
     try {
       const config = await firstValueFrom(
-        this.http.get<{ publishableKey: string }>('/api/stripe/config')
+        this.http.get<{ publishableKey: string }>('/api/stripe/config').pipe(
+          // Add a 5-second timeout
+          timeout(5000)
+        )
       );
-      this.stripePublishableKey = config.publishableKey;
+      this.stripePublishableKey = (config as { publishableKey: string }).publishableKey;
+      console.log('Stripe config loaded successfully');
     } catch (error) {
       console.error('Failed to load Stripe configuration:', error);
-      throw error;
+      // Try to use a fallback key for development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('Using fallback test key for development');
+        this.stripePublishableKey = 'pk_test_51RhWHeFZCL6fhfMsDOgEH0Kq7hCcZrejYIghESUWhBfGTBeRccYtYuWTmsbR7ZrjArJtwSprSneoQHNHYhNDRkyB002qQLBtgw';
+      } else {
+        throw error;
+      }
     }
   }
 

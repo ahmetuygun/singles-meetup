@@ -273,6 +273,14 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
         await this.processWalletPayment();
       }
 
+      // Only reset processing if no modal is shown (success case)
+      if (!this.showPaymentModal()) {
+        console.log('completePurchase: Payment completed without modal, resetting processing');
+        this.isProcessing.set(false);
+      } else {
+        console.log('completePurchase: Modal shown, keeping processing state for user interaction');
+      }
+
     } catch (error) {
       console.log('completePurchase: Error caught, resetting processing to false');
       this.isProcessing.set(false);
@@ -280,18 +288,16 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       this.paymentSuccess.set(false);
       this.paymentErrorMessage.set('Payment failed. Please try again.');
       this.showPaymentModal.set(true);
-    } finally {
-      console.log('completePurchase: Finally block, resetting processing to false');
-      this.isProcessing.set(false);
-      console.log('completePurchase: Processing state after reset:', this.isProcessing());
     }
   }
 
   private async processCardPayment(): Promise<void> {
     // Check rate limits before processing
+    console.log('Checking payment limits - attempts:', this.paymentAttempts, 'max:', this.maxPaymentAttempts);
     if (!this.canProcessPayment()) {
-      this.errorMessage.set('Too many payment attempts. Please wait before trying again.');
-      return;
+      const error = new Error('Too many payment attempts. Please wait before trying again.');
+      this.errorMessage.set(error.message);
+      throw error;
     }
 
 
@@ -357,8 +363,9 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   private async processWalletPayment(): Promise<void> {
     // Check rate limits before processing
     if (!this.canProcessPayment()) {
-      this.errorMessage.set('Too many payment attempts. Please wait before trying again.');
-      return;
+      const error = new Error('Too many payment attempts. Please wait before trying again.');
+      this.errorMessage.set(error.message);
+      throw error;
     }
 
     this.errorMessage.set('');
@@ -434,18 +441,14 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     return new Promise<void>((resolve, reject) => {
       this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
         next: (response) => {
-          console.log('Payment successful, showing modal...');
           this.paymentSuccess.set(true);
           this.showPaymentModal.set(true);
-          console.log('Modal should be visible now. showPaymentModal:', this.showPaymentModal());
           resolve();
         },
         error: (error) => {
-          console.log('Payment error, showing error modal...');
           this.paymentSuccess.set(false);
           this.paymentErrorMessage.set('Payment succeeded but ticket creation failed. Please contact support.');
           this.showPaymentModal.set(true);
-          console.log('Error modal should be visible now. showPaymentModal:', this.showPaymentModal());
           reject(error);
         }
       });
@@ -461,26 +464,28 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  testModal(): void {
-    console.log('Testing modal...');
-    this.paymentSuccess.set(true);
-    this.showPaymentModal.set(true);
-    console.log('Test modal should be visible. showPaymentModal:', this.showPaymentModal());
-  }
+
 
   closePaymentModal(): void {
-    console.log('Closing payment modal...');
+    const wasSuccessful = this.paymentSuccess();
+    
     this.showPaymentModal.set(false);
     this.paymentSuccess.set(false);
     this.paymentErrorMessage.set('');
     
-    // Always reset processing state when modal is closed
+    // Reset processing state when modal is closed
     this.isProcessing.set(false);
-    console.log('Modal closed. showPaymentModal:', this.showPaymentModal());
+    console.log('Modal closed, processing state reset to:', this.isProcessing());
+    
+    // If payment was successful, automatically route to tickets page
+    if (wasSuccessful) {
+      this.router.navigate(['/my-tickets']);
+    }
   }
 
   goToMyTickets(): void {
     this.closePaymentModal();
+    // Route to my tickets page
     this.router.navigate(['/my-tickets']);
   }
 
@@ -490,6 +495,8 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.paymentSuccess.set(false);
     this.paymentErrorMessage.set('');
     this.showPaymentModal.set(false);
+    // Also clear payment attempts when resetting state
+    this.clearPaymentAttempts();
   }
 
   refreshAndRetry(): void {
@@ -537,16 +544,27 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   private canProcessPayment(): boolean {
     const now = Date.now();
     
+    console.log('canProcessPayment check:');
+    console.log('- Current attempts:', this.paymentAttempts);
+    console.log('- Max attempts:', this.maxPaymentAttempts);
+    console.log('- Last attempt time:', this.lastPaymentAttemptTime);
+    console.log('- Current time:', now);
+    console.log('- Time since last attempt:', this.lastPaymentAttemptTime > 0 ? now - this.lastPaymentAttemptTime : 'N/A');
+    console.log('- Cooldown period:', this.paymentCooldownMs);
+    
     // Check maximum attempts
     if (this.paymentAttempts >= this.maxPaymentAttempts) {
+      console.log('Payment blocked: Too many attempts');
       return false;
     }
     
     // Check cooldown period
     if (this.lastPaymentAttemptTime > 0 && (now - this.lastPaymentAttemptTime) < this.paymentCooldownMs) {
+      console.log('Payment blocked: Still in cooldown period');
       return false;
     }
     
+    console.log('Payment allowed');
     return true;
   }
 
@@ -564,12 +582,13 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Clear payment attempts on successful payment
    */
-  private clearPaymentAttempts(): void {
+  clearPaymentAttempts(): void {
     this.paymentAttempts = 0;
     this.lastPaymentAttemptTime = 0;
     
     localStorage.removeItem('payment_attempts');
     localStorage.removeItem('last_payment_attempt');
+    console.log('Payment attempts cleared');
   }
 
   /**
