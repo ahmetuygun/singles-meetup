@@ -59,7 +59,7 @@ public class StripeService {
      * @throws StripeException if the request fails
      */
     public PaymentIntent createPaymentIntentWithIdempotency(Long amount, String currency, Map<String, String> metadata, String idempotencyKey) throws StripeException {
-        log.debug("Creating payment intent with idempotency key for amount: {} {}", amount, currency);
+        log.info("Creating payment intent with idempotency key for amount: {} {} with idempotency key: {}", amount, currency, idempotencyKey);
         
         PaymentIntentCreateParams.Builder paramsBuilder = PaymentIntentCreateParams.builder()
             .setAmount(amount)
@@ -72,6 +72,7 @@ public class StripeService {
         
         if (metadata != null && !metadata.isEmpty()) {
             paramsBuilder.putAllMetadata(metadata);
+            log.info("Adding metadata to payment intent: {}", metadata);
         }
         
         PaymentIntentCreateParams params = paramsBuilder.build();
@@ -81,10 +82,21 @@ public class StripeService {
             .setIdempotencyKey(idempotencyKey)
             .build();
         
-        PaymentIntent paymentIntent = PaymentIntent.create(params, requestOptions);
-        
-        log.debug("Created payment intent with ID: {} using idempotency key", paymentIntent.getId());
-        return paymentIntent;
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.create(params, requestOptions);
+            
+            log.info("Successfully created payment intent with ID: {} using idempotency key: {}", paymentIntent.getId(), idempotencyKey);
+            log.info("Payment intent details: Amount={}, Currency={}, Status={}, Client Secret exists={}", 
+                paymentIntent.getAmount(), 
+                paymentIntent.getCurrency(), 
+                paymentIntent.getStatus(),
+                paymentIntent.getClientSecret() != null);
+            
+            return paymentIntent;
+        } catch (StripeException e) {
+            log.error("Failed to create payment intent with idempotency key: {}. Error: {}", idempotencyKey, e.getMessage());
+            throw e;
+        }
     }
 
     /**

@@ -69,6 +69,12 @@ public class PaymentResource {
                 idempotencyKey
             );
             
+            log.info("Payment intent created successfully: ID={}, Amount={}, Currency={}, Status={}", 
+                paymentIntent.getId(), 
+                amountInCents, 
+                request.getCurrency(), 
+                paymentIntent.getStatus());
+            
             PaymentIntentResponse response = new PaymentIntentResponse(
                 paymentIntent.getId(),
                 paymentIntent.getClientSecret(),

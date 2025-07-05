@@ -54,24 +54,35 @@ export class StripeService {
   async createCardElement(elementId: string): Promise<void> {
     await this.createElements();
     
-    if (this.elements && !this.cardElement) {
+    if (!this.elements) {
+      throw new Error('Stripe elements not initialized');
+    }
+    
+    if (!this.cardElement) {
       this.cardElement = this.elements.create('card', {
         style: {
           base: {
             fontSize: '18px',
             color: '#000000',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             '::placeholder': {
               color: '#6c757d'
             }
+          },
+          invalid: {
+            color: '#dc3545',
+            iconColor: '#dc3545'
           }
         },
         hidePostalCode: true
       });
       
       const cardElementContainer = document.getElementById(elementId);
-      if (cardElementContainer) {
-        this.cardElement.mount(`#${elementId}`);
+      if (!cardElementContainer) {
+        throw new Error(`Element with ID '${elementId}' not found`);
       }
+      
+      this.cardElement.mount(`#${elementId}`);
     }
   }
 
@@ -108,13 +119,60 @@ export class StripeService {
       throw new Error('Invalid client secret format');
     }
 
-    const result = await this.stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: this.cardElement,
+    try {
+      // First, retrieve the payment intent to check its current status
+      const paymentIntentId = clientSecret.split('_secret_')[0];
+      const paymentIntent = await this.stripe.retrievePaymentIntent(clientSecret);
+      
+      // Handle different payment intent states
+      switch (paymentIntent.paymentIntent?.status) {
+        case 'succeeded':
+        case 'processing':
+          return paymentIntent;
+          
+        case 'canceled':
+          throw new Error('Payment was canceled');
+          
+        case 'requires_payment_method':
+        case 'requires_confirmation':
+        case 'requires_action':
+          // These are the states where we can confirm the payment
+          break;
+          
+        default:
+          break;
       }
-    });
 
-    return result;
+      // Proceed with confirmation
+      console.log('Stripe: Confirming card payment with client secret:', clientSecret);
+      const result = await this.stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: this.cardElement,
+        }
+      });
+
+      console.log('Stripe: Payment confirmation result:', result);
+      console.log('Stripe: Payment status:', result.paymentIntent?.status);
+      console.log('Stripe: Payment ID:', result.paymentIntent?.id);
+      
+      return result;
+      
+    } catch (error: any) {
+      // Handle specific Stripe error codes
+      if (error.code === 'payment_intent_unexpected_state') {
+        // Try to retrieve the current state and handle appropriately
+        try {
+          const paymentIntent = await this.stripe.retrievePaymentIntent(clientSecret);
+          if (paymentIntent.paymentIntent?.status === 'succeeded') {
+            return paymentIntent;
+          }
+        } catch (retrieveError) {
+          // Ignore retrieval errors
+        }
+      }
+      
+      throw error;
+    }
   }
 
   /**
@@ -128,23 +186,48 @@ export class StripeService {
     return clientSecretPattern.test(clientSecret);
   }
 
-  async processPaymentRequestPayment(clientSecret: string): Promise<void> {
+  async processPaymentRequestPayment(clientSecret: string): Promise<any> {
     if (!this.paymentRequest) {
       throw new Error('Payment request not initialized');
     }
 
-    this.paymentRequest.on('paymentmethod', async (event: PaymentRequestPaymentMethodEvent) => {
-      if (!this.stripe) return;
+    // Return a promise that resolves when payment is completed
+    return new Promise((resolve, reject) => {
+      this.paymentRequest!.on('paymentmethod', async (event: PaymentRequestPaymentMethodEvent) => {
+        if (!this.stripe) {
+          event.complete('fail');
+          reject(new Error('Stripe not initialized'));
+          return;
+        }
 
-      const { error } = await this.stripe.confirmCardPayment(clientSecret, {
-        payment_method: event.paymentMethod.id
+        try {
+          console.log('Processing wallet payment with client secret:', clientSecret);
+          const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+            payment_method: event.paymentMethod.id
+          });
+
+          if (error) {
+            console.error('Wallet payment failed:', error);
+            event.complete('fail');
+            reject(error);
+          } else {
+            console.log('Wallet payment succeeded:', paymentIntent);
+            event.complete('success');
+            resolve({ paymentIntent, error: null });
+          }
+        } catch (err) {
+          console.error('Wallet payment error:', err);
+          event.complete('fail');
+          reject(err);
+        }
       });
 
-      if (error) {
-        event.complete('fail');
-        throw error;
-      } else {
-        event.complete('success');
+      // Show the payment request (Apple Pay/Google Pay sheet)
+      try {
+        this.paymentRequest!.show();
+      } catch (error) {
+        console.error('Failed to show payment request:', error);
+        reject(error);
       }
     });
   }

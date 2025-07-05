@@ -102,8 +102,8 @@ jhipster:
 
 # application:
 
-# Stripe Configuration
+# Stripe Configuration (Replace with your actual keys)
 stripe:
-  secret-key: ${STRIPE_SECRET_KEY:sk_live_change_me} # Set via environment variable in production
-  publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_live_change_me} # Set via environment variable in production
-  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_live_change_me} # Set via environment variable in production
+  secret-key: sk_test_YOUR_STRIPE_SECRET_KEY_HERE
+  publishable-key: pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE
+  webhook-secret: whsec_test_YOUR_STRIPE_WEBHOOK_SECRET_HERE

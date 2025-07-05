@@ -93,6 +93,6 @@ jhipster:
 
 # Stripe Configuration
 stripe:
-  secret-key: sk_test_51234567890abcdef # Replace with your actual Stripe test secret key
-  publishable-key: pk_test_51234567890abcdef # Replace with your actual Stripe test publishable key
-  webhook-secret: whsec_test_51234567890abcdef # Replace with your actual Stripe webhook secret
+  secret-key: sk_test_YOUR_STRIPE_SECRET_KEY_HERE
+  publishable-key: pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE
+  webhook-secret: whsec_test_YOUR_STRIPE_WEBHOOK_SECRET_HERE

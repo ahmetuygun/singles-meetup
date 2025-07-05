@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'jhi-payment',
   templateUrl: './payment.component.html',
+  styleUrls: ['./payment.component.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule, SharedModule],
 })
@@ -39,9 +40,15 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   applePayAvailable = signal<boolean>(false);
   googlePayAvailable = signal<boolean>(false);
   stripeCardElementMounted = signal<boolean>(false);
+  stripeCardElementComplete = signal<boolean>(false);
   
   // Error handling
   errorMessage = signal<string>('');
+
+  // Modal states
+  showPaymentModal = signal<boolean>(false);
+  paymentSuccess = signal<boolean>(false);
+  paymentErrorMessage = signal<string>('');
 
   private readonly maxPaymentAttempts = 3;
   private paymentAttempts = 0;
@@ -56,7 +63,13 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     if (state?.selectedTickets && state?.event) {
       this.selectedTickets.set(state.selectedTickets);
       this.event.set(state.event);
-      this.initializeStripe();
+      // Initialize Stripe first, then setup the card element
+      this.initializeStripe().then(() => {
+        // After Stripe is initialized, mount the card element if card is selected
+        if (this.selectedPaymentMethod() === 'card') {
+          setTimeout(() => this.mountStripeCardElement(), 200);
+        }
+      });
     } else {
       // If no state, redirect back
       this.router.navigate(['/']);
@@ -65,9 +78,8 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // This will be called after the view is initialized
-    // We'll mount the Stripe card element here if needed
-    if (this.isStripeInitialized() && this.selectedPaymentMethod() === 'card') {
+    // Ensure card element is mounted after view is ready
+    if (this.isStripeInitialized() && this.selectedPaymentMethod() === 'card' && !this.stripeCardElementMounted()) {
       setTimeout(() => this.mountStripeCardElement(), 100);
     }
   }
@@ -79,30 +91,76 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async initializeStripe(): Promise<void> {
     try {
+      console.log('Initializing Stripe...');
       await this.stripeService.initializeStripe();
       this.isStripeInitialized.set(true);
+      console.log('Stripe initialized successfully');
       
       // Check if Apple Pay / Google Pay is available
+      await this.checkWalletPaymentAvailability();
+    } catch (error) {
+      console.error('Failed to initialize Stripe:', error);
+      this.errorMessage.set('Failed to initialize payment system. Please refresh the page.');
+    }
+  }
+
+  async checkWalletPaymentAvailability(): Promise<void> {
+    try {
       const paymentRequest = await this.stripeService.createPaymentRequest(this.getTotalWithFees());
       if (paymentRequest) {
         const result = await paymentRequest.canMakePayment();
         if (result) {
           this.applePayAvailable.set(result.applePay || false);
           this.googlePayAvailable.set(result.googlePay || false);
+          console.log('Apple Pay available:', result.applePay);
+          console.log('Google Pay available:', result.googlePay);
+        } else {
+          console.log('No wallet payment methods available');
+          this.applePayAvailable.set(false);
+          this.googlePayAvailable.set(false);
         }
+      } else {
+        console.log('Payment request not supported');
+        this.applePayAvailable.set(false);
+        this.googlePayAvailable.set(false);
       }
     } catch (error) {
-      console.error('Failed to initialize Stripe:', error);
+      console.error('Failed to check wallet payment availability:', error);
+      this.applePayAvailable.set(false);
+      this.googlePayAvailable.set(false);
     }
   }
 
   async mountStripeCardElement(): Promise<void> {
     if (!this.stripeCardElementMounted()) {
       try {
+        console.log('Mounting Stripe card element...');
+        const cardElementContainer = document.getElementById('stripe-card-element');
+        if (!cardElementContainer) {
+          console.error('Card element container not found');
+          return;
+        }
+        
         await this.stripeService.createCardElement('stripe-card-element');
         this.stripeCardElementMounted.set(true);
+        console.log('Stripe card element mounted successfully');
+        
+        // Setup card element change listener
+        const cardElement = this.stripeService.getCardElement();
+        if (cardElement) {
+          cardElement.on('change', (event) => {
+            this.stripeCardElementComplete.set(event.complete);
+            
+            if (event.error) {
+              this.errorMessage.set(event.error.message);
+            } else {
+              this.errorMessage.set('');
+            }
+          });
+        }
       } catch (error) {
         console.error('Failed to mount Stripe card element:', error);
+        this.errorMessage.set('Failed to load card input. Please refresh the page.');
       }
     }
   }
@@ -161,28 +219,25 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   processPurchase(): void {
-    if (this.selectedPaymentMethod() === 'apple') {
-      // Handle Apple Pay
+    if (this.selectedPaymentMethod() === 'apple' || this.selectedPaymentMethod() === 'google') {
+      // Handle Apple Pay / Google Pay
       this.isProcessing.set(true);
-      setTimeout(() => {
-        this.completePurchase();
-      }, 2000);
-    } else {
-      // Handle card payment
+      this.completePurchase();
+    } else if (this.selectedPaymentMethod() === 'card') {
+      // Handle card payment with Stripe Elements
       if (this.validateCardForm()) {
         this.isProcessing.set(true);
-        setTimeout(() => {
-          this.completePurchase();
-        }, 2000);
+        this.completePurchase();
       }
     }
   }
 
   validateCardForm(): boolean {
-    return this.cardNumber().length > 0 && 
-           this.cardName().length > 0 && 
-           this.expiryDate().length > 0 && 
-           this.securityCode().length > 0;
+    // For Stripe Elements, we check if the card element is complete and valid
+    if (this.selectedPaymentMethod() === 'card') {
+      return this.stripeCardElementMounted() && this.stripeCardElementComplete();
+    }
+    return true;
   }
 
   getButtonDisabled(): boolean {
@@ -204,46 +259,43 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.securityCode.set(target.value);
   }
 
+
+
   async completePurchase(): Promise<void> {
     try {
+      console.log('completePurchase: Setting processing to true');
       this.isProcessing.set(true);
 
-      // Step 1: Create payment intent on backend
-      const paymentIntentData = {
-        amount: Math.round(this.getTotalWithFees() * 100), // Convert to cents
-        currency: 'eur',
-        ticketSelections: this.selectedTickets().map(selection => ({
-          ticketId: selection.ticket.id,
-          quantity: selection.quantity
-        })),
-        paymentMethod: this.selectedPaymentMethod()
-      };
-
-      const paymentIntentResponse = await this.http.post<any>('/api/payments/create-intent', paymentIntentData).toPromise();
-      const clientSecret = paymentIntentResponse.clientSecret;
-
-      // Step 2: Process payment based on selected method
+      // Step 1: Process payment based on selected method
       if (this.selectedPaymentMethod() === 'card') {
-        await this.processCardPayment(clientSecret);
+        await this.processCardPayment();
       } else if (this.selectedPaymentMethod() === 'apple' || this.selectedPaymentMethod() === 'google') {
-        await this.processWalletPayment(clientSecret);
+        await this.processWalletPayment();
       }
 
     } catch (error) {
+      console.log('completePurchase: Error caught, resetting processing to false');
       this.isProcessing.set(false);
       console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
+      this.paymentSuccess.set(false);
+      this.paymentErrorMessage.set('Payment failed. Please try again.');
+      this.showPaymentModal.set(true);
+    } finally {
+      console.log('completePurchase: Finally block, resetting processing to false');
+      this.isProcessing.set(false);
+      console.log('completePurchase: Processing state after reset:', this.isProcessing());
     }
   }
 
-  private async processCardPayment(clientSecret: string): Promise<void> {
+  private async processCardPayment(): Promise<void> {
     // Check rate limits before processing
     if (!this.canProcessPayment()) {
       this.errorMessage.set('Too many payment attempts. Please wait before trying again.');
       return;
     }
 
-    this.isProcessing.set(true);
+
+
     this.errorMessage.set('');
     
     // Record payment attempt
@@ -266,28 +318,106 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       // Process payment with Stripe
       const result = await this.stripeService.processCardPayment(paymentIntentResponse.clientSecret);
       
+      // LOG STRIPE RESPONSE FOR DEBUGGING
+      console.log('=== STRIPE PAYMENT RESULT ===');
+      console.log('Full result:', result);
+      console.log('Payment Intent:', result.paymentIntent);
+      console.log('Payment Status:', result.paymentIntent?.status);
+      console.log('Payment ID:', result.paymentIntent?.id);
+      console.log('Error:', result.error);
+      console.log('==============================');
+      
       if (result.error) {
+        console.log('Processing payment error:', result.error);
         this.handlePaymentError(result.error);
-      } else if (result.paymentIntent?.status === 'succeeded') {
-        await this.completeTicketPurchase(result.paymentIntent.id);
-        this.clearPaymentAttempts(); // Clear attempts on success
+      } else if (result.paymentIntent?.status === 'succeeded' || result.paymentIntent?.status === 'processing') {
+        console.log('Payment successful, completing ticket purchase...');
+        try {
+          await this.completeTicketPurchase(result.paymentIntent.id);
+          this.clearPaymentAttempts(); // Clear attempts on success
+          console.log('Ticket purchase completed successfully');
+          // Success modal will be shown by completeTicketPurchase
+        } catch (completionError) {
+          console.log('Ticket completion failed:', completionError);
+          this.handlePaymentError(completionError);
+        }
+      } else if (result.paymentIntent?.status === 'requires_action') {
+        console.log('Payment requires additional action');
+        this.errorMessage.set('Payment requires additional authentication. Please complete the verification and try again.');
       } else {
+        console.log('Payment processing incomplete, status:', result.paymentIntent?.status);
+        this.errorMessage.set('Payment processing incomplete. Please try again.');
+      }
+    } catch (error: any) {
+      this.handlePaymentError(error);
+      throw error; // Re-throw to let completePurchase handle it
+    }
+  }
+
+  private async processWalletPayment(): Promise<void> {
+    // Check rate limits before processing
+    if (!this.canProcessPayment()) {
+      this.errorMessage.set('Too many payment attempts. Please wait before trying again.');
+      return;
+    }
+
+    this.errorMessage.set('');
+    
+    // Record payment attempt
+    this.recordPaymentAttempt();
+
+    try {
+      // Create payment intent first
+      const paymentIntentResponse = await firstValueFrom(
+        this.http.post<any>('/api/payments/create-intent', {
+          amount: this.getTotalWithFees(),
+          bookingFee: this.getBookingFees(),
+          currency: 'eur',
+          userId: '1', // TODO: Get from actual user service
+          eventId: this.event()?.id?.toString() || '',
+          ticketId: this.selectedTickets()[0]?.ticket.id?.toString() || '',
+          quantity: this.selectedTickets().reduce((sum, selection) => sum + selection.quantity, 0)
+        })
+      );
+
+      // Create fresh payment request for this payment attempt
+      const paymentRequest = await this.stripeService.createPaymentRequest(this.getTotalWithFees());
+      if (!paymentRequest) {
+        throw new Error('Wallet payment not available on this device');
+      }
+      
+      // Process wallet payment with Stripe
+      const result = await this.stripeService.processPaymentRequestPayment(paymentIntentResponse.clientSecret);
+      
+      // LOG WALLET PAYMENT RESULT FOR DEBUGGING
+      console.log('=== WALLET PAYMENT RESULT ===');
+      console.log('Full result:', result);
+      console.log('Payment Intent:', result.paymentIntent);
+      console.log('Payment Status:', result.paymentIntent?.status);
+      console.log('Payment ID:', result.paymentIntent?.id);
+      console.log('Error:', result.error);
+      console.log('=============================');
+      
+      if (result.error) {
+        console.log('Processing wallet payment error:', result.error);
+        this.handlePaymentError(result.error);
+      } else if (result.paymentIntent?.status === 'succeeded' || result.paymentIntent?.status === 'processing') {
+        console.log('Wallet payment successful, completing ticket purchase...');
+        try {
+          await this.completeTicketPurchase(result.paymentIntent.id);
+          this.clearPaymentAttempts(); // Clear attempts on success
+          console.log('Wallet ticket purchase completed successfully');
+        } catch (completionError) {
+          console.log('Wallet ticket completion failed:', completionError);
+          this.handlePaymentError(completionError);
+        }
+      } else {
+        console.log('Wallet payment processing incomplete, status:', result.paymentIntent?.status);
         this.errorMessage.set('Payment processing incomplete. Please try again.');
       }
     } catch (error) {
       this.handlePaymentError(error);
-    } finally {
-      this.isProcessing.set(false);
-    }
-  }
-
-  private async processWalletPayment(clientSecret: string): Promise<void> {
-    try {
-      await this.stripeService.processPaymentRequestPayment(clientSecret);
-      // Payment success will be handled in the payment request callback
-      await this.completeTicketPurchase(clientSecret);
-    } catch (error) {
-      throw error;
+      throw error; // Re-throw to let completePurchase handle it
     }
   }
 
@@ -301,17 +431,20 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       stripePaymentIntentId: paymentIntentId
     };
 
-    this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
-      next: (response) => {
-        this.isProcessing.set(false);
-        alert('Payment processed successfully!');
-        this.router.navigate(['/my-tickets']);
-      },
-      error: (error) => {
-        this.isProcessing.set(false);
-        console.error('Ticket purchase failed:', error);
-        alert('Payment succeeded but ticket creation failed. Please contact support.');
-      }
+    return new Promise<void>((resolve, reject) => {
+      this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
+        next: (response) => {
+          this.paymentSuccess.set(true);
+          this.showPaymentModal.set(true);
+          resolve();
+        },
+        error: (error) => {
+          this.paymentSuccess.set(false);
+          this.paymentErrorMessage.set('Payment succeeded but ticket creation failed. Please contact support.');
+          this.showPaymentModal.set(true);
+          reject(error);
+        }
+      });
     });
   }
 
@@ -322,6 +455,51 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.router.navigate(['/']);
     }
+  }
+
+  closePaymentModal(): void {
+    this.showPaymentModal.set(false);
+    this.paymentSuccess.set(false);
+    this.paymentErrorMessage.set('');
+    
+    // Always reset processing state when modal is closed
+    this.isProcessing.set(false);
+  }
+
+  goToMyTickets(): void {
+    this.closePaymentModal();
+    this.router.navigate(['/my-tickets']);
+  }
+
+  resetPaymentState(): void {
+    this.isProcessing.set(false);
+    this.errorMessage.set('');
+    this.paymentSuccess.set(false);
+    this.paymentErrorMessage.set('');
+    this.showPaymentModal.set(false);
+  }
+
+  refreshAndRetry(): void {
+    // Reset all payment state
+    this.resetPaymentState();
+    
+    // Destroy and reinitialize Stripe elements to get a fresh state
+    this.stripeService.destroy();
+    this.stripeCardElementMounted.set(false);
+    this.stripeCardElementComplete.set(false);
+    
+    // Reinitialize Stripe and mount card element
+    setTimeout(async () => {
+      try {
+        await this.initializeStripe();
+        if (this.selectedPaymentMethod() === 'card') {
+          await this.mountStripeCardElement();
+        }
+      } catch (error) {
+        console.error('Failed to reinitialize Stripe:', error);
+        this.errorMessage.set('Failed to refresh payment system. Please reload the page.');
+      }
+    }, 100);
   }
 
   /**
@@ -387,26 +565,57 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   private handlePaymentError(error: any): void {
     console.error('Payment error:', error);
     
-    // Provide specific error messages based on error type
+    let errorMessage = '';
+    
+    // Handle Stripe-specific errors
     if (error.type === 'card_error') {
       switch (error.code) {
         case 'card_declined':
-          this.errorMessage.set('Your card was declined. Please check your card details or try a different card.');
+          errorMessage = 'Your card was declined. Please check your card details or try a different card.';
           break;
         case 'insufficient_funds':
-          this.errorMessage.set('Insufficient funds. Please check your account balance.');
+          errorMessage = 'Insufficient funds. Please check your account balance.';
           break;
         case 'expired_card':
-          this.errorMessage.set('Your card has expired. Please use a different card.');
+          errorMessage = 'Your card has expired. Please use a different card.';
           break;
         case 'incorrect_cvc':
-          this.errorMessage.set('The security code (CVC) is incorrect. Please check and try again.');
+          errorMessage = 'The security code (CVC) is incorrect. Please check and try again.';
           break;
         default:
-          this.errorMessage.set(`Card error: ${error.message || 'Please check your card details.'}`);
+          errorMessage = `Card error: ${error.message || 'Please check your card details.'}`;
+      }
+    } else if (error.type === 'invalid_request_error') {
+      switch (error.code) {
+        case 'payment_intent_unexpected_state':
+          errorMessage = 'This payment has already been processed or is in an invalid state. Please refresh the page and try again.';
+          break;
+        case 'payment_method_not_available':
+          errorMessage = 'This payment method is not available. Please try a different card.';
+          break;
+        default:
+          errorMessage = `Payment error: ${error.message || 'Please try again.'}`;
+      }
+    } else if (error.type === 'authentication_error') {
+      errorMessage = 'Payment authentication failed. Please verify your payment details and try again.';
+    } else if (error.type === 'rate_limit_error') {
+      errorMessage = 'Too many payment requests. Please wait a moment and try again.';
+    } else if (error.message) {
+      // Handle custom error messages
+      if (error.message.includes('already been processed')) {
+        errorMessage = 'This payment has already been processed. Please check your tickets or refresh the page.';
+      } else if (error.message.includes('canceled')) {
+        errorMessage = 'Payment was canceled. Please try again with a new payment.';
+      } else {
+        errorMessage = error.message;
       }
     } else {
-      this.errorMessage.set('An error occurred while processing your payment. Please try again.');
+      errorMessage = 'An error occurred while processing your payment. Please try again.';
     }
+    
+    // Show payment failure modal
+    this.paymentSuccess.set(false);
+    this.paymentErrorMessage.set(errorMessage);
+    this.showPaymentModal.set(true);
   }
 } 
