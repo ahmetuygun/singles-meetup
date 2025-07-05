@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -7,6 +7,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import {EventComponent} from "../entities/event/list/event.component";
 import FaqComponent from "../faq/faq.component";
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'jhi-home',
@@ -14,8 +15,9 @@ import FaqComponent from "../faq/faq.component";
   styleUrl: './home.component.scss',
   imports: [SharedModule, RouterModule, EventComponent, FaqComponent],
 })
-export default class HomeComponent implements OnInit {
+export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  faMapMarkerAlt = faMapMarkerAlt;
 
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
@@ -23,6 +25,10 @@ export default class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
+  }
+
+  ngOnDestroy(): void {
+    // Clean up any remaining event listeners if needed
   }
 
   login(): void {
