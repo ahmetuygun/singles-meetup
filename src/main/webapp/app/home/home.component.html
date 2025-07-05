@@ -3,17 +3,13 @@
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
         <div class="location-badge mb-4">
-          <i class="fas fa-map-marker-alt me-2"></i>
+          <fa-icon [icon]="faMapMarkerAlt" class="me-2"></fa-icon>
           Dublin
         </div>
         
-        <h1 class="hero-title mb-3">GO BEYOND RANDOM.</h1>
-        <h2 class="hero-subtitle mb-4">ENGINEERED SOCIAL EVENTS.</h2>
-        
-        <p class="hero-description mb-5">
-          Our process begins with a comprehensive personality test to understand your mindset.
-          We then use that data to curate your experience, placing you at tables where genuine connection is not just a chance—it's by design.
-        </p>
+        <div class="hero-hashtag mb-2">#NotRandom</div>
+        <h1 class="hero-title mb-3">Connect with <span class="text-nowrap">like-minded</span> strangers</h1>
+        <h2 class="hero-subtitle mb-4">A personality-driven algorithm brings together people who just click—for dinners, parties, and meetups where connection feels natural.</h2>
         
         <div class="d-flex flex-row justify-content-center align-items-center gap-3 my-4">
           @if (!account()) {
@@ -71,6 +67,62 @@
                 <p>After the event, let us know who you liked. If it's mutual, we'll connect you for a chat.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Grid Section -->
+<div class="photo-grid-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="text-center mb-5">
+          <h2 class="grid-title mb-3">WHEN CHEMISTRY HAPPENS</h2>
+          <p class="grid-subtitle">Real moments from events where <span class="text-nowrap">like-minded</span> people truly connect</p>
+        </div>
+        
+        <div class="polaroid-collage">
+          <div class="polaroid-photo polaroid-1">
+            <div class="polaroid-frame">
+              <img src="content/images/collage/image1.webp" alt="Singles Event 1" class="photo-img">
+              <div class="polaroid-caption">Friends</div>
+            </div>
+            <div class="polaroid-shadow"></div>
+          </div>
+          
+          <div class="polaroid-photo polaroid-2">
+            <div class="polaroid-frame">
+              <img src="content/images/collage/image2.jpg" alt="Singles Event 2" class="photo-img">
+              <div class="polaroid-caption">Garden Party Vibes</div>
+            </div>
+            <div class="polaroid-shadow"></div>
+          </div>
+          
+          <div class="polaroid-photo polaroid-3">
+            <div class="polaroid-frame">
+              <img src="content/images/collage/image3.webp" alt="Singles Event 3" class="photo-img">
+              <div class="polaroid-caption">Night Out Together</div>
+            </div>
+            <div class="polaroid-shadow"></div>
+          </div>
+          
+          <div class="polaroid-photo polaroid-4">
+            <div class="polaroid-frame">
+              <img src="content/images/collage/image4.jpg" alt="Singles Event 4" class="photo-img">
+              <div class="polaroid-caption">Making Connections</div>
+            </div>
+            <div class="polaroid-shadow"></div>
+          </div>
+          
+          <div class="polaroid-photo polaroid-5">
+            <div class="polaroid-frame">
+              <img src="content/images/collage/image5.jpg" alt="Singles Event 5" class="photo-img">
+              <div class="polaroid-caption">Great Conversations</div>
+            </div>
+            <div class="polaroid-shadow"></div>
           </div>
         </div>
       </div>
