@@ -165,6 +165,12 @@
 
     <!-- Bottom Section -->
     <div class="position-fixed bottom-0 bg-white border-top shadow-lg p-4" style="left: 50%; transform: translateX(-50%); max-width: 480px; width: 100%;">
+      <!-- Test Modal Button (temporary) -->
+      <div class="mb-3">
+        <button type="button" class="btn btn-info btn-sm" (click)="testModal()">
+          Test Modal
+        </button>
+      </div>
       <!-- Purchase Button -->
       <div class="d-grid">
                 <button
@@ -191,4 +197,78 @@
       </div>
     </div>
   </div>
+
+  <!-- Payment Result Modal -->
+  @if (showPaymentModal()) {
+    <div class="modal payment-modal show" style="display: block; z-index: 9999;" tabindex="-1" role="dialog">
+      <div class="modal-backdrop show" (click)="closePaymentModal()"></div>
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <!-- Success Header -->
+          @if (paymentSuccess()) {
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title text-white">
+                <fa-icon icon="check-circle" class="me-2"></fa-icon>
+                Payment Successful
+              </h5>
+              <button type="button" class="btn-close btn-close-white" (click)="closePaymentModal()"></button>
+            </div>
+          }
+
+          <!-- Error Header -->
+          @if (!paymentSuccess()) {
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title text-white">
+                <fa-icon icon="times-circle" class="me-2"></fa-icon>
+                Payment Failed
+              </h5>
+              <button type="button" class="btn-close btn-close-white" (click)="closePaymentModal()"></button>
+            </div>
+          }
+
+          <!-- Modal Body -->
+          <div class="modal-body text-center py-4">
+            @if (paymentSuccess()) {
+              <!-- Success Content -->
+              <fa-icon icon="check-circle" class="text-success mb-3" style="font-size: 4rem;"></fa-icon>
+              <h4 class="mb-3">Thank you for your purchase!</h4>
+              <div class="alert alert-success">
+                <strong>Payment Amount: €{{ getTotalWithFees().toFixed(2) }}</strong>
+              </div>
+              <p class="text-muted">Your tickets have been confirmed and sent to your account.</p>
+            } @else {
+              <!-- Error Content -->
+              <fa-icon icon="times-circle" class="text-danger mb-3" style="font-size: 4rem;"></fa-icon>
+              <h4 class="mb-3">Payment Failed</h4>
+              <div class="alert alert-warning">
+                {{ paymentErrorMessage() || 'An error occurred while processing your payment. Please try again.' }}
+              </div>
+              <p class="text-muted">Your payment was not processed. Please check your payment details and try again.</p>
+            }
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            @if (paymentSuccess()) {
+              <button type="button" class="btn btn-success" (click)="goToMyTickets()">
+                <fa-icon icon="ticket-alt" class="me-2"></fa-icon>
+                View My Tickets
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="closePaymentModal()">Close</button>
+            } @else {
+              @if (paymentErrorMessage().includes('already been processed') || paymentErrorMessage().includes('invalid state')) {
+                <button type="button" class="btn btn-warning" (click)="refreshAndRetry()">
+                  <fa-icon icon="sync" class="me-2"></fa-icon>
+                  Refresh & Retry
+                </button>
+              } @else {
+                <button type="button" class="btn btn-primary" (click)="closePaymentModal()">Try Again</button>
+              }
+              <button type="button" class="btn btn-secondary" (click)="goBack()">Go Back</button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

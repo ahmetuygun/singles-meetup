@@ -434,14 +434,18 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     return new Promise<void>((resolve, reject) => {
       this.userTicketService.purchaseTickets(purchaseRequest).subscribe({
         next: (response) => {
+          console.log('Payment successful, showing modal...');
           this.paymentSuccess.set(true);
           this.showPaymentModal.set(true);
+          console.log('Modal should be visible now. showPaymentModal:', this.showPaymentModal());
           resolve();
         },
         error: (error) => {
+          console.log('Payment error, showing error modal...');
           this.paymentSuccess.set(false);
           this.paymentErrorMessage.set('Payment succeeded but ticket creation failed. Please contact support.');
           this.showPaymentModal.set(true);
+          console.log('Error modal should be visible now. showPaymentModal:', this.showPaymentModal());
           reject(error);
         }
       });
@@ -457,13 +461,22 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  testModal(): void {
+    console.log('Testing modal...');
+    this.paymentSuccess.set(true);
+    this.showPaymentModal.set(true);
+    console.log('Test modal should be visible. showPaymentModal:', this.showPaymentModal());
+  }
+
   closePaymentModal(): void {
+    console.log('Closing payment modal...');
     this.showPaymentModal.set(false);
     this.paymentSuccess.set(false);
     this.paymentErrorMessage.set('');
     
     // Always reset processing state when modal is closed
     this.isProcessing.set(false);
+    console.log('Modal closed. showPaymentModal:', this.showPaymentModal());
   }
 
   goToMyTickets(): void {
