@@ -30,7 +30,7 @@
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": true,
-  "registrationEmailAsUsername": false,
+  "registrationEmailAsUsername": true,
   "rememberMe": false,
   "verifyEmail": false,
   "loginWithEmailAllowed": true,
@@ -80,7 +80,7 @@
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
-          "realm": ["offline_access", "uma_authorization"],
+          "realm": ["offline_access", "uma_authorization", "ROLE_USER"],
           "client": {
             "account": ["view-profile", "manage-account"]
           }
@@ -2212,7 +2212,7 @@
     "cibaInterval": "5",
     "realmReusableOtpCode": "false",
     "frontendUrl": "",
-    "acr.loa.map": "[]"
+    "acr.loa.map": "{}"
   },
   "keycloakVersion": "23.0.1",
   "userManagedAccessAllowed": false,

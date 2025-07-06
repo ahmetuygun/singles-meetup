@@ -46,8 +46,61 @@
     <!-- Title -->
     <h1 class="text-3xl font-bold mb-8 text-center text-black">Register</h1>
     
+    <!-- Error Messages -->
+    <#if message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
+      <div class="mb-4 p-4 rounded-lg ${message.type}-message flex items-center gap-2">
+        <#if message.type = 'success'>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22,4 12,14.01 9,11.01"></polyline>
+          </svg>
+        </#if>
+        <#if message.type = 'warning'>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </#if>
+        <#if message.type = 'error'>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </#if>
+        <#if message.type = 'info'>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </#if>
+        <span class="message-text font-medium">${kcSanitize(message.summary)?no_esc}</span>
+      </div>
+    </#if>
+    
     <!-- Registration Form -->
     <form id="kc-register-form" action="${url.registrationAction}" method="post" class="space-y-6">
+      
+      <!-- Username field is hidden when registrationEmailAsUsername is true -->
+      <#if !realm.registrationEmailAsUsername>
+        <div>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            autocomplete="username"
+            class="w-full px-6 py-4 text-lg rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent placeholder-gray-500"
+            placeholder="Username"
+            value="${(register.formData.username!'')}"
+            required
+          >
+          <#if messagesPerField.existsError('username')>
+            <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('username'))?no_esc}</div>
+          </#if>
+        </div>
+      </#if>
       
       <!-- Email Input -->
       <div>
@@ -58,8 +111,12 @@
           autocomplete="email"
           class="w-full px-6 py-4 text-lg rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent placeholder-gray-500"
           placeholder="Email"
+          value="${(register.formData.email!'')}"
           required
         >
+        <#if messagesPerField.existsError('email')>
+          <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('email'))?no_esc}</div>
+        </#if>
       </div>
       
       <!-- First Name Input -->
@@ -71,8 +128,12 @@
           autocomplete="given-name"
           class="w-full px-6 py-4 text-lg rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent placeholder-gray-500"
           placeholder="First Name"
+          value="${(register.formData.firstName!'')}"
           required
         >
+        <#if messagesPerField.existsError('firstName')>
+          <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('firstName'))?no_esc}</div>
+        </#if>
       </div>
       
       <!-- Last Name Input -->
@@ -84,8 +145,12 @@
           autocomplete="family-name"
           class="w-full px-6 py-4 text-lg rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent placeholder-gray-500"
           placeholder="Last Name"
+          value="${(register.formData.lastName!'')}"
           required
         >
+        <#if messagesPerField.existsError('lastName')>
+          <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('lastName'))?no_esc}</div>
+        </#if>
       </div>
       
       <!-- Password Input -->
@@ -100,12 +165,15 @@
           required
         >
         <!-- Eye icon for password visibility -->
-        <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+        <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500" onclick="togglePassword('password')">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
         </button>
+        <#if messagesPerField.existsError('password')>
+          <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('password'))?no_esc}</div>
+        </#if>
       </div>
       
       <!-- Confirm Password Input -->
@@ -120,12 +188,15 @@
           required
         >
         <!-- Eye icon for password visibility -->
-        <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+        <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500" onclick="togglePassword('password-confirm')">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
         </button>
+        <#if messagesPerField.existsError('password-confirm')>
+          <div class="text-red-500 text-sm mt-1">${kcSanitize(messagesPerField.get('password-confirm'))?no_esc}</div>
+        </#if>
       </div>
       
       <!-- Register Button with solid-shadow-rectangle style -->
@@ -210,5 +281,54 @@
       </div>
     </form>
   </div>
+
+  <!-- JavaScript for password toggle and error styling -->
+  <script>
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const button = field.nextElementSibling;
+      const svg = button.querySelector('svg');
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        // Change to eye-off icon
+        svg.innerHTML = `
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        `;
+      } else {
+        field.type = 'password';
+        // Change back to eye icon
+        svg.innerHTML = `
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        `;
+      }
+    }
+  </script>
+
+  <!-- Error message styling -->
+  <style>
+    .error-message {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+    .success-message {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+    }
+    .warning-message {
+      background-color: #fffbeb;
+      border: 1px solid #fed7aa;
+      color: #d97706;
+    }
+    .info-message {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #2563eb;
+    }
+  </style>
 </body>
 </html>
