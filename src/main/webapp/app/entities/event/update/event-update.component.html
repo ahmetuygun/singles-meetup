@@ -167,6 +167,19 @@
           </small>
         </div>
 
+        <div class="mb-3">
+          <label class="form-label" for="field_type">Event Type</label>
+          <select class="form-control" id="field_type" data-cy="type" name="type" formControlName="type">
+            <option value="">Select Event Type</option>
+            <option value="DINNER">Dinner</option>
+            <option value="SINGLES">Singles</option>
+            <option value="SOCIAL">Social</option>
+          </select>
+          <small class="form-text text-muted">
+            Choose the type of event to help categorize it properly.
+          </small>
+        </div>
+
         @let imageRef = editForm.get('image')!;
         <div class="mb-3">
           <label class="form-label" for="field_image" jhiTranslate="singlesMeetup2App.event.image">Image</label>

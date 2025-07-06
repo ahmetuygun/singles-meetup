@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import com.meet.singles.domain.enumeration.EventType;
 
 /**
  * A Event.
@@ -63,6 +64,10 @@ public class Event implements Serializable {
 
     @Column(name = "active")
     private Boolean active;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private EventType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "events" }, allowSetters = true)
@@ -220,6 +225,19 @@ public class Event implements Serializable {
         this.active = active;
     }
 
+    public EventType getType() {
+        return this.type;
+    }
+
+    public Event type(EventType type) {
+        this.setType(type);
+        return this;
+    }
+
+    public void setType(EventType type) {
+        this.type = type;
+    }
+
     public Venue getVenue() {
         return this.venue;
     }
@@ -298,6 +316,7 @@ public class Event implements Serializable {
             ", image='" + getImage() + "'" +
             ", imageContentType='" + getImageContentType() + "'" +
             ", active='" + getActive() + "'" +
+            ", type='" + getType() + "'" +
             "}";
     }
 }

@@ -41,6 +41,7 @@ type EventFormGroupContent = {
   image: FormControl<EventFormRawValue['image']>;
   imageContentType: FormControl<EventFormRawValue['imageContentType']>;
   active: FormControl<EventFormRawValue['active']>;
+  type: FormControl<EventFormRawValue['type']>;
   venue: FormControl<EventFormRawValue['venue']>;
 };
 
@@ -81,6 +82,7 @@ export class EventFormService {
       image: new FormControl(eventRawValue.image),
       imageContentType: new FormControl(eventRawValue.imageContentType),
       active: new FormControl(eventRawValue.active),
+      type: new FormControl(eventRawValue.type),
       venue: new FormControl(eventRawValue.venue),
     });
   }

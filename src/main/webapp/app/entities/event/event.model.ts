@@ -2,6 +2,12 @@ import dayjs from 'dayjs/esm';
 import { IVenue } from 'app/entities/venue/venue.model';
 import { IPersonProfile } from 'app/entities/person-profile/person-profile.model';
 
+export enum EventType {
+  DINNER = 'DINNER',
+  SINGLES = 'SINGLES',
+  SOCIAL = 'SOCIAL'
+}
+
 export interface IEvent {
   id: number;
   name?: string | null;
@@ -14,6 +20,7 @@ export interface IEvent {
   image?: string | null;
   imageContentType?: string | null;
   active?: boolean | null;
+  type?: EventType | null;
   venue?: IVenue | null;
   participants?: IPersonProfile[] | null;
 }
