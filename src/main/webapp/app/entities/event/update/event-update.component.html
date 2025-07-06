@@ -148,6 +148,25 @@
           }
         </div>
 
+        <div class="mb-3">
+          <label class="form-label" for="field_active">Event Status</label>
+          <div class="form-check">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="field_active" 
+              data-cy="active" 
+              formControlName="active"
+            />
+            <label class="form-check-label" for="field_active">
+              Active Event
+            </label>
+          </div>
+          <small class="form-text text-muted">
+            Inactive events will not be visible to regular users and unauthenticated users.
+          </small>
+        </div>
+
         @let imageRef = editForm.get('image')!;
         <div class="mb-3">
           <label class="form-label" for="field_image" jhiTranslate="singlesMeetup2App.event.image">Image</label>

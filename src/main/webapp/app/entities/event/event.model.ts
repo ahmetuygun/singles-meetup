@@ -13,6 +13,7 @@ export interface IEvent {
   price?: number | null;
   image?: string | null;
   imageContentType?: string | null;
+  active?: boolean | null;
   venue?: IVenue | null;
   participants?: IPersonProfile[] | null;
 }

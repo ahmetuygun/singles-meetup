@@ -11,6 +11,7 @@ import { FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date'
 import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 import { IEvent } from '../event.model';
 import { EventService } from '../service/event.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   selector: 'jhi-event',
@@ -35,7 +36,8 @@ export class EventComponent implements OnInit {
   constructor(
     protected eventService: EventService,
     protected eventModalService: NgbModal,
-    protected router: Router
+    protected router: Router,
+    protected accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +49,17 @@ export class EventComponent implements OnInit {
     this.eventService.query().subscribe({
       next: (res) => {
         this.isLoading = false;
-        this.events.set(res.body ?? []);
+        const allEvents = res.body ?? [];
+        
+        // Only admins can see inactive events
+        if (this.accountService.hasAnyAuthority('ROLE_ADMIN')) {
+          // For admins, show all events including inactive ones
+          this.events.set(allEvents);
+        } else {
+          // For unauthenticated users and regular users, filter out inactive events
+          const filteredEvents = allEvents.filter(event => event.active !== false);
+          this.events.set(filteredEvents);
+        }
       },
       error: () => {
         this.isLoading = false;

@@ -61,6 +61,9 @@ public class Event implements Serializable {
     @Column(name = "image_content_type")
     private String imageContentType;
 
+    @Column(name = "active")
+    private Boolean active;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "events" }, allowSetters = true)
     private Venue venue;
@@ -204,6 +207,19 @@ public class Event implements Serializable {
         this.imageContentType = imageContentType;
     }
 
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public Event active(Boolean active) {
+        this.setActive(active);
+        return this;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public Venue getVenue() {
         return this.venue;
     }
@@ -281,6 +297,7 @@ public class Event implements Serializable {
             ", price=" + getPrice() +
             ", image='" + getImage() + "'" +
             ", imageContentType='" + getImageContentType() + "'" +
+            ", active='" + getActive() + "'" +
             "}";
     }
 }
