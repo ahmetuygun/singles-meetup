@@ -54,6 +54,7 @@ Main page styles
   .hero-hashtag { font-size: 1rem; }
   .hero-title { font-size: 3rem; }
   .hero-subtitle { font-size: 1.2rem; }
+  .grid-title { font-size: 3rem; }
 }
 
 @media (max-width: 768px) {
@@ -61,12 +62,14 @@ Main page styles
   .hero-title { font-size: 2.5rem; line-height: 1.2; }
   .hero-subtitle { font-size: 1.1rem; line-height: 1.4; }
   .hero-section { padding: 3rem 0 2rem; }
+  .grid-title { font-size: 2.5rem; line-height: 1.2; }
 }
 
 @media (max-width: 480px) {
   .hero-hashtag { font-size: 0.8rem; }
   .hero-title { font-size: 2rem; line-height: 1.2; }
   .hero-subtitle { font-size: 1rem; line-height: 1.4; }
+  .grid-title { font-size: 2rem; line-height: 1.2; }
 }
 
 .hipster {
@@ -145,11 +148,10 @@ Photo Grid Section - Polaroid Collage Style
 }
 
 .grid-title {
-  color: #2d3436;
-  font: 900 2.8rem/1 system-ui;
+  font: 700 3.5rem/1.1 system-ui;
+  font-style: italic;
   letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-  text-transform: uppercase;
+  color: #000;
 }
 
 .grid-subtitle {
@@ -225,7 +227,6 @@ Photo Grid Section - Polaroid Collage Style
 /* Mobile */
 @media (max-width: 768px) {
   .photo-grid-section { padding: 4rem 0; }
-  .grid-title { font-size: 2.2rem; }
   .grid-subtitle { font-size: 1.1rem; margin-bottom: 3rem; }
   .polaroid-collage { height: 500px; padding: 0 20px; }
   .polaroid-frame { width: 160px; height: 200px; padding: 12px 12px 40px; }
@@ -243,7 +244,6 @@ Photo Grid Section - Polaroid Collage Style
   .photo-img { height: 135px; }
 }
 @media (min-width: 1025px) {
-  .grid-title { font-size: 3.2rem; }
   .grid-subtitle { font-size: 1.4rem; }
   .polaroid-collage { height: 650px; }
   .polaroid-frame { width: 220px; height: 260px; padding: 18px 18px 60px; }
