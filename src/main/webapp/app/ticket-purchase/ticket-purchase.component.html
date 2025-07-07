@@ -17,8 +17,7 @@
             <div class="flex-grow-1">
               <h6 class="mb-1 fw-normal">{{ ticket.name }}</h6>
               <div class="text-muted small">
-                €{{ (ticket.price || 0).toFixed(2) }} +
-                <span class="text-muted">€{{ getBookingFeeForTicket(ticket).toFixed(2) }} booking fee</span>
+                €{{ (ticket.price || 0).toFixed(2) }}
               </div>
             </div>
 

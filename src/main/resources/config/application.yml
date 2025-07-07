@@ -236,3 +236,7 @@ jhipster:
 # ===================================================================
 
 # application:
+stripe:
+  fee:
+    percentage: 1.5  # 1.5% fee
+    constant: 0.25   # €0.25 constant fee

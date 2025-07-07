@@ -1,6 +1,7 @@
 package com.meet.singles.web.rest;
 
 import com.meet.singles.service.StripeService;
+import com.meet.singles.service.StripeFeeService;
 import com.meet.singles.web.rest.dto.PaymentIntentRequest;
 import com.meet.singles.web.rest.dto.PaymentIntentResponse;
 import com.meet.singles.web.rest.dto.ConfirmPaymentRequest;
@@ -32,9 +33,11 @@ public class PaymentResource {
     private String applicationName;
 
     private final StripeService stripeService;
+    private final StripeFeeService stripeFeeService;
 
-    public PaymentResource(StripeService stripeService) {
+    public PaymentResource(StripeService stripeService, StripeFeeService stripeFeeService) {
         this.stripeService = stripeService;
+        this.stripeFeeService = stripeFeeService;
     }
 
     /**
@@ -59,7 +62,7 @@ public class PaymentResource {
             metadata.put("quantity", request.getQuantity().toString());
             
             // Convert amount to cents
-            Long amountInCents = stripeService.convertToCents(request.getAmount().add(request.getBookingFee()));
+            Long amountInCents = stripeService.convertToCents(request.getAmount());
             
             // Create payment intent with idempotency key
             PaymentIntent paymentIntent = stripeService.createPaymentIntentWithIdempotency(
@@ -101,7 +104,7 @@ public class PaymentResource {
             request.getEventId(), 
             request.getTicketId(),
             request.getQuantity(),
-            request.getAmount().add(request.getBookingFee()).toString()
+            request.getAmount().toString()
         );
         return UUID.nameUUIDFromBytes(keySource.getBytes()).toString();
     }
@@ -167,5 +170,18 @@ public class PaymentResource {
             log.error("Error retrieving payment status", e);
             throw new BadRequestAlertException("Failed to retrieve payment status: " + e.getMessage(), ENTITY_NAME, "stripeerror");
         }
+    }
+
+    /**
+     * {@code GET  /payments/stripe-fee-config} : Get Stripe fee configuration
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the fee configuration
+     */
+    @GetMapping("/stripe-fee-config")
+    public ResponseEntity<Map<String, Object>> getStripeFeeConfig() {
+        Map<String, Object> config = new HashMap<>();
+        config.put("percentage", stripeFeeService.getStripeFeePercentage());
+        config.put("constant", stripeFeeService.getStripeFeeConstant());
+        return ResponseEntity.ok(config);
     }
 } 

@@ -13,6 +13,7 @@ import com.meet.singles.repository.TicketRepository;
 import com.meet.singles.security.SecurityUtils;
 import com.meet.singles.service.QrCodeService;
 import com.meet.singles.service.StripeService;
+import com.meet.singles.service.StripeFeeService;
 import com.meet.singles.web.rest.errors.BadRequestAlertException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -56,6 +57,7 @@ public class UserTicketResource {
     private final TicketRepository ticketRepository;
     private final QrCodeService qrCodeService;
     private final StripeService stripeService;
+    private final StripeFeeService stripeFeeService;
 
     public UserTicketResource(
         UserTicketRepository userTicketRepository,
@@ -63,7 +65,8 @@ public class UserTicketResource {
         PersonProfileRepository personProfileRepository,
         TicketRepository ticketRepository,
         QrCodeService qrCodeService,
-        StripeService stripeService
+        StripeService stripeService,
+        StripeFeeService stripeFeeService
     ) {
         this.userTicketRepository = userTicketRepository;
         this.userEventRepository = userEventRepository;
@@ -71,6 +74,7 @@ public class UserTicketResource {
         this.ticketRepository = ticketRepository;
         this.qrCodeService = qrCodeService;
         this.stripeService = stripeService;
+        this.stripeFeeService = stripeFeeService;
     }
 
     /**
@@ -118,15 +122,20 @@ public class UserTicketResource {
                     uniqueEvents.add(ticket.getEvent());
                 }
                 
-                BigDecimal totalPrice = ticket.getPrice().multiply(BigDecimal.valueOf(selection.getQuantity()));
-                // Use ticket's booking fee or default to 10% of total price if not set
-        BigDecimal bookingFee = ticket.getBookingFee();
-        if (bookingFee == null) {
-            bookingFee = totalPrice.multiply(BigDecimal.valueOf(0.1)); // Default 10% of total price
-        } else {
-            // If booking fee is set, multiply by quantity
-            bookingFee = bookingFee.multiply(BigDecimal.valueOf(selection.getQuantity()));
-        }
+                // Use discounted amounts if provided, otherwise calculate from original ticket price
+                BigDecimal totalPrice;
+                BigDecimal bookingFee;
+                
+                if (selection.getDiscountedTotalPrice() != null) {
+                    // Use the discounted amount provided by frontend
+                    totalPrice = selection.getDiscountedTotalPrice();
+                } else {
+                    // Fallback to original calculation (for backward compatibility)
+                    totalPrice = ticket.getPrice().multiply(BigDecimal.valueOf(selection.getQuantity()));
+                }
+                
+                // Calculate Stripe fee using configurable service
+                bookingFee = stripeFeeService.calculateStripeFee(totalPrice);
                 
                 UserTicket userTicket = new UserTicket();
                 userTicket.setPersonProfile(personProfile);
@@ -268,6 +277,7 @@ public class UserTicketResource {
     public static class TicketSelection {
         private Long ticketId;
         private Integer quantity;
+        private BigDecimal discountedTotalPrice;
 
         public Long getTicketId() {
             return ticketId;
@@ -283,6 +293,14 @@ public class UserTicketResource {
 
         public void setQuantity(Integer quantity) {
             this.quantity = quantity;
+        }
+
+        public BigDecimal getDiscountedTotalPrice() {
+            return discountedTotalPrice;
+        }
+
+        public void setDiscountedTotalPrice(BigDecimal discountedTotalPrice) {
+            this.discountedTotalPrice = discountedTotalPrice;
         }
     }
 } 

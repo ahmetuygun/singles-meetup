@@ -9,6 +9,7 @@ import { TicketSelection } from '../ticket-purchase/ticket-purchase.component';
 import { UserTicketService, PurchaseRequest } from '../entities/user-ticket/service/user-ticket.service';
 import { StripeService } from '../shared/services/stripe.service';
 import { firstValueFrom } from 'rxjs';
+import { IPromoCode, PromoCodeType } from '../entities/promo-code/promo-code.model';
 
 @Component({
   selector: 'jhi-payment',
@@ -27,6 +28,17 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTickets = signal<TicketSelection[]>([]);
   selectedPaymentMethod = signal<string>('card');
   isProcessing = signal<boolean>(false);
+  
+  // Promo code properties
+  promoCodeInput = '';
+  appliedPromoCode = signal<IPromoCode | null>(null);
+  promoCodeApplied = signal<boolean>(false);
+  promoCodeError = signal<string>('');
+  isApplyingPromoCode = signal<boolean>(false);
+  
+  // Booking fee properties
+  bookingFee = signal<number>(0);
+  bookingFeeConfig = signal<{percentage: number, constant: number} | null>(null);
   
   // Card form fields (for display only - Stripe handles the actual input)
   cardNumber = signal<string>('');
@@ -70,6 +82,9 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
           setTimeout(() => this.mountStripeCardElement(), 200);
         }
       });
+      
+      // Load booking fee configuration and calculate fees
+      this.loadBookingFeeConfig();
     } else {
       // If no state, redirect back
       this.router.navigate(['/']);
@@ -180,15 +195,40 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  getBookingFees(): number {
-    return this.selectedTickets().reduce((total, selection) => {
-      const ticketBookingFee = selection.ticket.bookingFee || (selection.ticket.price || 0) * 0.1; // Default 10% if not set
-      return total + (ticketBookingFee * selection.quantity);
-    }, 0);
+  getTotalWithFees(): number {
+    const subtotal = this.getTotalPrice();
+    const discountedSubtotal = this.applyPromoCodeDiscount(subtotal);
+    return discountedSubtotal + this.bookingFee();
   }
 
-  getTotalWithFees(): number {
-    return this.getTotalPrice() + this.getBookingFees();
+  private applyPromoCodeDiscount(subtotal: number): number {
+    if (!this.promoCodeApplied() || !this.appliedPromoCode()) {
+      return subtotal;
+    }
+
+    const promoCode = this.appliedPromoCode()!;
+    
+    switch (promoCode.type) {
+      case PromoCodeType.PERCENTAGE:
+        const discountPercentage = (promoCode.value || 0) / 100;
+        return subtotal * (1 - discountPercentage);
+      case PromoCodeType.FIXED:
+        return Math.max(0, subtotal - (promoCode.value || 0));
+      case PromoCodeType.FREE:
+        return 0;
+      default:
+        return subtotal;
+    }
+  }
+
+  getPromoCodeDiscount(): number {
+    if (!this.promoCodeApplied() || !this.appliedPromoCode()) {
+      return 0;
+    }
+
+    const subtotal = this.getTotalPrice();
+    const finalTotal = this.applyPromoCodeDiscount(subtotal);
+    return subtotal - finalTotal;
   }
 
   formatCardNumber(event: Event): void {
@@ -241,6 +281,15 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getButtonDisabled(): boolean {
+    const totalAmount = this.getTotalWithFees();
+    const isFreePurchase = totalAmount === 0;
+    
+    // For free purchases, only check if processing
+    if (isFreePurchase) {
+      return this.isProcessing();
+    }
+    
+    // For paid purchases, check processing and card validation if card payment is selected
     return this.isProcessing() || (this.selectedPaymentMethod() === 'card' && !this.validateCardForm());
   }
 
@@ -259,18 +308,33 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.securityCode.set(target.value);
   }
 
-
-
   async completePurchase(): Promise<void> {
     try {
       console.log('completePurchase: Setting processing to true');
       this.isProcessing.set(true);
 
-      // Step 1: Process payment based on selected method
-      if (this.selectedPaymentMethod() === 'card') {
-        await this.processCardPayment();
-      } else if (this.selectedPaymentMethod() === 'apple' || this.selectedPaymentMethod() === 'google') {
-        await this.processWalletPayment();
+      // Check if this is a free purchase (total amount is 0)
+      const totalAmount = this.getTotalWithFees();
+      console.log('Total amount for purchase:', totalAmount);
+
+      if (totalAmount === 0) {
+        // Free purchase - skip payment processing and create tickets directly
+        console.log('Free purchase detected, skipping payment processing');
+        try {
+          await this.completeTicketPurchase('FREE_PURCHASE');
+          this.clearPaymentAttempts(); // Clear attempts on success
+          console.log('Free ticket purchase completed successfully');
+        } catch (completionError) {
+          console.log('Free ticket completion failed:', completionError);
+          this.handlePaymentError(completionError);
+        }
+      } else {
+        // Paid purchase - process payment based on selected method
+        if (this.selectedPaymentMethod() === 'card') {
+          await this.processCardPayment();
+        } else if (this.selectedPaymentMethod() === 'apple' || this.selectedPaymentMethod() === 'google') {
+          await this.processWalletPayment();
+        }
       }
 
       // Only reset processing if no modal is shown (success case)
@@ -300,8 +364,6 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       throw error;
     }
 
-
-
     this.errorMessage.set('');
     
     // Record payment attempt
@@ -311,8 +373,7 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       // Create payment intent first
       const paymentIntentResponse = await firstValueFrom(
         this.http.post<any>('/api/payments/create-intent', {
-          amount: this.getTotalWithFees(),
-          bookingFee: this.getBookingFees(),
+          amount: this.getTotalWithFees().toFixed(2),
           currency: 'eur',
           userId: '1', // TODO: Get from actual user service
           eventId: this.event()?.id?.toString() || '',
@@ -377,8 +438,7 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
       // Create payment intent first
       const paymentIntentResponse = await firstValueFrom(
         this.http.post<any>('/api/payments/create-intent', {
-          amount: this.getTotalWithFees(),
-          bookingFee: this.getBookingFees(),
+          amount: this.getTotalWithFees().toFixed(2),
           currency: 'eur',
           userId: '1', // TODO: Get from actual user service
           eventId: this.event()?.id?.toString() || '',
@@ -430,12 +490,39 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private async completeTicketPurchase(paymentIntentId: string): Promise<void> {
     const purchaseRequest: PurchaseRequest = {
-      ticketSelections: this.selectedTickets().map(selection => ({
-        ticketId: selection.ticket.id,
-        quantity: selection.quantity
-      })),
-      paymentMethod: this.selectedPaymentMethod(),
-      stripePaymentIntentId: paymentIntentId
+      ticketSelections: this.selectedTickets().map(selection => {
+        // Calculate the discounted amounts for this ticket selection
+        const originalTotalPrice = (selection.ticket.price || 0) * selection.quantity;
+        
+        // Apply promo code discount if available
+        let discountedTotalPrice = originalTotalPrice;
+        
+        if (this.promoCodeApplied() && this.appliedPromoCode()) {
+          const promoCode = this.appliedPromoCode()!;
+          
+          switch (promoCode.type) {
+            case 'PERCENTAGE':
+              const discountPercentage = (promoCode.value || 0) / 100;
+              discountedTotalPrice = Math.max(0, originalTotalPrice * (1 - discountPercentage));
+              break;
+            case 'FIXED':
+              const fixedDiscount = promoCode.value || 0;
+              discountedTotalPrice = Math.max(0, originalTotalPrice - fixedDiscount);
+              break;
+            case 'FREE':
+              discountedTotalPrice = 0;
+              break;
+          }
+        }
+        
+        return {
+          ticketId: selection.ticket.id,
+          quantity: selection.quantity,
+          discountedTotalPrice: discountedTotalPrice
+        };
+      }),
+      paymentMethod: paymentIntentId === 'FREE_PURCHASE' ? 'free' : this.selectedPaymentMethod(),
+      stripePaymentIntentId: paymentIntentId === 'FREE_PURCHASE' ? undefined : paymentIntentId
     };
 
     return new Promise<void>((resolve, reject) => {
@@ -464,7 +551,35 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  async loadBookingFeeConfig(): Promise<void> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<{percentage: number, constant: number}>('/api/payments/stripe-fee-config')
+      );
+      this.bookingFeeConfig.set(response);
+      this.calculateBookingFee();
+    } catch (error) {
+      console.error('Failed to load booking fee config:', error);
+    }
+  }
 
+  calculateBookingFee(): void {
+    const config = this.bookingFeeConfig();
+    if (!config) return;
+    
+    const subtotal = this.getTotalPrice();
+    const discountedSubtotal = this.applyPromoCodeDiscount(subtotal);
+    
+    // If promo code is FREE, no booking fee
+    if (this.promoCodeApplied() && this.appliedPromoCode()?.type === 'FREE') {
+      this.bookingFee.set(0);
+      return;
+    }
+    
+    // Calculate booking fee: percentage * amount + constant
+    const bookingFee = (discountedSubtotal * config.percentage / 100) + config.constant;
+    this.bookingFee.set(bookingFee);
+  }
 
   closePaymentModal(): void {
     const wasSuccessful = this.paymentSuccess();
@@ -487,6 +602,59 @@ export class PaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.closePaymentModal();
     // Route to my tickets page
     this.router.navigate(['/my-tickets']);
+  }
+
+  // Promo code methods
+  async applyPromoCode(): Promise<void> {
+    if (!this.promoCodeInput || this.promoCodeInput.trim().length === 0) {
+      return;
+    }
+
+    this.isApplyingPromoCode.set(true);
+    this.promoCodeError.set('');
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>('/api/promo-codes/validate', {
+          code: this.promoCodeInput.trim().toUpperCase(),
+          eventId: this.event()?.id,
+          totalAmount: this.getTotalPrice() + this.getPromoCodeDiscount()
+        })
+      );
+
+      if (response.valid) {
+        this.appliedPromoCode.set(response.promoCode);
+        this.promoCodeApplied.set(true);
+        this.promoCodeInput = '';
+        // Recalculate booking fee after applying promo code
+        this.calculateBookingFee();
+      } else {
+        this.promoCodeError.set(response.message || 'Invalid promo code');
+      }
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error.status === 404) {
+        this.promoCodeError.set('Promo code not found. Please check the code and try again.');
+      } else if (error.status === 400) {
+        this.promoCodeError.set(error.error?.message || 'Invalid promo code. Please check the code and try again.');
+      } else if (error.status === 410) {
+        this.promoCodeError.set('This promo code has expired or is no longer valid.');
+      } else if (error.status === 409) {
+        this.promoCodeError.set('This promo code has reached its maximum usage limit.');
+      } else {
+        this.promoCodeError.set('Error applying promo code. Please try again.');
+      }
+    } finally {
+      this.isApplyingPromoCode.set(false);
+    }
+  }
+
+  removePromoCode(): void {
+    this.appliedPromoCode.set(null);
+    this.promoCodeApplied.set(false);
+    this.promoCodeError.set('');
+    // Recalculate booking fee after removing promo code
+    this.calculateBookingFee();
   }
 
   resetPaymentState(): void {

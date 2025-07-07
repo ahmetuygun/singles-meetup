@@ -269,8 +269,8 @@
                         </div>
                         <div class="col-6">
                           <div class="bg-light rounded p-2 text-center">
-                            <div class="fw-bold text-secondary">+€{{ (ticket.bookingFee || 0).toFixed(2) }}</div>
-                            <small class="text-muted">Booking Fee</small>
+                            <div class="fw-bold text-secondary">+€0.00</div>
+                            <small class="text-muted">Processing Fee</small>
                           </div>
                         </div>
                       </div>
@@ -302,7 +302,7 @@
                         <span class="badge bg-primary fs-6">€{{ ticket.price }}</span>
                       </div>
                       <div class="col-md-2">
-                        <small class="text-muted">+€{{ (ticket.bookingFee || 0).toFixed(2) }} fee</small>
+                        <small class="text-muted">+€0.00 processing fee</small>
                       </div>
                       <div class="col-md-2">
                         <small class="text-muted">
@@ -361,20 +361,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-6 col-md-2">
-                  <div class="mb-3">
-                    <label class="form-label">Booking Fee (€)</label>
-                    <input 
-                      type="number" 
-                      step="0.01" 
-                      min="0" 
-                      class="form-control" 
-                      [value]="newTicket.bookingFee"
-                      (input)="onTicketBookingFeeChange($any($event.target).valueAsNumber)"
-                      placeholder="1.20"
-                    />
-                  </div>
-                </div>
+
                 <div class="col-6 col-md-2">
                   <div class="mb-3">
                     <label class="form-label">Quantity</label>

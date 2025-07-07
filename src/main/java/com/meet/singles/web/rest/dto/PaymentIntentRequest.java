@@ -12,10 +12,6 @@ public class PaymentIntentRequest {
     private BigDecimal amount;
     
     @NotNull
-    @Positive
-    private BigDecimal bookingFee;
-    
-    @NotNull
     @Size(min = 3, max = 3)
     private String currency;
     
@@ -35,10 +31,9 @@ public class PaymentIntentRequest {
     // Constructors
     public PaymentIntentRequest() {}
 
-    public PaymentIntentRequest(BigDecimal amount, BigDecimal bookingFee, String currency, String userId, 
+    public PaymentIntentRequest(BigDecimal amount, String currency, String userId, 
                                String eventId, String ticketId, Integer quantity) {
         this.amount = amount;
-        this.bookingFee = bookingFee;
         this.currency = currency;
         this.userId = userId;
         this.eventId = eventId;
@@ -55,13 +50,7 @@ public class PaymentIntentRequest {
         this.amount = amount;
     }
 
-    public BigDecimal getBookingFee() {
-        return bookingFee;
-    }
 
-    public void setBookingFee(BigDecimal bookingFee) {
-        this.bookingFee = bookingFee;
-    }
 
     public String getCurrency() {
         return currency;
@@ -107,7 +96,6 @@ public class PaymentIntentRequest {
     public String toString() {
         return "PaymentIntentRequest{" +
                 "amount=" + amount +
-                ", bookingFee=" + bookingFee +
                 ", currency='" + currency + '\'' +
                 ", userId='" + userId + '\'' +
                 ", eventId='" + eventId + '\'' +

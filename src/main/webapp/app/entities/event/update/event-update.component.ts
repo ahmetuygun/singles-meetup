@@ -169,7 +169,6 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
       name: '',
       description: null,
       price: 0,
-      bookingFee: 0,
       quantityAvailable: 1,
       quantitySold: 0,
       isActive: true,
@@ -253,7 +252,5 @@ export class EventUpdateComponent implements OnInit, OnDestroy {
     this.newTicket.price = value;
   }
 
-  onTicketBookingFeeChange(value: number): void {
-    this.newTicket.bookingFee = value;
-  }
+
 }

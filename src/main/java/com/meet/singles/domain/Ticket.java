@@ -36,9 +36,6 @@ public class Ticket implements Serializable {
     @Column(name = "price", precision = 21, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Column(name = "booking_fee", precision = 21, scale = 2)
-    private BigDecimal bookingFee;
-
     @Column(name = "quantity_available")
     private Integer quantityAvailable;
 
@@ -113,18 +110,7 @@ public class Ticket implements Serializable {
         this.price = price;
     }
 
-    public BigDecimal getBookingFee() {
-        return this.bookingFee;
-    }
 
-    public Ticket bookingFee(BigDecimal bookingFee) {
-        this.setBookingFee(bookingFee);
-        return this;
-    }
-
-    public void setBookingFee(BigDecimal bookingFee) {
-        this.bookingFee = bookingFee;
-    }
 
     public Integer getQuantityAvailable() {
         return this.quantityAvailable;
@@ -231,7 +217,6 @@ public class Ticket implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", bookingFee=" + getBookingFee() +
             ", quantityAvailable=" + getQuantityAvailable() +
             ", quantitySold=" + getQuantitySold() +
             ", isActive='" + getIsActive() + "'" +

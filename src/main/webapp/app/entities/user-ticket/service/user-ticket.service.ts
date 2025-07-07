@@ -33,6 +33,7 @@ export interface PurchaseRequest {
 export interface TicketSelection {
   ticketId: number;
   quantity: number;
+  discountedTotalPrice?: number;
 }
 
 @Injectable({ providedIn: 'root' })
