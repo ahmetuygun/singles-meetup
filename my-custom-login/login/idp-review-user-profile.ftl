@@ -31,7 +31,7 @@
     
     <!-- Logo at the top -->
     <div class="flex justify-center mb-8">
-      <img src="${url.resourcesPath}/img/logo-bg-white.svg" alt="Logo" class="h-16 w-auto">
+      <img src="${url.resourcesPath}/img/logo1.svg" alt="Logo" class="h-16 w-auto">
     </div>
     
     <!-- Title -->
